@@ -23,7 +23,7 @@ VoxelObject::VoxelObject()
 	Reset();
 }
 
-void VoxelObject::SetOpenGLRenderer(Renderer* pRenderer)
+void VoxelObject::SetRenderer(Renderer* pRenderer)
 {
 	m_pRenderer = pRenderer;
 }

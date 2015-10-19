@@ -60,10 +60,6 @@ void Camera::Strafe(const float speed)
 	m_position.z = m_position.z + m_right.z * speed;
 }
 
-void Camera::Zoom(const float speed)
-{
-}
-
 void Camera::Rotate(const float xAmount, const float yAmount, const float zAmount)
 {
 	Quaternion xRotation;
@@ -80,13 +76,33 @@ void Camera::Rotate(const float xAmount, const float yAmount, const float zAmoun
 	m_facing = (rotation * m_facing).GetUnit();
 }
 
+void Camera::RotateAroundPoint(const float xAmount, const float yAmount, const float zoomAmount)
+{
+	Quaternion xRotation;
+	xRotation.SetAxis(m_right, xAmount);
+	Quaternion yRotation;
+	yRotation.SetAxis(m_up, yAmount);
+
+	Quaternion rotation = xRotation * yRotation;
+
+	// Get the view position, based on the facing and the zoom amount
+	Vector3d view = m_position + (m_facing*zoomAmount);
+
+	// Translate the position to the origin, relative to the view position (that is the facing zoomed)
+	m_position -= view;
+	m_position = (rotation * m_position);
+	// Translate back to relative view position
+	m_position += view;
+
+	m_right = (rotation * m_right).GetUnit();
+	m_facing = (rotation * m_facing).GetUnit();
+	m_up = (rotation * m_up).GetUnit();
+}
+
 // Viewing
-void Camera::Look() const {
+void Camera::Look() const
+{
 	Vector3d view = m_position + m_facing;
 	gluLookAt(m_position.x, m_position.y, m_position.z, view.x, view.y, view.z, m_up.x, m_up.y, m_up.z);
     m_pRenderer->GetFrustum(m_pRenderer->GetActiveViewPort())->SetCamera(m_position, view, m_up);
-}
-
-void Camera::SetLookAtCamera(const Vector3d &pos, const Vector3d &target, const Vector3d &up) {
-	gluLookAt(pos.x, pos.y, pos.z, target.x, target.y, target.z, up.x, up.y, up.z);
 }

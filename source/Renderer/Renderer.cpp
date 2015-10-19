@@ -17,15 +17,27 @@
 
 #include "Renderer.h"
 
-bool useGLSL = false;
-bool extensions_init = false;
-bool bGeometryShader = false;
-bool bGPUShader4 = false;
-bool HasGeometryShaderSupport();
-bool HasGLSLSupport();
-bool InitOpenGLExtensions();
-bool HasShaderModel4();
+// GL ERROR CHECK
+int CheckGLErrors(char *file, int line)
+{
+	GLenum glErr;
+	int    retCode = 0;
 
+	glErr = glGetError();
+	while (glErr != GL_NO_ERROR)
+	{
+		const GLubyte* sError = gluErrorString(glErr);
+
+		if (sError)
+			cout << "GL Error #" << glErr << "(" << gluErrorString(glErr) << ") " << " in File " << file << " at line: " << line << endl;
+		else
+			cout << "GL Error #" << glErr << " (no message available)" << " in File " << file << " at line: " << line << endl;
+
+		retCode = 1;
+		glErr = glGetError();
+	}
+	return retCode;
+}
 
 Renderer::Renderer(int width, int height, int depthBits, int stencilBits)
 {
@@ -57,6 +69,10 @@ Renderer::Renderer(int width, int height, int depthBits, int stencilBits)
 		m_stencil = true;
 	}
 
+	m_Quadratic = gluNewQuadric();
+	gluQuadricNormals(m_Quadratic, GLU_SMOOTH);
+	gluQuadricTexture(m_Quadratic, GL_TRUE);
+
 	// Initialize defaults
 	m_cullMode = CM_NOCULL;
 	m_primativeMode = PM_TRIANGLES;
@@ -75,6 +91,7 @@ Renderer::~Renderer()
 		delete m_vertexArrays[i];
 		m_vertexArrays[i] = 0;
 	}
+	m_vertexArrays.clear();
 
 	// Delete the viewports
 	for (i = 0; i < m_viewports.size(); i++)
@@ -82,6 +99,7 @@ Renderer::~Renderer()
 		delete m_viewports[i];
 		m_viewports[i] = 0;
 	}
+	m_viewports.clear();
 
 	// Delete the frustums
 	for (i = 0; i < m_frustums.size(); i++)
@@ -89,6 +107,7 @@ Renderer::~Renderer()
 		delete m_frustums[i];
 		m_frustums[i] = 0;
 	}
+	m_frustums.clear();
 
 	// Delete the materials
 	for (i = 0; i < m_materials.size(); i++)
@@ -96,6 +115,7 @@ Renderer::~Renderer()
 		delete m_materials[i];
 		m_materials[i] = 0;
 	}
+	m_materials.clear();
 
 	// Delete the textures
 	for (i = 0; i < m_textures.size(); i++)
@@ -103,6 +123,7 @@ Renderer::~Renderer()
 		delete m_textures[i];
 		m_textures[i] = 0;
 	}
+	m_textures.clear();
 
 	// Delete the lights
 	for (i = 0; i < m_lights.size(); i++)
@@ -110,6 +131,7 @@ Renderer::~Renderer()
 		delete m_lights[i];
 		m_lights[i] = 0;
 	}
+	m_lights.clear();
 
 	// Delete the FreeType fonts
 	for (i = 0; i < m_freetypeFonts.size(); i++)
@@ -117,6 +139,26 @@ Renderer::~Renderer()
 		delete m_freetypeFonts[i];
 		m_freetypeFonts[i] = 0;
 	}
+	m_freetypeFonts.clear();
+
+	// Delete the frame buffers
+	for (i = 0; i < m_vFrameBuffers.size(); i++)
+	{
+		delete m_vFrameBuffers[i];
+		m_vFrameBuffers[i] = 0;
+	}
+	m_vFrameBuffers.clear();
+
+	// Delete the shaders
+	for (i = 0; i < m_shaders.size(); i++)
+	{
+		delete m_shaders[i];
+		m_shaders[i] = 0;
+	}
+	m_shaders.clear();
+
+	// Delete the quadratic drawer
+	gluDeleteQuadric(m_Quadratic);
 }
 
 void Renderer::ResizeWindow(int newWidth, int newHeight)
@@ -358,6 +400,18 @@ void Renderer::SetPointSize(float width)
 	glPointSize(width);
 }
 
+void Renderer::SetFrontFaceDirection(FrontFaceDirection direction)
+{
+	if(direction == FrontFaceDirection_CW)
+	{
+		glFrontFace(GL_CW);
+	}
+	else if (direction == FrontFaceDirection_CCW)
+	{
+		glFrontFace(GL_CCW);
+	}
+}
+
 // Projection
 bool Renderer::SetProjectionMode(ProjectionMode mode, int viewPort)
 {
@@ -596,7 +650,7 @@ void Renderer::SetLookAtCamera(Vector3d pos, Vector3d target, Vector3d up)
 // Transparency
 void Renderer::EnableTransparency(BlendFunction source, BlendFunction destination)
 {
-	glDisable(GL_DEPTH_WRITEMASK);
+	//glDisable(GL_DEPTH_WRITEMASK);
 	glEnable(GL_BLEND);
 	glBlendFunc(GetBlendEnum(source), GetBlendEnum(destination));
 }
@@ -604,7 +658,7 @@ void Renderer::EnableTransparency(BlendFunction source, BlendFunction destinatio
 void Renderer::DisableTransparency()
 {
 	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_WRITEMASK);
+	//glEnable(GL_DEPTH_WRITEMASK);
 }
 
 GLenum Renderer::GetBlendEnum(BlendFunction flag)
@@ -771,6 +825,95 @@ void Renderer::ImmediateColourAlpha(float r, float g, float b, float a)
 void Renderer::DisableImmediateMode()
 {
 	glEnd();
+}
+
+// Drawing helpers
+void Renderer::DrawLineCircle(float lRadius, int lPoints)
+{
+	glBegin(GL_LINE_LOOP);
+
+	float lAngleRatio = DegToRad(360.0f / lPoints);
+	for (float i = 0.0f; i < lPoints; i += 1.0f)
+	{
+		float angle = i * lAngleRatio;
+		glVertex3f(cos(angle) * lRadius, 0.0f, sin(angle) * lRadius);
+	}
+
+	glEnd();
+}
+
+void Renderer::DrawSphere(float lRadius, int lSlices, int lStacks)
+{
+	gluSphere(m_Quadratic, lRadius, lSlices, lStacks);
+}
+
+void Renderer::DrawBezier(Bezier3 curve, int lPoints)
+{
+	glBegin(GL_LINE_STRIP);
+
+	float ratio = 1.0f / (float)lPoints;
+	for (float i = 0.0f; i <= 1.0f; i += ratio)
+	{
+		Vector3d point = curve.GetInterpolatedPoint(i);
+
+		glVertex3f(point.x, point.y, point.z);
+	}
+
+	Vector3d point = curve.GetInterpolatedPoint(1.0f);
+	glVertex3f(point.x, point.y, point.z);
+
+	glEnd();
+}
+
+void Renderer::DrawBezier(Bezier4 curve, int lPoints)
+{
+	glBegin(GL_LINE_STRIP);
+
+	float ratio = 1.0f / (float)lPoints;
+	for (float i = 0.0f; i <= 1.0f; i += ratio)
+	{
+		Vector3d point = curve.GetInterpolatedPoint(i);
+
+		glVertex3f(point.x, point.y, point.z);
+	}
+
+	Vector3d point = curve.GetInterpolatedPoint(1.0f);
+	glVertex3f(point.x, point.y, point.z);
+
+	glEnd();
+}
+
+void Renderer::DrawCircleSector(float lRadius, float angle, int lPoints)
+{
+	glBegin(GL_LINE_LOOP);
+
+	glVertex3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(cos(angle) * lRadius, 0.0f, sin(angle) * lRadius);
+
+	glVertex3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(cos(-angle) * lRadius, 0.0f, sin(-angle) * lRadius);
+
+	float lAngleRatio = DegToRad(RadToDeg(angle*2.0f) / lPoints);
+	for (float i = 0.0f; i <= lPoints; i += 1.0f)
+	{
+		float newAngle = -angle + i * lAngleRatio;
+		glVertex3f(cos(newAngle) * lRadius, 0.0f, sin(newAngle) * lRadius);
+	}
+
+	glEnd();
+}
+
+void Renderer::DrawSphericalSector(float lRadius, float angle, int lSectors, int lPoints)
+{
+	float lAngleRatio = 360.0f / lSectors;
+	for (float i = 0.0f; i <= lSectors; i += 1.0f)
+	{
+		float rotateAngle = i * lAngleRatio;
+		PushMatrix();
+		RotateWorldMatrix(rotateAngle, 0.0f, 0.0f);
+		DrawCircleSector(lRadius, angle, lPoints);
+		PopMatrix();
+	}
 }
 
 // Text rendering
@@ -1075,6 +1218,19 @@ void Renderer::BindTexture(unsigned int id)
 {
 	glEnable(GL_TEXTURE_2D);
 	m_textures[id]->Bind();
+}
+
+void Renderer::PrepareShaderTexture(unsigned int textureIndex, unsigned int textureId)
+{
+	glActiveTextureARB(GL_TEXTURE0_ARB + textureIndex);
+	glUniform1iARB(textureId, textureIndex);
+}
+
+void Renderer::EmptyTextureIndex(unsigned int textureIndex)
+{
+	glActiveTextureARB(GL_TEXTURE0_ARB + textureIndex);
+	glDisable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textureIndex);
 }
 
 void Renderer::DisableTexture()
@@ -2001,110 +2157,247 @@ int Renderer::CubeInFrustum(unsigned int frustumid, const Vector3d &center, floa
 	return pFrustum->CubeInFrustum(center, x, y, z);
 }
 
-bool InitOpenGLExtensions()
+// Frame buffers
+bool Renderer::CreateFrameBuffer(int idToResetup, bool diffuse, bool position, bool normal, bool depth, int width, int height, float viewportScale, string name, unsigned int *pId)
 {
-	if (extensions_init)
-		return true;
-
-	extensions_init = true;
-
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-
-	if (GLEW_OK != err)
+	FrameBuffer* pNewFrameBuffer = NULL;
+	if (idToResetup == -1)
 	{
-		cout << "Error:" << glewGetErrorString(err) << endl;
-		extensions_init = false;
-		return false;
-	}
-
-	cout << "OpenGL Vendor: " << (char*)glGetString(GL_VENDOR) << "\n";
-	cout << "OpenGL Renderer: " << (char*)glGetString(GL_RENDERER) << "\n";
-	cout << "OpenGL Version: " << (char*)glGetString(GL_VERSION) << "\n";
-	//cout << "OpenGL Extensions:\n" << (char*) glGetString(GL_EXTENSIONS) << "\n\n";
-
-	HasGLSLSupport();
-
-	return true;
-}
-
-// OpenGL Extensions
-bool HasGLSLSupport()
-{
-	bGeometryShader = HasGeometryShaderSupport();
-	bGPUShader4 = HasShaderModel4();
-
-	if (useGLSL)
-		return true;  // already initialized and GLSL is available
-	useGLSL = true;
-
-	if (!extensions_init)
-		InitOpenGLExtensions();  // extensions were not yet initialized!!
-
-
-	if (GLEW_VERSION_2_0)
-	{
-		cout << "OpenGL 2.0 (or higher) is available!" << endl;
-	}
-	else if (GLEW_VERSION_1_5)
-	{
-		cout << "OpenGL 1.5 core functions are available" << endl;
-	}
-	else if (GLEW_VERSION_1_4)
-	{
-		cout << "OpenGL 1.4 core functions are available" << endl;
-	}
-	else if (GLEW_VERSION_1_3)
-	{
-		cout << "OpenGL 1.3 core functions are available" << endl;
-	}
-	else if (GLEW_VERSION_1_2)
-	{
-		cout << "OpenGL 1.2 core functions are available" << endl;
-	}
-
-	if (GL_TRUE != glewGetExtension("GL_ARB_fragment_shader"))
-	{
-		cout << "[WARNING] GL_ARB_fragment_shader extension is not available!\n";
-		useGLSL = false;
-	}
-
-	if (GL_TRUE != glewGetExtension("GL_ARB_vertex_shader"))
-	{
-		cout << "[WARNING] GL_ARB_vertex_shader extension is not available!\n";
-		useGLSL = false;
-	}
-
-	if (GL_TRUE != glewGetExtension("GL_ARB_shader_objects"))
-	{
-		cout << "[WARNING] GL_ARB_shader_objects extension is not available!\n";
-		useGLSL = false;
-	}
-
-	if (useGLSL)
-	{
-		cout << "OpenGL Shading Language is available!\n\n";
+		pNewFrameBuffer = new FrameBuffer();
 	}
 	else
 	{
-		cout << "OpenGL Shading Language is not available...\n\n";
+		pNewFrameBuffer = m_vFrameBuffers[idToResetup];
+
+		glDeleteFramebuffersEXT(1, &pNewFrameBuffer->m_fbo);
+
+		glDeleteTextures(1, &pNewFrameBuffer->m_diffuseTexture);
+		glDeleteTextures(1, &pNewFrameBuffer->m_positionTexture);
+		glDeleteTextures(1, &pNewFrameBuffer->m_normalTexture);
+		glDeleteTextures(1, &pNewFrameBuffer->m_depthTexture);
 	}
 
-	return useGLSL;
-}
+	pNewFrameBuffer->m_name = name;
+	pNewFrameBuffer->m_diffuseTexture = -1;
+	pNewFrameBuffer->m_positionTexture = -1;
+	pNewFrameBuffer->m_normalTexture = -1;
+	pNewFrameBuffer->m_depthTexture = -1;
 
-bool HasGeometryShaderSupport()
-{
-	if (GL_TRUE != glewGetExtension("GL_EXT_geometry_shader4"))
+	pNewFrameBuffer->m_width = width;
+	pNewFrameBuffer->m_height = height;
+	pNewFrameBuffer->m_viewportScale = viewportScale;
+
+	glGenFramebuffersEXT(1, &pNewFrameBuffer->m_fbo);
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, pNewFrameBuffer->m_fbo);
+
+	if (diffuse)
+	{
+		glGenTextures(1, &pNewFrameBuffer->m_diffuseTexture);
+		glBindTexture(GL_TEXTURE_2D, pNewFrameBuffer->m_diffuseTexture);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, (int)(width*viewportScale), (int)(height*viewportScale), 0, GL_RGBA, GL_FLOAT, NULL);
+		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, pNewFrameBuffer->m_diffuseTexture, 0);
+	}
+
+	if (position)
+	{
+		glGenTextures(1, &pNewFrameBuffer->m_positionTexture);
+		glBindTexture(GL_TEXTURE_2D, pNewFrameBuffer->m_positionTexture);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, (int)(width*viewportScale), (int)(height*viewportScale), 0, GL_RGBA, GL_FLOAT, NULL);
+		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT, GL_TEXTURE_2D, pNewFrameBuffer->m_positionTexture, 0);
+	}
+
+	if (normal)
+	{
+		glGenTextures(1, &pNewFrameBuffer->m_normalTexture);
+		glBindTexture(GL_TEXTURE_2D, pNewFrameBuffer->m_normalTexture);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, (int)(width*viewportScale), (int)(height*viewportScale), 0, GL_RGBA, GL_FLOAT, NULL);
+		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT2_EXT, GL_TEXTURE_2D, pNewFrameBuffer->m_normalTexture, 0);
+	}
+
+	if (depth)
+	{
+		glGenTextures(1, &pNewFrameBuffer->m_depthTexture);
+		glBindTexture(GL_TEXTURE_2D, pNewFrameBuffer->m_depthTexture);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+		glTexParameterf(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, (int)(width*viewportScale), (int)(height*viewportScale), 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+
+		// Instruct openGL that we won't bind a color texture with the currently binded FBO
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+
+		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, pNewFrameBuffer->m_depthTexture, 0);
+	}
+
+	// Check if all worked fine and unbind the FBO
+	GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+	if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
+	{
+		//throw new std::exception("Can't initialize an FBO render texture. FBO initialization failed.");
 		return false;
+	}
+
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+	if (idToResetup == -1)
+	{
+		// Push the frame buffer onto the list
+		m_vFrameBuffers.push_back(pNewFrameBuffer);
+
+		// Return the frame buffer id
+		*pId = (int)m_vFrameBuffers.size() - 1;
+	}
+	else
+	{
+		*pId = idToResetup;
+	}
 
 	return true;
 }
 
-bool HasShaderModel4()
+int Renderer::GetNumFrameBuffers()
 {
-	if (GL_TRUE != glewGetExtension("GL_EXT_gpu_shader4"))
-		return false;
+	return (int)m_vFrameBuffers.size();
+}
 
-	return true;
+FrameBuffer* Renderer::GetFrameBuffer(string name)
+{
+	int foundIndex = -1;
+	for (int i = 0; i < (int)m_vFrameBuffers.size(); i++)
+	{
+		if (m_vFrameBuffers[i]->m_name == name)
+		{
+			foundIndex = i;
+		}
+	}
+
+	if (foundIndex == -1)
+		return NULL;
+
+	return GetFrameBuffer(foundIndex);
+}
+
+FrameBuffer* Renderer::GetFrameBuffer(int index)
+{
+	return m_vFrameBuffers[index];
+}
+
+int Renderer::GetFrameBufferIndex(string name)
+{
+	int foundIndex = -1;
+	for (int i = 0; i < (int)m_vFrameBuffers.size(); i++)
+	{
+		if (m_vFrameBuffers[i]->m_name == name)
+		{
+			foundIndex = i;
+		}
+	}
+
+	return foundIndex;
+}
+
+void Renderer::StartRenderingToFrameBuffer(unsigned int frameBufferId)
+{
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_vFrameBuffers[frameBufferId]->m_fbo);
+	glPushAttrib(GL_VIEWPORT_BIT);
+	glViewport(0, 0, (int)(m_vFrameBuffers[frameBufferId]->m_width*m_vFrameBuffers[frameBufferId]->m_viewportScale), (int)(m_vFrameBuffers[frameBufferId]->m_height*m_vFrameBuffers[frameBufferId]->m_viewportScale));
+
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+	// Clear the render targets
+	GLbitfield clear(0);
+
+	if (m_vFrameBuffers[frameBufferId]->m_diffuseTexture != -1)
+		clear |= GL_COLOR_BUFFER_BIT;
+	if (m_vFrameBuffers[frameBufferId]->m_depthTexture != -1)
+		clear |= GL_DEPTH_BUFFER_BIT;
+	glClear(clear);
+
+	glActiveTextureARB(GL_TEXTURE0_ARB);
+	glEnable(GL_TEXTURE_2D);
+
+	// Specify what to render an start acquiring
+	GLenum buffers[] = { GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT, GL_COLOR_ATTACHMENT2_EXT };
+	glDrawBuffers(3, buffers);
+}
+
+void Renderer::StopRenderingToFrameBuffer(unsigned int frameBufferId)
+{
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	glPopAttrib();
+}
+
+unsigned int Renderer::GetDiffuseTextureFromFrameBuffer(unsigned int frameBufferId)
+{
+	return m_vFrameBuffers[frameBufferId]->m_diffuseTexture;
+}
+
+unsigned int Renderer::GetPositionTextureFromFrameBuffer(unsigned int frameBufferId)
+{
+	return m_vFrameBuffers[frameBufferId]->m_positionTexture;
+}
+
+unsigned int Renderer::GetNormalTextureFromFrameBuffer(unsigned int frameBufferId)
+{
+	return m_vFrameBuffers[frameBufferId]->m_normalTexture;
+}
+
+unsigned int Renderer::GetDepthTextureFromFrameBuffer(unsigned int frameBufferId)
+{
+	return m_vFrameBuffers[frameBufferId]->m_depthTexture;
+}
+
+// Shaders
+bool Renderer::LoadGLSLShader(char* vertexFile, char* fragmentFile, unsigned int *pID)
+{
+	glShader* lpShader = NULL;
+
+	// Load the shader
+	lpShader = ShaderManager.loadfromFile(vertexFile, fragmentFile);  // load (and compile, link) from file
+
+	if (lpShader != NULL)
+	{
+		// Push the vertex array onto the list
+		m_shaders.push_back(lpShader);
+
+		// Return the vertex array id
+		*pID = (int)m_shaders.size() - 1;
+
+		return true;
+	}
+
+	cout << "ERROR: Could not load GLSL shaders: " << vertexFile << ", " << fragmentFile << endl << flush;
+
+	return false;
+}
+
+void Renderer::BeginGLSLShader(unsigned int shaderID)
+{
+	m_shaders[shaderID]->begin();
+}
+
+void Renderer::EndGLSLShader(unsigned int shaderID)
+{
+	m_shaders[shaderID]->end();
+}
+
+glShader* Renderer::GetShader(unsigned int shaderID)
+{
+	return m_shaders[shaderID];
 }

@@ -75,7 +75,7 @@ blendFrame: 118
 animationName: LevelUp
 looping: 0
 startFrame: 140
-endFrame: 176
+endFrame: 174
 blendFrame: 140
 
 animationName: GhostPose

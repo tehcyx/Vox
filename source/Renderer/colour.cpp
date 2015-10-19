@@ -2,9 +2,11 @@
 
 #include <cmath>
 
+#pragma warning(disable: 4056)  // Overflow in floating-point constant arithmetic
+
 #ifdef _MSC_VER
 #define _INFINITY (FLT_MAX+FLT_MAX)
-#define _NAN (INFINITY-INFINITY)
+#define _NAN (_INFINITY-_INFINITY)
 #endif
 
 void Colour::RGBToHSV(float r, float g, float b, float *h, float *s, float *v)
@@ -52,7 +54,7 @@ void Colour::HSVToRGB(float h, float s, float v, float *r, float *g, float *b)
     long        i;
 
     if(s <= 0.0f) {       // < is bogus, just shuts up warnings
-        if(h == NAN) {   // h == NAN
+        if(h == _NAN) {   // h == NAN
             *r = v;
             *g = v;
             *b = v;

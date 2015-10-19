@@ -31,6 +31,12 @@
     <Filter Include="source\utils">
       <UniqueIdentifier>{187a17fc-3674-43d7-84c9-234f7d3f3d32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\Lighting">
+      <UniqueIdentifier>{45525327-f2b0-4b79-a78e-5a5ea5e853ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\Particles">
+      <UniqueIdentifier>{f2497cd1-23a0-48fd-8b71-6ee58a6be4ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\glew\src\glew.c">
@@ -126,23 +132,41 @@
     <ClCompile Include="source\Renderer\camera.cpp">
       <Filter>source\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="source\input.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="source\main.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="source\setup.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="source\update.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="source\render.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\VoxGame.cpp">
       <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VoxApplication.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VoxWindow.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VoxInput.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Renderer\glsl.cpp">
+      <Filter>source\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Lighting\DynamicLight.cpp">
+      <Filter>source\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Lighting\LightingManager.cpp">
+      <Filter>source\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Particles\BlockParticle.cpp">
+      <Filter>source\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Particles\BlockParticleEffect.cpp">
+      <Filter>source\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Particles\BlockParticleEmitter.cpp">
+      <Filter>source\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Particles\BlockParticleManager.cpp">
+      <Filter>source\Particles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -236,11 +260,38 @@
     <ClInclude Include="source\Renderer\camera.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\input.h">
-      <Filter>source</Filter>
-    </ClInclude>
     <ClInclude Include="source\VoxGame.h">
       <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\VoxApplication.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\VoxWindow.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Renderer\framebuffer.h">
+      <Filter>source\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Renderer\glsl.h">
+      <Filter>source\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Lighting\DynamicLight.h">
+      <Filter>source\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Lighting\LightingManager.h">
+      <Filter>source\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Particles\BlockParticle.h">
+      <Filter>source\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Particles\BlockParticleEffect.h">
+      <Filter>source\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Particles\BlockParticleEmitter.h">
+      <Filter>source\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Particles\BlockParticleManager.h">
+      <Filter>source\Particles</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

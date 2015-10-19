@@ -18,7 +18,7 @@
 
 #include "QubicleBinary.h"
 
-typedef std::vector<QubicleBinary*> QubicleBinaryList;
+typedef vector<QubicleBinary*> QubicleBinaryList;
 
 
 class QubicleBinaryManager

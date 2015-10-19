@@ -105,7 +105,7 @@ public:
 	}
 };
 
-typedef std::vector<QubicleMatrix*> QubicleMatrixList;
+typedef vector<QubicleMatrix*> QubicleMatrixList;
 
 
 class QubicleBinary

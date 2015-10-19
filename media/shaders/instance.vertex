@@ -1,0 +1,45 @@
+#version 150
+
+uniform mat4 viewMatrix;
+uniform mat4 projMatrix;
+
+in vec4 in_position;
+in vec4 in_color;
+in vec4 in_normal;
+in mat4 in_model_matrix;
+
+uniform vec4 in_light_ambient;
+uniform vec4 in_light_diffuse;
+uniform vec4 in_light_position;
+uniform float in_light_const_a;
+uniform float in_light_linear_a;
+uniform float in_light_quad_a;
+
+out vec4 out_color;
+out vec4 out_position;
+out vec4 out_normal;
+
+out vec4 out_light_ambient;
+out vec4 out_light_diffuse;
+out vec3 lightDir;
+out vec3 eyeVec;
+out float att;
+
+void main()
+{
+	out_color = in_color;
+	out_position = projMatrix * viewMatrix * in_model_matrix * in_position;
+	out_normal = transpose(inverse(viewMatrix * in_model_matrix)) * in_normal;
+
+	vec3 modelViewPos = (in_model_matrix * in_position).xyz;
+
+	out_light_ambient = in_light_ambient;
+	out_light_diffuse = in_light_diffuse;
+	lightDir = vec3(in_light_position.xyz - modelViewPos);
+	eyeVec = -modelViewPos;
+
+	float d = length(lightDir);
+	att = 1.0 / ( in_light_const_a + (in_light_linear_a*d) + (in_light_quad_a*d*d) );
+
+	gl_Position = out_position;
+}

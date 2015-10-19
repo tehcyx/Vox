@@ -104,7 +104,7 @@ void VoxelWeapon::LoadWeapon(const char *weaponFilename, bool useManager)
 		for(int i = 0; i < m_numAnimatedSections; i++)
 		{
 			m_pAnimatedSections[i].m_pVoxelObject = new VoxelObject();
-			m_pAnimatedSections[i].m_pVoxelObject->SetOpenGLRenderer(m_pRenderer);
+			m_pAnimatedSections[i].m_pVoxelObject->SetRenderer(m_pRenderer);
 			m_pAnimatedSections[i].m_pVoxelObject->SetQubicleBinaryManager(m_pQubicleBinaryManager);
 
 			file >> tempString >> m_pAnimatedSections[i].m_fileName;
@@ -271,7 +271,7 @@ void VoxelWeapon::LoadWeapon(const char *weaponFilename, bool useManager)
 			m_pWeaponTrails[i].m_parentScale = 1.0f;
 			m_pWeaponTrails[i].m_trailNextAddIndex = 0;
 			m_pWeaponTrails[i].m_nextTrailTimer = 0.0f;
-			m_pWeaponTrails[i].m_nextTrailTime = 0.003f;
+			m_pWeaponTrails[i].m_nextTrailTime = 0.00001f;
 			for(int point = 0; point < m_pWeaponTrails[i].m_numTrailPoints; point++)
 			{
 				m_pWeaponTrails[i].m_pTrailPoints[point].m_pointActive = false;
@@ -442,7 +442,7 @@ void VoxelWeapon::StartWeaponTrails()
 	for(int i = 0; i < m_numWeaponTrails; i++)
 	{
 		m_pWeaponTrails[i].m_trailNextAddIndex = 0;
-		m_pWeaponTrails[i].m_nextTrailTime = 0.003f;
+		m_pWeaponTrails[i].m_nextTrailTime = 0.00001f;
 		m_pWeaponTrails[i].m_nextTrailTimer = m_pWeaponTrails[i].m_nextTrailTime;
 		for(int point = 0; point < m_pWeaponTrails[i].m_numTrailPoints; point++)
 		{

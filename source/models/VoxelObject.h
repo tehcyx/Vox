@@ -27,7 +27,7 @@ public:
 	VoxelObject();
 	~VoxelObject();
 
-	void SetOpenGLRenderer(Renderer* pRenderer);
+	void SetRenderer(Renderer* pRenderer);
 	void SetQubicleBinaryManager(QubicleBinaryManager* pQubicleBinaryManager);
 
 	void Reset();

@@ -32,7 +32,7 @@ numLights: 0
 numParticleEffects: 0
 
 numWeaponTrails: 1
-numTrailPoints: 25
+numTrailPoints: 7
 startOffsetPoint: 0 -5 0
 endOffsetPoint: 0 12 0
 trailColour: 1 1 0

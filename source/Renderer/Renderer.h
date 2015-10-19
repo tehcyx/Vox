@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "glsl.h"
+
 #include "../Maths/3dmaths.h"
 #include "../freetype/freetypefont.h"
 
@@ -36,6 +38,7 @@ using namespace std;
 #include "texture.h"
 #include "material.h"
 #include "light.h"
+#include "framebuffer.h"
 
 
 enum ProjectionMode
@@ -106,6 +109,12 @@ enum ImmediateModePrimitive
 	IM_POLYGON
 };
 
+enum FrontFaceDirection
+{
+	FrontFaceDirection_CW = 0,
+	FrontFaceDirection_CCW,
+};
+
 struct OGLPositionVertex
 {
 	float x, y, z; // Position.
@@ -164,6 +173,7 @@ public:
 	CullMode GetCullMode();
 	void SetLineWidth(float width);
 	void SetPointSize(float width);
+	void SetFrontFaceDirection(FrontFaceDirection direction);
 
 	// Projection
 	bool SetProjectionMode(ProjectionMode mode, int viewPort);
@@ -225,6 +235,14 @@ public:
 	void ImmediateColourAlpha(float r, float g, float b, float a);
 	void DisableImmediateMode();
 
+	// Drawing helpers
+	void DrawLineCircle(float lRadius, int lPoints);
+	void DrawSphere(float lRadius, int lSlices, int lStacks);
+	void DrawBezier(Bezier3 curve, int lPoints);
+	void DrawBezier(Bezier4 curve, int lPoints);
+	void DrawCircleSector(float lRadius, float angle, int lPoints);
+	void DrawSphericalSector(float lRadius, float angle, int lSectors, int lPoints);
+
 	// Text rendering
 	bool CreateFreeTypeFont(char *fontName, int fontSize, unsigned int *pID);
 	bool RenderFreeTypeText(unsigned int fontID, float x, float y, float z, Colour colour, float scale, char *inText, ...);
@@ -260,6 +278,8 @@ public:
 	bool RefreshTexture(unsigned int id);
 	bool RefreshTexture(string filename);
 	void BindTexture(unsigned int id);
+	void PrepareShaderTexture(unsigned int textureIndex, unsigned int textureId);
+	void EmptyTextureIndex(unsigned int textureIndex);
 	void DisableTexture();
 	Texture* GetTexture(unsigned int id);
 	void BindRawTextureId(unsigned int textureId);
@@ -304,6 +324,25 @@ public:
 	int SphereInFrustum(unsigned int frustumid, const Vector3d &point, float radius);
 	int CubeInFrustum(unsigned int frustumid, const Vector3d &center, float x, float y, float z);
 
+	// Frame buffers
+	bool CreateFrameBuffer(int idToResetup, bool diffuse, bool position, bool normal, bool depth, int width, int height, float viewportScale, string name, unsigned int *pId);
+	int GetNumFrameBuffers();
+	FrameBuffer* GetFrameBuffer(string name);
+	FrameBuffer* GetFrameBuffer(int index);
+	int GetFrameBufferIndex(string name);
+	void StartRenderingToFrameBuffer(unsigned int frameBufferId);
+	void StopRenderingToFrameBuffer(unsigned int frameBufferId);
+	unsigned int GetDiffuseTextureFromFrameBuffer(unsigned int frameBufferId);
+	unsigned int GetPositionTextureFromFrameBuffer(unsigned int frameBufferId);
+	unsigned int GetNormalTextureFromFrameBuffer(unsigned int frameBufferId);
+	unsigned int GetDepthTextureFromFrameBuffer(unsigned int frameBufferId);
+
+	// Shaders
+	bool LoadGLSLShader(char* vertexFile, char* fragmentFile, unsigned int *pID);
+	void BeginGLSLShader(unsigned int shaderID);
+	void EndGLSLShader(unsigned int shaderID);
+	glShader* GetShader(unsigned int shaderID);
+
 protected:
 	/* Protected methods */
 
@@ -335,6 +374,9 @@ private:
 	// Cull mode
 	CullMode m_cullMode;
 
+	// Quadratic drawing
+	GLUquadricObj *m_Quadratic;
+
 	// Viewports
 	vector<Viewport *> m_viewports;
 	unsigned int m_activeViewport;
@@ -357,6 +399,13 @@ private:
 	// Vertex arrays, for storing static vertex data
 	vector<VertexArray *> m_vertexArrays;
 
+	// Frame buffers
+	vector<FrameBuffer*> m_vFrameBuffers;
+
+	// Shaders
+	glShaderManager ShaderManager;
+	vector<glShader *> m_shaders;
+
 	// Matrices
 	Matrix4x4 *m_projection;
 	Matrix4x4  m_view;
@@ -369,3 +418,6 @@ private:
 	static const int NAME_PICKING_BUFFER = 64;
 	unsigned int m_SelectBuffer[NAME_PICKING_BUFFER];
 };
+
+int CheckGLErrors(char *file, int line);
+#define CHECK_GL_ERRORS() CheckGLErrors(__FILE__, __LINE__)

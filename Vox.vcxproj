@@ -21,7 +21,8 @@
   <ItemGroup>
     <ClCompile Include="source\freetype\freetypefont.cpp" />
     <ClCompile Include="source\glew\src\glew.c" />
-    <ClCompile Include="source\input.cpp" />
+    <ClCompile Include="source\Lighting\DynamicLight.cpp" />
+    <ClCompile Include="source\Lighting\LightingManager.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\Maths\3dmaths.cpp" />
     <ClCompile Include="source\Maths\Bezier3.cpp" />
@@ -42,27 +43,33 @@
     <ClCompile Include="source\models\VoxelCharacter.cpp" />
     <ClCompile Include="source\models\VoxelObject.cpp" />
     <ClCompile Include="source\models\VoxelWeapon.cpp" />
-    <ClCompile Include="source\render.cpp" />
+    <ClCompile Include="source\Particles\BlockParticle.cpp" />
+    <ClCompile Include="source\Particles\BlockParticleEffect.cpp" />
+    <ClCompile Include="source\Particles\BlockParticleEmitter.cpp" />
+    <ClCompile Include="source\Particles\BlockParticleManager.cpp" />
     <ClCompile Include="source\Renderer\bmp.cpp" />
     <ClCompile Include="source\Renderer\bmp_class.cpp" />
     <ClCompile Include="source\Renderer\camera.cpp" />
     <ClCompile Include="source\Renderer\colour.cpp" />
     <ClCompile Include="source\Renderer\frustum.cpp" />
+    <ClCompile Include="source\Renderer\glsl.cpp" />
     <ClCompile Include="source\Renderer\mesh.cpp" />
     <ClCompile Include="source\Renderer\Renderer.cpp" />
     <ClCompile Include="source\Renderer\texture.cpp" />
     <ClCompile Include="source\Renderer\tga.cpp" />
-    <ClCompile Include="source\setup.cpp" />
-    <ClCompile Include="source\update.cpp" />
     <ClCompile Include="source\utils\Interpolator.cpp" />
+    <ClCompile Include="source\VoxApplication.cpp" />
     <ClCompile Include="source\VoxGame.cpp" />
+    <ClCompile Include="source\VoxInput.cpp" />
+    <ClCompile Include="source\VoxWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\freetype\freetypefont.h" />
     <ClInclude Include="source\glew\include\GL\glew.h" />
     <ClInclude Include="source\glew\include\GL\glxew.h" />
     <ClInclude Include="source\glew\include\GL\wglew.h" />
-    <ClInclude Include="source\input.h" />
+    <ClInclude Include="source\Lighting\DynamicLight.h" />
+    <ClInclude Include="source\Lighting\LightingManager.h" />
     <ClInclude Include="source\Maths\3dGeometry.h" />
     <ClInclude Include="source\Maths\3dmaths.h" />
     <ClInclude Include="source\models\BoundingBox.h" />
@@ -75,10 +82,16 @@
     <ClInclude Include="source\models\VoxelCharacter.h" />
     <ClInclude Include="source\models\VoxelObject.h" />
     <ClInclude Include="source\models\VoxelWeapon.h" />
+    <ClInclude Include="source\Particles\BlockParticle.h" />
+    <ClInclude Include="source\Particles\BlockParticleEffect.h" />
+    <ClInclude Include="source\Particles\BlockParticleEmitter.h" />
+    <ClInclude Include="source\Particles\BlockParticleManager.h" />
     <ClInclude Include="source\Renderer\bmp_class.h" />
     <ClInclude Include="source\Renderer\camera.h" />
     <ClInclude Include="source\Renderer\colour.h" />
+    <ClInclude Include="source\Renderer\framebuffer.h" />
     <ClInclude Include="source\Renderer\frustum.h" />
+    <ClInclude Include="source\Renderer\glsl.h" />
     <ClInclude Include="source\Renderer\light.h" />
     <ClInclude Include="source\Renderer\material.h" />
     <ClInclude Include="source\Renderer\mesh.h" />
@@ -89,7 +102,9 @@
     <ClInclude Include="source\Renderer\viewport.h" />
     <ClInclude Include="source\utils\Interpolator.h" />
     <ClInclude Include="source\utils\Random.h" />
+    <ClInclude Include="source\VoxApplication.h" />
     <ClInclude Include="source\VoxGame.h" />
+    <ClInclude Include="source\VoxWindow.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4496164E-D363-42DC-84E8-64D61B812689}</ProjectGuid>
@@ -142,12 +157,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\build\$(Configuration)\</OutDir>
-    <IntDir>build\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)\bin\$(Configuration)\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\build\$(Configuration)\</OutDir>
-    <IntDir>build\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)\bin\$(Configuration)\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

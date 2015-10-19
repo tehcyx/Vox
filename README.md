@@ -7,19 +7,25 @@ Vox is a voxel based RPG adventure game with a heavy focus on player customizati
 * Keyframe and skeleton animation support.
 
 ## License
-More information is provided in the [license file](https://github.com/AlwaysGeeky/Vox/blob/master/LICENSE.md).
+This software is provided under the **GNU General Public License**, more information is provided in the [license file](https://github.com/AlwaysGeeky/Vox/blob/master/LICENSE.md).
 
 ## Setup
 Setting up and compiling the project is a fairly simple process.
 
-### Windows
+**Windows**
+
 Visual Studio projects are included.
 
-### Linux
+**Linux**
+
+// Todo //
+
+**Mac**
+
 // Todo //
 
 ## How To Contribute
 // Todo //
 
 # Screenshots
-![Vox](http://i.imgur.com/TSPcgk2.png)
+![Vox](http://i.imgur.com/LOdGV0A.png)
