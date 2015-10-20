@@ -16,13 +16,17 @@
 * ~~Remove any GL calls from VoxGame - Add InitZeroTexture() functionality to renderer.~~
 * App player class and put voxel character functionalit in player class.
 * Switch over to using glm maths lib.
-* Use Cmake for build management.
+* ~~Use Cmake for build management.~~
+* ~~Add fullscreen support and toggle.~~
 * Enable cross platform compiling and support, linux.
 * Enable x64 build configurations.
 * Better readme file.
 * Weapon trails controlled by the animation file.
 * Convert shaders over to be more unified.
 * Better SSAO shader.
+* Shadow shader.
+* Phong lighting shader.
+* Add basic lighting to scene - OpenGL lighting.
 
 # BUGS
 * ~~End of animation frame state - level up animation goes to mummy walk?~~

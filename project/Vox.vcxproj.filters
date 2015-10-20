@@ -39,258 +39,258 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\glew\src\glew.c">
+    <ClCompile Include="..\source\glew\src\glew.c">
       <Filter>source\glew\src</Filter>
     </ClCompile>
-    <ClCompile Include="source\freetype\freetypefont.cpp">
+    <ClCompile Include="..\source\freetype\freetypefont.cpp">
       <Filter>source\freetype</Filter>
     </ClCompile>
-    <ClCompile Include="source\Renderer\Renderer.cpp">
+    <ClCompile Include="..\source\Renderer\Renderer.cpp">
       <Filter>source\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="source\Maths\3dmaths.cpp">
+    <ClCompile Include="..\source\Maths\3dmaths.cpp">
       <Filter>source\Maths</Filter>
     </ClCompile>
-    <ClCompile Include="source\Maths\Bezier3.cpp">
+    <ClCompile Include="..\source\Maths\Bezier3.cpp">
       <Filter>source\Maths</Filter>
     </ClCompile>
-    <ClCompile Include="source\Maths\Bezier4.cpp">
+    <ClCompile Include="..\source\Maths\Bezier4.cpp">
       <Filter>source\Maths</Filter>
     </ClCompile>
-    <ClCompile Include="source\Maths\Line3D.cpp">
+    <ClCompile Include="..\source\Maths\Line3D.cpp">
       <Filter>source\Maths</Filter>
     </ClCompile>
-    <ClCompile Include="source\Maths\matrix3x3.cpp">
+    <ClCompile Include="..\source\Maths\matrix3x3.cpp">
       <Filter>source\Maths</Filter>
     </ClCompile>
-    <ClCompile Include="source\Maths\matrix4x4.cpp">
+    <ClCompile Include="..\source\Maths\matrix4x4.cpp">
       <Filter>source\Maths</Filter>
     </ClCompile>
-    <ClCompile Include="source\Maths\Plane3D.cpp">
+    <ClCompile Include="..\source\Maths\Plane3D.cpp">
       <Filter>source\Maths</Filter>
     </ClCompile>
-    <ClCompile Include="source\Maths\quaternion.cpp">
+    <ClCompile Include="..\source\Maths\quaternion.cpp">
       <Filter>source\Maths</Filter>
     </ClCompile>
-    <ClCompile Include="source\Maths\vector2d.cpp">
+    <ClCompile Include="..\source\Maths\vector2d.cpp">
       <Filter>source\Maths</Filter>
     </ClCompile>
-    <ClCompile Include="source\Maths\vector3d.cpp">
+    <ClCompile Include="..\source\Maths\vector3d.cpp">
       <Filter>source\Maths</Filter>
     </ClCompile>
-    <ClCompile Include="source\Renderer\frustum.cpp">
+    <ClCompile Include="..\source\Renderer\frustum.cpp">
       <Filter>source\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="source\Renderer\colour.cpp">
+    <ClCompile Include="..\source\Renderer\colour.cpp">
       <Filter>source\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="source\Renderer\mesh.cpp">
+    <ClCompile Include="..\source\Renderer\mesh.cpp">
       <Filter>source\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="source\Renderer\texture.cpp">
+    <ClCompile Include="..\source\Renderer\texture.cpp">
       <Filter>source\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="source\Renderer\tga.cpp">
+    <ClCompile Include="..\source\Renderer\tga.cpp">
       <Filter>source\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="source\Renderer\bmp_class.cpp">
+    <ClCompile Include="..\source\Renderer\bmp_class.cpp">
       <Filter>source\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="source\Renderer\bmp.cpp">
+    <ClCompile Include="..\source\Renderer\bmp.cpp">
       <Filter>source\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="source\models\BoundingBox.cpp">
+    <ClCompile Include="..\source\models\BoundingBox.cpp">
       <Filter>source\models</Filter>
     </ClCompile>
-    <ClCompile Include="source\models\objmodel.cpp">
+    <ClCompile Include="..\source\models\objmodel.cpp">
       <Filter>source\models</Filter>
     </ClCompile>
-    <ClCompile Include="source\models\MS3DModel.cpp">
+    <ClCompile Include="..\source\models\MS3DModel.cpp">
       <Filter>source\models</Filter>
     </ClCompile>
-    <ClCompile Include="source\models\MS3DAnimator.cpp">
+    <ClCompile Include="..\source\models\MS3DAnimator.cpp">
       <Filter>source\models</Filter>
     </ClCompile>
-    <ClCompile Include="source\models\QubicleBinary.cpp">
+    <ClCompile Include="..\source\models\QubicleBinary.cpp">
       <Filter>source\models</Filter>
     </ClCompile>
-    <ClCompile Include="source\models\QubicleBinaryManager.cpp">
+    <ClCompile Include="..\source\models\QubicleBinaryManager.cpp">
       <Filter>source\models</Filter>
     </ClCompile>
-    <ClCompile Include="source\models\VoxelCharacter.cpp">
+    <ClCompile Include="..\source\models\VoxelCharacter.cpp">
       <Filter>source\models</Filter>
     </ClCompile>
-    <ClCompile Include="source\models\VoxelWeapon.cpp">
+    <ClCompile Include="..\source\models\VoxelWeapon.cpp">
       <Filter>source\models</Filter>
     </ClCompile>
-    <ClCompile Include="source\models\VoxelObject.cpp">
+    <ClCompile Include="..\source\models\VoxelObject.cpp">
       <Filter>source\models</Filter>
     </ClCompile>
-    <ClCompile Include="source\utils\Interpolator.cpp">
+    <ClCompile Include="..\source\utils\Interpolator.cpp">
       <Filter>source\utils</Filter>
     </ClCompile>
-    <ClCompile Include="source\Renderer\camera.cpp">
+    <ClCompile Include="..\source\Renderer\camera.cpp">
       <Filter>source\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="source\main.cpp">
+    <ClCompile Include="..\source\main.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\VoxGame.cpp">
+    <ClCompile Include="..\source\VoxGame.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\VoxApplication.cpp">
+    <ClCompile Include="..\source\VoxApplication.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\VoxWindow.cpp">
+    <ClCompile Include="..\source\VoxWindow.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\VoxInput.cpp">
+    <ClCompile Include="..\source\VoxInput.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\Renderer\glsl.cpp">
+    <ClCompile Include="..\source\Renderer\glsl.cpp">
       <Filter>source\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="source\Lighting\DynamicLight.cpp">
+    <ClCompile Include="..\source\Lighting\DynamicLight.cpp">
       <Filter>source\Lighting</Filter>
     </ClCompile>
-    <ClCompile Include="source\Lighting\LightingManager.cpp">
+    <ClCompile Include="..\source\Lighting\LightingManager.cpp">
       <Filter>source\Lighting</Filter>
     </ClCompile>
-    <ClCompile Include="source\Particles\BlockParticle.cpp">
+    <ClCompile Include="..\source\Particles\BlockParticle.cpp">
       <Filter>source\Particles</Filter>
     </ClCompile>
-    <ClCompile Include="source\Particles\BlockParticleEffect.cpp">
+    <ClCompile Include="..\source\Particles\BlockParticleEffect.cpp">
       <Filter>source\Particles</Filter>
     </ClCompile>
-    <ClCompile Include="source\Particles\BlockParticleEmitter.cpp">
+    <ClCompile Include="..\source\Particles\BlockParticleEmitter.cpp">
       <Filter>source\Particles</Filter>
     </ClCompile>
-    <ClCompile Include="source\Particles\BlockParticleManager.cpp">
+    <ClCompile Include="..\source\Particles\BlockParticleManager.cpp">
       <Filter>source\Particles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\glew\include\GL\glew.h">
+    <ClInclude Include="..\source\glew\include\GL\glew.h">
       <Filter>source\glew\include\GL</Filter>
     </ClInclude>
-    <ClInclude Include="source\glew\include\GL\glxew.h">
+    <ClInclude Include="..\source\glew\include\GL\glxew.h">
       <Filter>source\glew\include\GL</Filter>
     </ClInclude>
-    <ClInclude Include="source\glew\include\GL\wglew.h">
+    <ClInclude Include="..\source\glew\include\GL\wglew.h">
       <Filter>source\glew\include\GL</Filter>
     </ClInclude>
-    <ClInclude Include="source\freetype\freetypefont.h">
+    <ClInclude Include="..\source\freetype\freetypefont.h">
       <Filter>source\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\Renderer.h">
+    <ClInclude Include="..\source\Renderer\Renderer.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\Maths\3dGeometry.h">
+    <ClInclude Include="..\source\Maths\3dGeometry.h">
       <Filter>source\Maths</Filter>
     </ClInclude>
-    <ClInclude Include="source\Maths\3dmaths.h">
+    <ClInclude Include="..\source\Maths\3dmaths.h">
       <Filter>source\Maths</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\frustum.h">
+    <ClInclude Include="..\source\Renderer\frustum.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\viewport.h">
+    <ClInclude Include="..\source\Renderer\viewport.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\colour.h">
+    <ClInclude Include="..\source\Renderer\colour.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\mesh.h">
+    <ClInclude Include="..\source\Renderer\mesh.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\vertexarray.h">
+    <ClInclude Include="..\source\Renderer\vertexarray.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\light.h">
+    <ClInclude Include="..\source\Renderer\light.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\material.h">
+    <ClInclude Include="..\source\Renderer\material.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\texture.h">
+    <ClInclude Include="..\source\Renderer\texture.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\tga.h">
+    <ClInclude Include="..\source\Renderer\tga.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\bmp_class.h">
+    <ClInclude Include="..\source\Renderer\bmp_class.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\models\BoundingBox.h">
+    <ClInclude Include="..\source\models\BoundingBox.h">
       <Filter>source\models</Filter>
     </ClInclude>
-    <ClInclude Include="source\models\modelloader.h">
+    <ClInclude Include="..\source\models\modelloader.h">
       <Filter>source\models</Filter>
     </ClInclude>
-    <ClInclude Include="source\models\OBJModel.h">
+    <ClInclude Include="..\source\models\OBJModel.h">
       <Filter>source\models</Filter>
     </ClInclude>
-    <ClInclude Include="source\models\MS3DModel.h">
+    <ClInclude Include="..\source\models\MS3DModel.h">
       <Filter>source\models</Filter>
     </ClInclude>
-    <ClInclude Include="source\models\MS3DAnimator.h">
+    <ClInclude Include="..\source\models\MS3DAnimator.h">
       <Filter>source\models</Filter>
     </ClInclude>
-    <ClInclude Include="source\models\QubicleBinary.h">
+    <ClInclude Include="..\source\models\QubicleBinary.h">
       <Filter>source\models</Filter>
     </ClInclude>
-    <ClInclude Include="source\models\QubicleBinaryManager.h">
+    <ClInclude Include="..\source\models\QubicleBinaryManager.h">
       <Filter>source\models</Filter>
     </ClInclude>
-    <ClInclude Include="source\models\VoxelCharacter.h">
+    <ClInclude Include="..\source\models\VoxelCharacter.h">
       <Filter>source\models</Filter>
     </ClInclude>
-    <ClInclude Include="source\models\VoxelWeapon.h">
+    <ClInclude Include="..\source\models\VoxelWeapon.h">
       <Filter>source\models</Filter>
     </ClInclude>
-    <ClInclude Include="source\models\VoxelObject.h">
+    <ClInclude Include="..\source\models\VoxelObject.h">
       <Filter>source\models</Filter>
     </ClInclude>
-    <ClInclude Include="source\utils\Interpolator.h">
+    <ClInclude Include="..\source\utils\Interpolator.h">
       <Filter>source\utils</Filter>
     </ClInclude>
-    <ClInclude Include="source\utils\Random.h">
+    <ClInclude Include="..\source\utils\Random.h">
       <Filter>source\utils</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\camera.h">
+    <ClInclude Include="..\source\Renderer\camera.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\VoxGame.h">
+    <ClInclude Include="..\source\VoxGame.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="source\VoxApplication.h">
+    <ClInclude Include="..\source\VoxApplication.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="source\VoxWindow.h">
+    <ClInclude Include="..\source\VoxWindow.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\framebuffer.h">
+    <ClInclude Include="..\source\Renderer\framebuffer.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\Renderer\glsl.h">
+    <ClInclude Include="..\source\Renderer\glsl.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\Lighting\DynamicLight.h">
+    <ClInclude Include="..\source\Lighting\DynamicLight.h">
       <Filter>source\Lighting</Filter>
     </ClInclude>
-    <ClInclude Include="source\Lighting\LightingManager.h">
+    <ClInclude Include="..\source\Lighting\LightingManager.h">
       <Filter>source\Lighting</Filter>
     </ClInclude>
-    <ClInclude Include="source\Particles\BlockParticle.h">
+    <ClInclude Include="..\source\Particles\BlockParticle.h">
       <Filter>source\Particles</Filter>
     </ClInclude>
-    <ClInclude Include="source\Particles\BlockParticleEffect.h">
+    <ClInclude Include="..\source\Particles\BlockParticleEffect.h">
       <Filter>source\Particles</Filter>
     </ClInclude>
-    <ClInclude Include="source\Particles\BlockParticleEmitter.h">
+    <ClInclude Include="..\source\Particles\BlockParticleEmitter.h">
       <Filter>source\Particles</Filter>
     </ClInclude>
-    <ClInclude Include="source\Particles\BlockParticleManager.h">
+    <ClInclude Include="..\source\Particles\BlockParticleManager.h">
       <Filter>source\Particles</Filter>
     </ClInclude>
   </ItemGroup>

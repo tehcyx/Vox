@@ -1,4 +1,4 @@
-#include "../glew/include/GL/glew.h"
+#include "glew/include/GL/glew.h"
 
 #include <windows.h>
 #include <gl/gl.h>
@@ -42,12 +42,16 @@ void VoxWindow::Create()
 	/* Create a windowed mode window and it's OpenGL context */
 	m_windowWidth = 800;
 	m_windowHeight = 800;
+	m_oldWindowWidth = m_windowWidth;
+	m_oldWindowHeight = m_windowHeight;
 	window = glfwCreateWindow(m_windowWidth, m_windowHeight, "Vox", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
+
+	m_minimized = false;
 
 	/* Set default cursor positions */
 	m_cursorX = 0;
@@ -96,6 +100,7 @@ void VoxWindow::Render()
 	glfwSwapBuffers(window);
 }
 
+// Windows dimensions
 int VoxWindow::GetWindowWidth()
 {
 	return m_windowWidth;
@@ -108,10 +113,18 @@ int VoxWindow::GetWindowHeight()
 
 void VoxWindow::ResizeWindow(int width, int height)
 {
+	m_minimized = (width == 0 || height == 0);
+
 	m_windowWidth = width;
 	m_windowHeight = height;
 }
 
+bool VoxWindow::GetMinimized()
+{
+	return m_minimized;
+}
+
+// Cursor position
 int VoxWindow::GetCursorX()
 {
 	return m_cursorX;
@@ -122,6 +135,56 @@ int VoxWindow::GetCursorY()
 	return m_cursorY;
 }
 
+// Fullscreen
+void VoxWindow::ToggleFullScreen(bool fullscreen)
+{
+	if (fullscreen)
+	{
+		const GLFWvidmode* vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+		m_oldWindowWidth = m_windowWidth;
+		m_oldWindowHeight = m_windowHeight;
+
+		m_windowWidth = vidMode->width;
+		m_windowHeight = vidMode->height;
+	}
+	else
+	{
+		m_windowWidth = m_oldWindowWidth;
+		m_windowHeight = m_oldWindowHeight;
+	}
+
+	// Create new window
+	GLFWwindow* newWindow = glfwCreateWindow(m_windowWidth, m_windowHeight, "Vox", fullscreen ? glfwGetPrimaryMonitor() : NULL, window);
+
+	/* Make the window's context current */
+	glfwMakeContextCurrent(newWindow);
+	glfwSwapInterval(0); // Disable v-sync
+
+	/* Window callbacks */
+	glfwSetWindowSizeCallback(newWindow, WindowResizeCallback);
+
+	/* Input callbacks */
+	glfwSetKeyCallback(newWindow, KeyCallback);
+	glfwSetMouseButtonCallback(newWindow, MouseButtonCallback);
+	glfwSetScrollCallback(newWindow, MouseScrollCallback);
+
+	/* Center on screen */
+	const GLFWvidmode* vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	glfwGetWindowSize(newWindow, &m_windowWidth, &m_windowHeight);
+	glfwSetWindowPos(newWindow, (vidmode->width - m_windowWidth) / 2, (vidmode->height - m_windowHeight) / 2);
+
+	/* Show the window */
+	glfwShowWindow(newWindow);
+
+	/* Force resize */
+	WindowResizeCallback(newWindow, m_windowWidth, m_windowHeight);
+
+	glfwDestroyWindow(window);
+	window = newWindow;
+}
+
+// Events
 void VoxWindow::PollEvents()
 {
 	/* Poll for and process events */
@@ -133,6 +196,7 @@ int VoxWindow::ShouldCloseWindow()
 	return glfwWindowShouldClose(window);
 }
 
+// Callbacks
 void WindowResizeCallback(GLFWwindow* window, int width, int height)
 {
 	VoxGame::GetInstance()->ResizeWindow(width, height);

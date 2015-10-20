@@ -152,6 +152,11 @@ void BlockParticleManager::SetupGLBuffers()
 	glBindFragDataLocation(pShader->GetProgramObject(), 1, "outputPosition");
 	glBindFragDataLocation(pShader->GetProgramObject(), 2, "outputNormal");
 
+	if (m_vertexArray != -1)
+	{
+		glDeleteVertexArrays(1, &m_vertexArray);
+	}
+
 	glGenVertexArrays(1, &m_vertexArray);
 	glBindVertexArray(m_vertexArray);
 
@@ -176,6 +181,10 @@ void BlockParticleManager::SetupGLBuffers()
 	glBufferData(GL_ARRAY_BUFFER, sizeOfNormals, normals, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(in_normal);
 	glVertexAttribPointer(in_normal, 4, GL_FLOAT, 0, 0, 0);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 // Accessors

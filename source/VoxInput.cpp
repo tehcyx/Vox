@@ -207,6 +207,15 @@ void VoxGame::KeyReleased(int key, int scancode, int mods)
 
 			break;
 		}
+		case GLFW_KEY_F:
+		{
+			m_fullscreen = !m_fullscreen;
+
+			m_pVoxWindow->ToggleFullScreen(m_fullscreen);
+			m_pBlockParticleManager->SetupGLBuffers();
+
+			break;
+		}
 		case GLFW_KEY_A:
 		{
 			switch (m_weaponIndex)

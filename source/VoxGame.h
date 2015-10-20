@@ -150,6 +150,7 @@ private:
 	int m_weaponIndex;
 	string m_weaponString;
 	bool m_animationUpdate;
+	bool m_fullscreen;
 
 	// Singleton instance
 	static VoxGame *c_instance;
