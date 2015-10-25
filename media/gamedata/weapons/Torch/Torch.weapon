@@ -40,7 +40,7 @@ position: 0 7 0
 connectedToSection: -1
 
 numWeaponTrails: 1
-numTrailPoints: 7
+numTrailPoints: 13
 startOffsetPoint: 0 0 0
 endOffsetPoint: 0 9 0
 trailColour: 0.95 0.36 0

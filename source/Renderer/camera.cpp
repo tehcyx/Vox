@@ -27,8 +27,11 @@ Camera::Camera(Renderer* pRenderer)
 	SetFacing(Vector3d(0.0f, 0.0f, -1.0f));
 	SetUp(Vector3d(0.0f, 1.0f, 0.0f));
 	SetRight(Vector3d(1.0f, 0.0f, 0.0f));
-}
 
+	m_zoomAmount = 3.0f;
+	m_minZoomAmount = 0.1f;
+	m_maxZoomAmount = 100.0f;
+}
 
 // Camera movement
 void Camera::Fly(const float speed)
@@ -76,7 +79,7 @@ void Camera::Rotate(const float xAmount, const float yAmount, const float zAmoun
 	m_facing = (rotation * m_facing).GetUnit();
 }
 
-void Camera::RotateAroundPoint(const float xAmount, const float yAmount, const float zoomAmount)
+void Camera::RotateAroundPoint(const float xAmount, const float yAmount)
 {
 	Quaternion xRotation;
 	xRotation.SetAxis(m_right, xAmount);
@@ -86,7 +89,7 @@ void Camera::RotateAroundPoint(const float xAmount, const float yAmount, const f
 	Quaternion rotation = xRotation * yRotation;
 
 	// Get the view position, based on the facing and the zoom amount
-	Vector3d view = m_position + (m_facing*zoomAmount);
+	Vector3d view = m_position + (m_facing*m_zoomAmount);
 
 	// Translate the position to the origin, relative to the view position (that is the facing zoomed)
 	m_position -= view;
@@ -97,6 +100,25 @@ void Camera::RotateAroundPoint(const float xAmount, const float yAmount, const f
 	m_right = (rotation * m_right).GetUnit();
 	m_facing = (rotation * m_facing).GetUnit();
 	m_up = (rotation * m_up).GetUnit();
+}
+
+void Camera::Zoom(const float amount)
+{
+	m_zoomAmount += amount;
+	if (m_zoomAmount <= m_minZoomAmount)
+	{
+		m_zoomAmount = m_minZoomAmount;
+	}
+	else if (m_zoomAmount >= m_maxZoomAmount)
+	{
+		m_zoomAmount = m_maxZoomAmount;
+	}
+	else
+	{
+		m_position.x = m_position.x - m_facing.x * amount;
+		m_position.y = m_position.y - m_facing.y * amount;
+		m_position.z = m_position.z - m_facing.z * amount;
+	}
 }
 
 // Viewing

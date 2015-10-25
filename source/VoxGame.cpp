@@ -55,23 +55,34 @@ void VoxGame::Create()
 	m_pRenderer->CreateFreeTypeFont("media/fonts/arial.ttf", 12, &m_defaultFont);
 
 	/* Create lights */
+	m_defaultLightPosition = Vector3d(2.0f, 2.0f, 1.0f);
+	m_defaultLightView = Vector3d(0.0f, 0.0f, 0.0f);
+	m_pRenderer->CreateLight(Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(0.0f, 0.0f, 0.0f, 1.0f),
+							 Vector3d(2.0f, 2.0f, 1.0f), Vector3d(0.0f, -1.0f, 0.0f), 0.0f, 0.0f, 0.5f, 0.35f, 0.05f, true, false, &m_defaultLight);
 
 	/* Create materials */
+	m_pRenderer->CreateMaterial(Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(0.0f, 0.0f, 0.0f, 1.0f), 64, &m_defaultMaterial);
 
 	/* Create the frame buffers */
 	bool frameBufferCreated = false;
 	frameBufferCreated = m_pRenderer->CreateFrameBuffer(-1, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "SSAO", &m_SSAOFrameBuffer);
 	frameBufferCreated = m_pRenderer->CreateFrameBuffer(-1, true, true, true, true, m_windowWidth, m_windowHeight, 5.0f, "Shadow", &m_shadowFrameBuffer);
 	frameBufferCreated = m_pRenderer->CreateFrameBuffer(-1, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "Deferred Lighting", &m_lightingFrameBuffer);
+	frameBufferCreated = m_pRenderer->CreateFrameBuffer(-1, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "Transparency", &m_transparencyFrameBuffer);
 
 	/* Create the shaders */
 	m_defaultShader = -1;
+	m_phongShader = -1;
 	m_SSAOShader = -1;
 	m_shadowShader = -1;
+	m_lightingShader = -1;
+	m_textureShader = -1;
 	m_pRenderer->LoadGLSLShader("media/shaders/default.vertex", "media/shaders/default.pixel", &m_defaultShader);
+	m_pRenderer->LoadGLSLShader("media/shaders/phong.vertex", "media/shaders/phong.pixel", &m_phongShader);
 	m_pRenderer->LoadGLSLShader("media/shaders/fullscreen/SSAO.vertex", "media/shaders/fullscreen/SSAO.pixel", &m_SSAOShader);
 	m_pRenderer->LoadGLSLShader("media/shaders/shadow.vertex", "media/shaders/shadow.pixel", &m_shadowShader);
 	m_pRenderer->LoadGLSLShader("media/shaders/fullscreen/lighting.vertex", "media/shaders/fullscreen/lighting.pixel", &m_lightingShader);
+	m_pRenderer->LoadGLSLShader("media/shaders/texture.vertex", "media/shaders/texture.pixel", &m_textureShader);
 
 	/* Create the qubicle binary file manager */
 	m_pQubicleBinaryManager = new QubicleBinaryManager(m_pRenderer);
@@ -120,6 +131,7 @@ void VoxGame::Create()
 
 	// Camera movement
 	m_bCameraRotate = false;
+	m_bCameraZoom = false;
 
 	m_pressedX = 0;
 	m_pressedY = 0;	
@@ -128,12 +140,15 @@ void VoxGame::Create()
 
 	// Toggle flags
 	m_renderModeIndex = 0;
-	m_renderModeString = "SSAO";
+	m_renderModeString = "Shadow";
 	m_displayHelpText = true;
 	m_modelWireframe = false;
 	m_modelTalking = false;
 	m_modelAnimationIndex = 0;
 	m_multiSampling = true;
+	m_ssao = true;
+	m_shadows = true;
+	m_dynamicLighting = true;
 	m_weaponIndex = 0;
 	m_weaponString = "NONE";
 	m_animationUpdate = true;
@@ -192,6 +207,7 @@ void VoxGame::ResizeWindow(int width, int height)
 		frameBufferResize = m_pRenderer->CreateFrameBuffer(m_SSAOFrameBuffer, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "SSAO", &m_SSAOFrameBuffer);
 		frameBufferResize = m_pRenderer->CreateFrameBuffer(m_shadowFrameBuffer, true, true, true, true, m_windowWidth, m_windowHeight, 5.0f, "Shadow", &m_shadowFrameBuffer);
 		frameBufferResize = m_pRenderer->CreateFrameBuffer(m_lightingFrameBuffer, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "Deferred Lighting", &m_lightingFrameBuffer);
+		frameBufferResize = m_pRenderer->CreateFrameBuffer(m_transparencyFrameBuffer, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "Transparency", &m_transparencyFrameBuffer);
 	}
 }
 
@@ -201,15 +217,10 @@ void VoxGame::Update()
 	// Update interpolator singleton
 	Interpolator::GetInstance()->Update();
 
-	// Delta time
-	double timeNow = (double)timeGetTime() / 1000.0;
-	static double timeOld = timeNow - (1.0 / 50.0);
-	m_deltaTime = (float)timeNow - (float)timeOld;
-	timeOld = timeNow;
-
 	// FPS
 	QueryPerformanceCounter(&m_fpsCurrentTicks);
-	m_fps = 1.0f / ((float)(m_fpsCurrentTicks.QuadPart - m_fpsPreviousTicks.QuadPart) / (float)m_fpsTicksPerSecond.QuadPart);
+	m_deltaTime = ((float)(m_fpsCurrentTicks.QuadPart - m_fpsPreviousTicks.QuadPart) / (float)m_fpsTicksPerSecond.QuadPart);
+	m_fps = 1.0f / m_deltaTime;
 	m_fpsPreviousTicks = m_fpsCurrentTicks;
 
 	// Pause the interpolator if animations are paused.
@@ -238,9 +249,17 @@ void VoxGame::Update()
 	// Update controls
 	UpdateControls(m_deltaTime);
 
+	// Update lights
+	UpdateLights(m_deltaTime);
+
 	// Update the application and window
 	m_pVoxApplication->Update(m_deltaTime);
 	m_pVoxWindow->Update(m_deltaTime);
+}
+
+void VoxGame::UpdateLights(float dt)
+{
+	m_pRenderer->EditLightPosition(m_defaultLight, m_defaultLightPosition);
 }
 
 void VoxGame::UpdateWeaponLights(float dt)
@@ -463,11 +482,54 @@ void VoxGame::Render()
 		return;
 	}
 
+	Matrix4x4 worldMatrix;
+	glShader* pShader = NULL;
+
 	// Begin rendering
 	m_pRenderer->BeginScene(true, true, true);
 
+		//glEnable(GL_COLOR_MATERIAL);
+		//glEnable(GL_NORMALIZE);
+
+		// Shadow rendering to the shadow frame buffer
+		if (m_renderModeIndex == 0 && m_shadows)
+		{
+			m_pRenderer->PushMatrix();
+			m_pRenderer->StartRenderingToFrameBuffer(m_shadowFrameBuffer);
+			glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			glOrtho(-5.0f, 5.0f, -5.0f, 5.0f, 0.01f, 1000.0f);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			gluLookAt(m_defaultLightPosition.x, m_defaultLightPosition.y, m_defaultLightPosition.z, m_defaultLightView.x, m_defaultLightView.y, m_defaultLightView.z, 0.0f, 1.0f, 0.0f);
+
+			m_pRenderer->PushMatrix();
+				m_pRenderer->SetCullMode(CM_FRONT);
+
+				// Render the voxel character
+				Colour OulineColour(1.0f, 1.0f, 0.0f, 1.0f);
+				m_pRenderer->PushMatrix();
+					m_pRenderer->MultiplyWorldMatrix(worldMatrix);
+					m_pVoxelCharacter->RenderWeapons(false, false, false, OulineColour);
+					m_pVoxelCharacter->Render(false, false, false, OulineColour, false);
+				m_pRenderer->PopMatrix();
+
+				// Render the block particles
+				m_pBlockParticleManager->Render();
+
+				m_pRenderer->SetTextureMatrix();
+				m_pRenderer->SetCullMode(CM_BACK);
+			m_pRenderer->PopMatrix();
+
+			glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+			m_pRenderer->StopRenderingToFrameBuffer(m_shadowFrameBuffer);
+			m_pRenderer->PopMatrix();
+		}
+
 		// SSAO frame buffer rendering start
-		if (m_renderModeIndex == 0)
+		//if (m_ssao)
 		{
 			m_pRenderer->StartRenderingToFrameBuffer(m_SSAOFrameBuffer);
 		}
@@ -485,6 +547,18 @@ void VoxGame::Render()
 			// Set the lookat camera
 			m_pGameCamera->Look();
 
+			// Enable the lights
+			m_pRenderer->PushMatrix();
+				m_pRenderer->EnableLight(m_defaultLight, 0);
+			m_pRenderer->PopMatrix();
+
+			// Render the lights (DEBUG)
+			m_pRenderer->PushMatrix();
+				m_pRenderer->SetCullMode(CM_BACK);
+				m_pRenderer->SetRenderMode(RM_SOLID);
+				m_pRenderer->RenderLight(m_defaultLight);
+			m_pRenderer->PopMatrix();
+
 			// Multisampling MSAA
 			if (m_multiSampling)
 			{
@@ -495,9 +569,31 @@ void VoxGame::Render()
 				m_pRenderer->DisableMultiSampling();
 			}
 
-			m_pRenderer->BeginGLSLShader(m_defaultShader);
+			// Get the selected shader index
+			unsigned int shaderIndex = m_shadowShader;
+			if (m_renderModeIndex == 1)
+			{
+				shaderIndex = m_phongShader;
+			}
+			else if (m_renderModeIndex == 2)
+			{
+				shaderIndex = m_defaultShader;
+			}
 
-			Matrix4x4 worldMatrix;
+			m_pRenderer->BeginGLSLShader(shaderIndex);
+
+			if (m_renderModeIndex == 0)
+			{
+				pShader = m_pRenderer->GetShader(shaderIndex);
+				GLuint shadowMapUniform = glGetUniformLocationARB(pShader->GetProgramObject(), "ShadowMap");
+				m_pRenderer->PrepareShaderTexture(7, shadowMapUniform);
+				m_pRenderer->BindRawTextureId(m_pRenderer->GetDepthTextureFromFrameBuffer(m_shadowFrameBuffer));
+				glUniform1iARB(glGetUniformLocationARB(pShader->GetProgramObject(), "renderShadow"), m_shadows);
+				glUniform1iARB(glGetUniformLocationARB(pShader->GetProgramObject(), "alwaysShadow"), false);
+			}
+
+			// Render world
+			RenderWorld();
 
 			// Render the voxel character
 			Colour OulineColour(1.0f, 1.0f, 0.0f, 1.0f);
@@ -507,17 +603,10 @@ void VoxGame::Render()
 				m_pVoxelCharacter->Render(false, false, false, OulineColour, false);
 			m_pRenderer->PopMatrix();
 
-			m_pRenderer->EndGLSLShader(m_defaultShader);
-
-			// Render the voxel character face
-			m_pRenderer->PushMatrix();
-				m_pRenderer->MultiplyWorldMatrix(worldMatrix);
-				m_pRenderer->EmptyTextureIndex(0);
-				m_pVoxelCharacter->RenderFace();
-			m_pRenderer->PopMatrix();
-
 			// Render the block particles
 			m_pBlockParticleManager->Render();
+
+			m_pRenderer->EndGLSLShader(shaderIndex);
 
 			// Render the voxel character weapon trails
 			m_pRenderer->PushMatrix();
@@ -529,7 +618,10 @@ void VoxGame::Render()
 		m_pRenderer->PopMatrix();
 
 		// Render the deferred lighting pass
-		RenderDeferredLighting();
+		if (m_dynamicLighting)
+		{
+			RenderDeferredLighting();
+		}
 
 		// ---------------------------------------
 		// Render 2d
@@ -538,13 +630,18 @@ void VoxGame::Render()
 		m_pRenderer->PopMatrix();
 
 		// SSAO frame buffer rendering stop
-		if (m_renderModeIndex == 0)
+		//if (m_ssao)
 		{
 			m_pRenderer->StopRenderingToFrameBuffer(m_SSAOFrameBuffer);
 		}
 
+		// ---------------------------------------
+		// Render transparency
+		// ---------------------------------------
+		RenderTransparency();
+
 		// Render the SSAO texture
-		if (m_renderModeIndex == 0)
+		//if (m_ssao)
 		{
 			RenderSSAOTexture();
 		}
@@ -558,6 +655,35 @@ void VoxGame::Render()
 
 	// Render the window
 	m_pVoxWindow->Render();
+}
+
+void VoxGame::RenderWorld()
+{
+	float floorY = 0.0f;
+	float floorLength = 5.0f;
+
+	m_pRenderer->EnableMaterial(m_defaultMaterial);
+
+	m_pRenderer->SetRenderMode(RM_SHADED);
+		m_pRenderer->EnableImmediateMode(IM_QUADS);
+		m_pRenderer->ImmediateColourAlpha(0.227f, 1.0f, 0.419f, 1.0f);
+
+		m_pRenderer->ImmediateTextureCoordinate(0.0f, 0.0f);
+		m_pRenderer->ImmediateVertex(-floorLength, floorY, -floorLength);
+		m_pRenderer->ImmediateNormal(0.0f, 1.0f, 0.0f);
+
+		m_pRenderer->ImmediateTextureCoordinate(0.0f, 1.0f);
+		m_pRenderer->ImmediateVertex(-floorLength, floorY, floorLength);
+		m_pRenderer->ImmediateNormal(0.0f, 1.0f, 0.0f);
+
+		m_pRenderer->ImmediateTextureCoordinate(1.0f, 1.0f);
+		m_pRenderer->ImmediateVertex(floorLength, floorY, floorLength);
+		m_pRenderer->ImmediateNormal(0.0f, 1.0f, 0.0f);
+
+		m_pRenderer->ImmediateTextureCoordinate(1.0f, 0.0f);
+		m_pRenderer->ImmediateVertex(floorLength, floorY, -floorLength);
+		m_pRenderer->ImmediateNormal(0.0f, 1.0f, 0.0f);
+	m_pRenderer->DisableImmediateMode();
 }
 
 void VoxGame::RenderDeferredLighting()
@@ -581,20 +707,12 @@ void VoxGame::RenderDeferredLighting()
 
 			glShader* pLightShader = m_pRenderer->GetShader(m_lightingShader);
 			unsigned NormalsID = glGetUniformLocationARB(pLightShader->GetProgramObject(), "normals");
-			unsigned DepthsID = glGetUniformLocationARB(pLightShader->GetProgramObject(), "depths");
-			unsigned ColorsID = glGetUniformLocationARB(pLightShader->GetProgramObject(), "colors");
 			unsigned PositionssID = glGetUniformLocationARB(pLightShader->GetProgramObject(), "positions");
 
 			m_pRenderer->PrepareShaderTexture(0, NormalsID);
 			m_pRenderer->BindRawTextureId(m_pRenderer->GetNormalTextureFromFrameBuffer(m_SSAOFrameBuffer));
 
-			m_pRenderer->PrepareShaderTexture(1, DepthsID);
-			m_pRenderer->BindRawTextureId(m_pRenderer->GetDepthTextureFromFrameBuffer(m_SSAOFrameBuffer));
-
-			m_pRenderer->PrepareShaderTexture(2, ColorsID);
-			m_pRenderer->BindRawTextureId(m_pRenderer->GetDiffuseTextureFromFrameBuffer(m_SSAOFrameBuffer));
-
-			m_pRenderer->PrepareShaderTexture(3, PositionssID);
+			m_pRenderer->PrepareShaderTexture(1, PositionssID);
 			m_pRenderer->BindRawTextureId(m_pRenderer->GetPositionTextureFromFrameBuffer(m_SSAOFrameBuffer));
 
 			pLightShader->setUniform1i("screenWidth", m_windowWidth);
@@ -630,8 +748,6 @@ void VoxGame::RenderDeferredLighting()
 				m_pRenderer->PopMatrix();
 			}
 
-			m_pRenderer->EmptyTextureIndex(3);
-			m_pRenderer->EmptyTextureIndex(2);
 			m_pRenderer->EmptyTextureIndex(1);
 			m_pRenderer->EmptyTextureIndex(0);
 
@@ -646,6 +762,30 @@ void VoxGame::RenderDeferredLighting()
 
 		m_pRenderer->StopRenderingToFrameBuffer(m_lightingFrameBuffer);
 
+	m_pRenderer->PopMatrix();
+}
+
+void VoxGame::RenderTransparency()
+{
+	Matrix4x4 worldMatrix;
+
+	m_pRenderer->PushMatrix();
+		m_pRenderer->SetProjectionMode(PM_PERSPECTIVE, m_defaultViewport);
+		m_pRenderer->SetCullMode(CM_BACK);
+
+		// Set the lookat camera
+		m_pGameCamera->Look();
+
+		m_pRenderer->StartRenderingToFrameBuffer(m_transparencyFrameBuffer);
+
+		// Render the voxel character face
+		m_pRenderer->PushMatrix();
+			m_pRenderer->MultiplyWorldMatrix(worldMatrix);
+			m_pRenderer->EmptyTextureIndex(0);
+			m_pVoxelCharacter->RenderFace();
+		m_pRenderer->PopMatrix();
+
+		m_pRenderer->StopRenderingToFrameBuffer(m_transparencyFrameBuffer);
 	m_pRenderer->PopMatrix();
 }
 
@@ -672,12 +812,24 @@ void VoxGame::RenderSSAOTexture()
 		m_pRenderer->PrepareShaderTexture(2, textureId2);
 		m_pRenderer->BindRawTextureId(m_pRenderer->GetDiffuseTextureFromFrameBuffer(m_lightingFrameBuffer));
 
-		pShader->setUniform1i("screenWidth", (int)(m_windowWidth*5.0f));
-		pShader->setUniform1i("screenHeight", (int)(m_windowHeight*5.0f));
+		unsigned int textureId3 = glGetUniformLocationARB(pShader->GetProgramObject(), "bgl_TransparentTexture");
+		m_pRenderer->PrepareShaderTexture(3, textureId3);
+		m_pRenderer->BindRawTextureId(m_pRenderer->GetDiffuseTextureFromFrameBuffer(m_transparencyFrameBuffer));
+
+		unsigned int textureId4 = glGetUniformLocationARB(pShader->GetProgramObject(), "bgl_TransparentDepthTexture");
+		m_pRenderer->PrepareShaderTexture(4, textureId4);
+		m_pRenderer->BindRawTextureId(m_pRenderer->GetDepthTextureFromFrameBuffer(m_transparencyFrameBuffer));
+		
+
+		pShader->setUniform1i("screenWidth", m_windowWidth);
+		pShader->setUniform1i("screenHeight", m_windowHeight);
 		pShader->setUniform1f("nearZ", 0.01f);
 		pShader->setUniform1f("farZ", 1000.0f);
 
-		pShader->setUniform1f("samplingMultiplier", 1.5f);
+		pShader->setUniform1f("samplingMultiplier", 0.5f);
+
+		pShader->setUniform1i("lighting_enabled", m_dynamicLighting);
+		pShader->setUniform1i("ssao_enabled", m_ssao);
 
 		m_pRenderer->SetRenderMode(RM_TEXTURED);
 			m_pRenderer->EnableImmediateMode(IM_QUADS);
@@ -691,6 +843,8 @@ void VoxGame::RenderSSAOTexture()
 			m_pRenderer->ImmediateVertex(0.0f, (float)m_windowHeight, 1.0f);
 		m_pRenderer->DisableImmediateMode();
 
+		m_pRenderer->EmptyTextureIndex(4);
+		m_pRenderer->EmptyTextureIndex(3);
 		m_pRenderer->EmptyTextureIndex(2);
 		m_pRenderer->EmptyTextureIndex(1);
 		m_pRenderer->EmptyTextureIndex(0);
@@ -702,11 +856,12 @@ void VoxGame::RenderSSAOTexture()
 void VoxGame::RenderDebugInformation()
 {
 	char lCameraBuff[256];
-	sprintf_s(lCameraBuff, 256, "Pos(%.2f, %.2f, %.2f), Facing(%.2f, %.2f, %.2f) = %.2f, Up(%.2f, %.2f, %.2f) = %.2f, Right(%.2f, %.2f, %.2f) = %.2f",
+	sprintf_s(lCameraBuff, 256, "Pos(%.2f, %.2f, %.2f), Facing(%.2f, %.2f, %.2f) = %.2f, Up(%.2f, %.2f, %.2f) = %.2f, Right(%.2f, %.2f, %.2f) = %.2f, Zoom=%.2f",
 		m_pGameCamera->GetPosition().x, m_pGameCamera->GetPosition().y, m_pGameCamera->GetPosition().z,
 		m_pGameCamera->GetFacing().x, m_pGameCamera->GetFacing().y, m_pGameCamera->GetFacing().z, m_pGameCamera->GetFacing().GetLength(),
 		m_pGameCamera->GetUp().x, m_pGameCamera->GetUp().y, m_pGameCamera->GetUp().z, m_pGameCamera->GetUp().GetLength(),
-		m_pGameCamera->GetRight().x, m_pGameCamera->GetRight().y, m_pGameCamera->GetRight().z, m_pGameCamera->GetRight().GetLength());
+		m_pGameCamera->GetRight().x, m_pGameCamera->GetRight().y, m_pGameCamera->GetRight().z, m_pGameCamera->GetRight().GetLength(),
+		m_pGameCamera->GetZoomAmount());
 	char lFPSBuff[128];
 	sprintf_s(lFPSBuff, "FPS: %.0f  Delta: %.4f", m_fps, m_deltaTime);
 	char lAnimationBuff[128];
@@ -732,11 +887,14 @@ void VoxGame::RenderDebugInformation()
 			m_pRenderer->RenderFreeTypeText(m_defaultFont, (int)(m_windowWidth * 0.5f) - 75.0f, 35.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, lAnimationBuff);
 			m_pRenderer->RenderFreeTypeText(m_defaultFont, (int)(m_windowWidth * 0.5f) - 75.0f, 15.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, lWeaponBuff);
 
-			m_pRenderer->RenderFreeTypeText(m_defaultFont, m_windowWidth - 150.0f, 195.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, "F - Fullscreen [%s]", m_fullscreen ? "On" : "Off");
+			m_pRenderer->RenderFreeTypeText(m_defaultFont, m_windowWidth - 150.0f, 255.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, "F - Fullscreen [%s]", m_fullscreen ? "On" : "Off");
+			m_pRenderer->RenderFreeTypeText(m_defaultFont, m_windowWidth - 150.0f, 235.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, "I - Dynamic Lighting [%s]", m_dynamicLighting ? "On" : "Off");
+			m_pRenderer->RenderFreeTypeText(m_defaultFont, m_windowWidth - 150.0f, 215.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, "U - Shadows [%s]", m_shadows ? "On" : "Off");
+			m_pRenderer->RenderFreeTypeText(m_defaultFont, m_windowWidth - 150.0f, 195.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, "Y - SSAO [%s]", m_ssao ? "On" : "Off");
 			m_pRenderer->RenderFreeTypeText(m_defaultFont, m_windowWidth - 150.0f, 175.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, "T - Render Mode [%s]", m_renderModeString.c_str());
 			m_pRenderer->RenderFreeTypeText(m_defaultFont, m_windowWidth - 150.0f, 155.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, "R - Toggle MSAA [%s]", m_multiSampling ? "On" : "Off");
 			m_pRenderer->RenderFreeTypeText(m_defaultFont, m_windowWidth - 150.0f, 135.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, "E - Toggle Talking [%s]", m_modelTalking ? "On" : "Off");
-			m_pRenderer->RenderFreeTypeText(m_defaultFont, m_windowWidth - 150.0f, 115.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, "Y - Toggle Animation [%s]", m_animationUpdate ? "On" : "Off");
+			m_pRenderer->RenderFreeTypeText(m_defaultFont, m_windowWidth - 150.0f, 115.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, "L - Toggle Animation [%s]", m_animationUpdate ? "On" : "Off");
 			m_pRenderer->RenderFreeTypeText(m_defaultFont, m_windowWidth - 150.0f, 95.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, "H - Toggle HelpText");
 			m_pRenderer->RenderFreeTypeText(m_defaultFont, m_windowWidth - 150.0f, 75.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, "W - Toggle Wireframe");
 			m_pRenderer->RenderFreeTypeText(m_defaultFont, m_windowWidth - 150.0f, 55.0f, 1.0f, Colour(1.0f, 1.0f, 1.0f), 1.0f, "Q - Cycle Animations");

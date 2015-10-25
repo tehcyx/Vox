@@ -90,6 +90,10 @@ void VoxGame::UpdateControls(float dt)
 	{
 		MouseCameraRotate(x, y);
 	}
+	if (m_bCameraZoom)
+	{
+		MouseCameraZoom(x, y);
+	}
 }
 
 void VoxGame::KeyPressed(int key, int scancode, int mods)
@@ -182,26 +186,45 @@ void VoxGame::KeyReleased(int key, int scancode, int mods)
 			m_multiSampling = !m_multiSampling;
 			break;
 		}
+		case GLFW_KEY_Y:
+		{
+			m_ssao = !m_ssao;
+			break;
+		}
+		case GLFW_KEY_U:
+		{
+			m_shadows = !m_shadows;
+			break;
+		}
+		case GLFW_KEY_I:
+		{
+			m_dynamicLighting = !m_dynamicLighting;
+			break;
+		}
 		case GLFW_KEY_T:
 		{
 			m_renderModeIndex++;
-			if (m_renderModeIndex >= 2)
+			if (m_renderModeIndex >= 3)
 			{
 				m_renderModeIndex = 0;
 			}
 
 			if (m_renderModeIndex == 0)
 			{
-				m_renderModeString = "SSAO";
+				m_renderModeString = "Shadow";
 			}
-			if (m_renderModeIndex == 1)
+			else if (m_renderModeIndex == 1)
 			{
-				m_renderModeString = "Normal";
+				m_renderModeString = "Phong";
+			}
+			else if (m_renderModeIndex == 2)
+			{
+				m_renderModeString = "Default";
 			}
 
 			break;
 		}
-		case GLFW_KEY_Y:
+		case GLFW_KEY_L:
 		{
 			m_animationUpdate = !m_animationUpdate;
 
@@ -324,10 +347,13 @@ void VoxGame::MouseRightPressed()
 	m_currentY = m_pVoxWindow->GetCursorY();
 	m_pressedX = m_currentX;
 	m_pressedY = m_currentY;
+
+	m_bCameraZoom = true;
 }
 
 void VoxGame::MouseRightReleased()
 {
+	m_bCameraZoom = false;
 }
 
 void VoxGame::MouseMiddlePressed()
@@ -364,7 +390,28 @@ void VoxGame::MouseCameraRotate(int x, int y)
 		changeX = -changeX;
 	}
 
-	m_pGameCamera->RotateAroundPoint(changeY*0.5f, -changeX*0.5f, 3.0f);
+	m_pGameCamera->RotateAroundPoint(changeY*0.5f, -changeX*0.5f);
+
+	m_currentX = x;
+	m_currentY = y;
+}
+
+void VoxGame::MouseCameraZoom(int x, int y)
+{
+	float changeX;
+	float changeY;
+
+	// The mouse hasn't moved so just return
+	if ((m_currentX == x) && (m_currentY == y))
+	{
+		return;
+	}
+
+	// Calculate and scale down the change in position
+	changeX = (x - m_currentX) / 5.0f;
+	changeY = (y - m_currentY) / 5.0f;
+
+	m_pGameCamera->Zoom(changeY*0.05f);
 
 	m_currentX = x;
 	m_currentY = y;

@@ -1730,7 +1730,6 @@ void VoxelCharacter::RenderFaceTextures(bool eyesTexture, bool wireframe, bool t
 			m_pRenderer->BindTexture(m_faceMouthTexture);
 		}
 
-		m_pRenderer->SetCullMode(CM_NOCULL);
 		if(transparency)
 		{
 			m_pRenderer->ImmediateColourAlpha(1.0f, 1.0f, 1.0f, m_characterAlpha);

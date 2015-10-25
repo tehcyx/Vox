@@ -5,6 +5,8 @@
 Vox.exe
 Vox.exp
 Vox.lib
+Vox.iobj
+Vox.ipdb
 
 # User-specific files
 *.suo

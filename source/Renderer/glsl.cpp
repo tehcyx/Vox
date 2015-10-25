@@ -1628,6 +1628,7 @@ glShader* glShaderManager::loadfromFile(char* vertexFile, char* fragmentFile)
       vertexLogFile << "***COMPILER ERROR (Vertex Shader):\n";
       vertexLogFile << tVertexShader->getCompilerLog() << endl;
 	  vertexLogFile.close();
+	  cout << tVertexShader->getCompilerLog();
       delete o;
       delete tVertexShader;
       delete tFragmentShader;
@@ -1643,6 +1644,7 @@ glShader* glShaderManager::loadfromFile(char* vertexFile, char* fragmentFile)
      fragmentLogFile << "***COMPILER ERROR (Fragment Shader):\n";
      fragmentLogFile << tFragmentShader->getCompilerLog() << endl;
      fragmentLogFile.close();
+	 cout << tFragmentShader->getCompilerLog();
      delete o;
      delete tVertexShader;
      delete tFragmentShader;

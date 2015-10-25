@@ -12,10 +12,12 @@ public:
 	void SetFacing(const Vector3d &facing) { m_facing = facing; }
 	void SetUp(const Vector3d &up) { m_up = up; }
 	void SetRight(const Vector3d &right) { m_right = right; }
+	const void SetZoomAmount(float amount) { m_zoomAmount = amount; }
 	const Vector3d GetPosition() const { return m_position; }
 	const Vector3d GetFacing()const { return m_facing; }
 	const Vector3d GetUp() const { return m_up; }
 	const Vector3d GetRight() const { return m_right; }
+	const float GetZoomAmount() const { return m_zoomAmount; }
 
 	// Camera movement
 	void Fly(const float speed);
@@ -23,7 +25,8 @@ public:
 	void Levitate(const float speed);
 	void Strafe(const float speed);
 	void Rotate(const float xAmount, const float yAmount, const float zAmount);
-	void RotateAroundPoint(const float xAmount, const float yAmount, const float zoomAmount);
+	void RotateAroundPoint(const float xAmount, const float yAmount);
+	void Zoom(const float amount);
 
 	// Viewing
 	void Look() const;
@@ -36,4 +39,8 @@ private:
 	Vector3d m_up;
 	Vector3d m_facing;
 	Vector3d m_right;
+
+	float m_zoomAmount;
+	float m_minZoomAmount;
+	float m_maxZoomAmount;
 };

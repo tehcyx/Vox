@@ -189,8 +189,6 @@ void Quaternion::LoadIdentity() {
 }
 
 void Quaternion::Normalize() {
-	Quaternion unit;
-
 	float length = GetLength();
 
 	x /= length;

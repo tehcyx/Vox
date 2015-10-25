@@ -10,11 +10,11 @@ Vox is a voxel based RPG adventure game with a heavy focus on player customizati
 This software is provided under the **GNU General Public License**, more information is provided in the [license file](https://github.com/AlwaysGeeky/Vox/blob/master/LICENSE.md).
 
 ## Setup
-Setting up and compiling the project is a fairly simple process.
+Setting up and compiling the project is a fairly simple process. Cmake can be used to build the project files for each environment and for different platforms, depending on what you are developing on.
 
 **Windows**
 
-Visual Studio projects are included.
+Visual Studio 2015 projects are included.
 
 **Linux**
 
@@ -25,7 +25,7 @@ Visual Studio projects are included.
 // Todo //
 
 ## How To Contribute
-// Todo //
+Contributions are always welcome, either reporting issues and bugs or forking the repository and then issuing pull requests when you have completed some additional coding that you feel will be beneficial to the main project.
 
 # Screenshots
-![Vox](http://i.imgur.com/LOdGV0A.png)
+![Vox](http://i.imgur.com/usPCqJt.png)

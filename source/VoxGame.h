@@ -42,16 +42,20 @@ public:
 
 	// Mouse controls
 	void MouseCameraRotate(int x, int y);
+	void MouseCameraZoom(int x, int y);
 
 	// Updating
 	void Update();
+	void UpdateLights(float dt);
 	void UpdateWeaponLights(float dt);
 	void UpdateWeaponParticleEffects(float dt);
 	void UnloadWeapon(bool left);
 
 	// Rendering
 	void Render();
+	void RenderWorld();
 	void RenderDeferredLighting();
+	void RenderTransparency();
 	void RenderSSAOTexture();
 	void RenderDebugInformation();
 
@@ -103,16 +107,27 @@ private:
 	// Fonts
 	unsigned int m_defaultFont;
 
+	// Lights
+	unsigned int m_defaultLight;
+	Vector3d m_defaultLightPosition;
+	Vector3d m_defaultLightView;
+
+	// Materials
+	unsigned int m_defaultMaterial;
+
 	// Frame buffers
 	unsigned int m_SSAOFrameBuffer;
 	unsigned int m_shadowFrameBuffer;
 	unsigned int m_lightingFrameBuffer;
+	unsigned int m_transparencyFrameBuffer;
 
 	// Shaders
 	unsigned int m_defaultShader;
+	unsigned int m_phongShader;
 	unsigned int m_SSAOShader;
 	unsigned int m_shadowShader;
 	unsigned int m_lightingShader;
+	unsigned int m_textureShader;
 
 	// FPS and deltatime
 	LARGE_INTEGER m_fpsPreviousTicks;
@@ -134,6 +149,7 @@ private:
 
 	// Camera movement
 	bool m_bCameraRotate;
+	bool m_bCameraZoom;
 	int m_pressedX;
 	int m_pressedY;
 	int m_currentX;
@@ -147,6 +163,9 @@ private:
 	bool m_modelTalking;
 	int m_modelAnimationIndex;
 	bool m_multiSampling;
+	bool m_ssao;
+	bool m_shadows;
+	bool m_dynamicLighting;
 	int m_weaponIndex;
 	string m_weaponString;
 	bool m_animationUpdate;
