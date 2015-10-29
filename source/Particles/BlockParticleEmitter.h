@@ -61,8 +61,8 @@ public:
 	string m_emitterName;
 
 	// Emitter position
-	Vector3d m_startingPosition;
-	Vector3d m_position;
+	vec3 m_startingPosition;
+	vec3 m_position;
 
 	// Creation Time
 	float m_creationTime;
@@ -98,9 +98,9 @@ public:
 	bool m_spawnOutline;
 
 	// Particle creation params
-	Vector3d m_gravityDirection;
+	vec3 m_gravityDirection;
 	float m_gravityMultiplier;
-	Vector3d m_pointOrigin;
+	vec3 m_pointOrigin;
 	float m_startScale;
 	float m_startScaleVariance;
 	float m_endScale;
@@ -128,12 +128,12 @@ public:
 	bool m_checkWorldCollisions;
 	bool m_destoryOnCollision;
 	bool m_startLifeDecayOnCollision;
-	Vector3d m_startVelocity;
-	Vector3d m_startVelocityVariance;
+	vec3 m_startVelocity;
+	vec3 m_startVelocityVariance;
 	bool m_randomStartRotation;
-	Vector3d m_startRotation;
-	Vector3d m_startAngularVelocity;
-	Vector3d m_startAngularVelocityVariance;
+	vec3 m_startRotation;
+	vec3 m_startAngularVelocity;
+	vec3 m_startAngularVelocityVariance;
 	float m_tangentialVelocityXY;
 	float m_tangentialAccelerationXY;
 	float m_tangentialVelocityXZ;

@@ -15,8 +15,9 @@
 
 #pragma once
 
-#include "../Maths/3dmaths.h"
 #include "../Renderer/colour.h"
+#include <glm/vec3.hpp>
+using namespace glm;
 
 
 class DynamicLight
@@ -41,7 +42,7 @@ public:
 	/* Public members */
 	unsigned int m_lightId;
 
-	Vector3d m_position;
+	vec3 m_position;
 
 	float m_radius;
 

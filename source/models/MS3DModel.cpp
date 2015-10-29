@@ -395,14 +395,14 @@ void MS3DModel::SetupStaticBuffer()
 
 				Matrix4x4& final = pJoints[pVertices[index].boneID].absolute;
 
-				Vector3d newVertex( pVertices[index].location[0], pVertices[index].location[1], pVertices[index].location[2]);
+				vec3 newVertex( pVertices[index].location[0], pVertices[index].location[1], pVertices[index].location[2]);
 				newVertex = final * newVertex;
 
 				vertices[lIndexCounter].x = newVertex.x;
 				vertices[lIndexCounter].y = newVertex.y;
 				vertices[lIndexCounter].z = newVertex.z;
 
-				Vector3d newNormal( pTri->vertexNormals[k][0], pTri->vertexNormals[k][1], pTri->vertexNormals[k][2]);
+				vec3 newNormal( pTri->vertexNormals[k][0], pTri->vertexNormals[k][1], pTri->vertexNormals[k][2]);
 				newNormal = final * newNormal;
 
 				vertices[lIndexCounter].nx = pTri->vertexNormals[k][0];
@@ -494,7 +494,7 @@ void MS3DModel::CalculateBoundingBox()
 		}
 
 		Matrix4x4& final = pJoints[pVertices[i].boneID].absolute;
-		Vector3d newVertex( pVertices[i].location[0], pVertices[i].location[1], pVertices[i].location[2]);
+		vec3 newVertex( pVertices[i].location[0], pVertices[i].location[1], pVertices[i].location[2]);
 
 		newVertex = final * newVertex;
 
@@ -658,11 +658,11 @@ void MS3DModel::RenderMesh()
 						glTexCoord2f( pTri->s[k], pTri->t[k] );
 
 						// Normal
-						Vector3d newNormal( pTri->vertexNormals[k][0], pTri->vertexNormals[k][1], pTri->vertexNormals[k][2]);
+						vec3 newNormal( pTri->vertexNormals[k][0], pTri->vertexNormals[k][1], pTri->vertexNormals[k][2]);
 
 						newNormal = final * newNormal;
 
-						newNormal = newNormal.GetUnit();
+						newNormal = normalize(newNormal);
 
 						float tempNormal[3];
 						tempNormal[0] = newNormal.x;
@@ -671,7 +671,7 @@ void MS3DModel::RenderMesh()
 						glNormal3fv( tempNormal );
 
 						// Vertex
-						Vector3d newVertex( pVertices[index].location[0], pVertices[index].location[1], pVertices[index].location[2]);
+						vec3 newVertex( pVertices[index].location[0], pVertices[index].location[1], pVertices[index].location[2]);
 
 						newVertex = final * newVertex;
 
@@ -732,11 +732,11 @@ void MS3DModel::RenderNormals()
 						Matrix4x4& final = pJoints[pVertices[index].boneID].absolute;
 
 						// Normal
-						Vector3d newNormal( pTri->vertexNormals[k][0], pTri->vertexNormals[k][1], pTri->vertexNormals[k][2]);
+						vec3 newNormal( pTri->vertexNormals[k][0], pTri->vertexNormals[k][1], pTri->vertexNormals[k][2]);
 
 						newNormal = final * newNormal;
 
-						newNormal = newNormal.GetUnit();
+						newNormal = normalize(newNormal);
 						newNormal *= 0.3f; // Scale normal down
 
 						float tempNormal[3];
@@ -745,7 +745,7 @@ void MS3DModel::RenderNormals()
 						tempNormal[2] = newNormal.z;
 
 						// Vertex
-						Vector3d newVertex( pVertices[index].location[0], pVertices[index].location[1], pVertices[index].location[2]);
+						vec3 newVertex( pVertices[index].location[0], pVertices[index].location[1], pVertices[index].location[2]);
 
 						newVertex = final * newVertex;
 
@@ -774,7 +774,7 @@ void MS3DModel::RenderBones()
 	{
 		glBegin( GL_LINES );
 		{
-			Vector3d newVertex;
+			vec3 newVertex;
 
 			newVertex = pJoints[i].absolute * newVertex;
 
@@ -787,7 +787,7 @@ void MS3DModel::RenderBones()
 			if ( pJoints[i].parent != -1 )
 			{
 				Matrix4x4& final = pJoints[pJoints[i].parent].absolute;
-				Vector3d newPVertex;
+				vec3 newPVertex;
 
 				newPVertex =  final * newPVertex;
 

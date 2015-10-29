@@ -61,14 +61,14 @@ Matrix4x4 VoxelObject::GetModelMatrix(int qubicleMatrixIndex)
 	return m_pVoxelModel->GetModelMatrix(qubicleMatrixIndex);
 }
 
-Vector3d VoxelObject::GetCenter()
+vec3 VoxelObject::GetCenter()
 {
 	if(m_pVoxelModel == NULL || m_loaded == false)
 	{
-		return Vector3d(0.0f, 0.0f, 0.0f);
+		return vec3(0.0f, 0.0f, 0.0f);
 	}
 
-	Vector3d centerPos;
+	vec3 centerPos;
 	for(int i = 0; i < m_pVoxelModel->GetNumMatrices(); i++)
 	{
 		QubicleMatrix* pMatrix = m_pVoxelModel->GetQubicleMatrix(i);

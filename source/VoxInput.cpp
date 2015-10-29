@@ -147,202 +147,35 @@ void VoxGame::KeyReleased(int key, int scancode, int mods)
 			m_bKeyboardStrafeRight = false;
 			break;
 		}
-
-		case GLFW_KEY_H:
-		{
-			m_displayHelpText = !m_displayHelpText;
-			break;
-		}
-		case GLFW_KEY_W:
-		{
-			m_modelWireframe = !m_modelWireframe;
-			m_pVoxelCharacter->SetWireFrameRender(m_modelWireframe);
-			break;
-		}
-		case GLFW_KEY_E:
-		{
-			m_modelTalking = !m_modelTalking;
-			m_pVoxelCharacter->SetTalkingAnimationEnabled(m_modelTalking);
-			break;
-		}
-		case GLFW_KEY_Q:
-		{
-			m_modelAnimationIndex++;
-			if (m_modelAnimationIndex >= m_pVoxelCharacter->GetNumAnimations())
-			{
-				m_modelAnimationIndex = 0;
-			}
-
-			m_pVoxelCharacter->PlayAnimation(AnimationSections_FullBody, false, AnimationSections_FullBody, m_pVoxelCharacter->GetAnimationName(m_modelAnimationIndex));
-			break;
-		}
-		case GLFW_KEY_Z:
-		{
-			m_pVoxelCharacter->PlayAnimation(AnimationSections_FullBody, false, AnimationSections_FullBody, m_pVoxelCharacter->GetAnimationName(m_modelAnimationIndex));
-			break;
-		}
-		case GLFW_KEY_R:
-		{
-			m_multiSampling = !m_multiSampling;
-			break;
-		}
-		case GLFW_KEY_Y:
-		{
-			m_ssao = !m_ssao;
-			break;
-		}
-		case GLFW_KEY_U:
-		{
-			m_shadows = !m_shadows;
-			break;
-		}
-		case GLFW_KEY_I:
-		{
-			m_dynamicLighting = !m_dynamicLighting;
-			break;
-		}
-		case GLFW_KEY_T:
-		{
-			m_renderModeIndex++;
-			if (m_renderModeIndex >= 3)
-			{
-				m_renderModeIndex = 0;
-			}
-
-			if (m_renderModeIndex == 0)
-			{
-				m_renderModeString = "Shadow";
-			}
-			else if (m_renderModeIndex == 1)
-			{
-				m_renderModeString = "Phong";
-			}
-			else if (m_renderModeIndex == 2)
-			{
-				m_renderModeString = "Default";
-			}
-
-			break;
-		}
-		case GLFW_KEY_L:
-		{
-			m_animationUpdate = !m_animationUpdate;
-
-			break;
-		}
-		case GLFW_KEY_F:
-		{
-			m_fullscreen = !m_fullscreen;
-
-			m_pVoxWindow->ToggleFullScreen(m_fullscreen);
-			m_pBlockParticleManager->SetupGLBuffers();
-
-			break;
-		}
-		case GLFW_KEY_A:
-		{
-			switch (m_weaponIndex)
-			{
-				case 0:
-				{
-					m_weaponString = "Sword";
-					UnloadWeapon(true);
-					UnloadWeapon(false);
-					m_pVoxelCharacter->LoadRightWeapon("media/gamedata/weapons/Sword/Sword.weapon");
-					break;
-				}
-				case 1:
-				{
-					m_weaponString = "Sword & Shield";
-					UnloadWeapon(true);
-					UnloadWeapon(false);
-					m_pVoxelCharacter->LoadRightWeapon("media/gamedata/weapons/Sword/Sword.weapon");
-					m_pVoxelCharacter->LoadLeftWeapon("media/gamedata/weapons/Shield/Shield.weapon");
-					break;
-				}
-				case 2:
-				{
-					m_weaponString = "Staff";
-					UnloadWeapon(true);
-					UnloadWeapon(false);
-					m_pVoxelCharacter->LoadRightWeapon("media/gamedata/weapons/Staff/Staff.weapon");
-					break;
-				}
-				case 3:
-				{
-					m_weaponString = "Bow";
-					UnloadWeapon(true);
-					UnloadWeapon(false);
-					m_pVoxelCharacter->LoadLeftWeapon("media/gamedata/weapons/Bow/Bow.weapon");
-					break;
-				}
-				case 4:
-				{
-					m_weaponString = "2HandedSword";
-					UnloadWeapon(true);
-					UnloadWeapon(false);
-					m_pVoxelCharacter->LoadRightWeapon("media/gamedata/weapons/2HandedSword/2HandedSword.weapon");
-					break;
-				}
-				case 5:
-				{
-					m_weaponString = "Torch";
-					UnloadWeapon(true);
-					UnloadWeapon(false);
-					m_pVoxelCharacter->LoadRightWeapon("media/gamedata/weapons/Torch/Torch.weapon");
-					break;
-				}
-				case 6:
-				{
-					m_weaponString = "Fireball";
-					UnloadWeapon(true);
-					UnloadWeapon(false);
-					m_pVoxelCharacter->LoadRightWeapon("media/gamedata/weapons/FireballHands/FireballHandsRight.weapon");
-					m_pVoxelCharacter->LoadLeftWeapon("media/gamedata/weapons/FireballHands/FireballHandsLeft.weapon");
-					m_pVoxelCharacter->SetQubicleMatrixRender("Right_Hand", false);
-					m_pVoxelCharacter->SetQubicleMatrixRender("Left_Hand", false);
-					break;
-				}
-				case 7:
-				{
-					m_weaponString = "NONE";
-					UnloadWeapon(true);
-					UnloadWeapon(false);
-					m_pVoxelCharacter->SetQubicleMatrixRender("Right_Hand", true);
-					m_pVoxelCharacter->SetQubicleMatrixRender("Left_Hand", true);
-					break;
-				}
-			}
-
-			m_weaponIndex++;
-			if (m_weaponIndex == 8)
-				m_weaponIndex = 0;
-
-			m_pVoxelCharacter->GetRightWeapon()->StartWeaponTrails();
-			m_pVoxelCharacter->GetLeftWeapon()->StartWeaponTrails();
-
-			break;
-		}
 	}
 }
 
 void VoxGame::MouseLeftPressed()
 {
-	m_currentX = m_pVoxWindow->GetCursorX();
-	m_currentY = m_pVoxWindow->GetCursorY();
-	m_pressedX = m_currentX;
-	m_pressedY = m_currentY;
+	m_pGUI->MousePressed(MOUSE_BUTTON1);
 
-	m_bCameraRotate = true;
+	if (!m_pGUI->IsMouseInteractingWithGUIComponent(false))
+	{
+		m_currentX = m_pVoxWindow->GetCursorX();
+		m_currentY = m_pVoxWindow->GetCursorY();
+		m_pressedX = m_currentX;
+		m_pressedY = m_currentY;
+
+		m_bCameraRotate = true;
+	}
 }
 
 void VoxGame::MouseLeftReleased()
 {
+	m_pGUI->MouseReleased(MOUSE_BUTTON1);
+
 	m_bCameraRotate = false;
 }
 
 void VoxGame::MouseRightPressed()
 {
+	m_pGUI->MousePressed(MOUSE_BUTTON2);
+
 	m_currentX = m_pVoxWindow->GetCursorX();
 	m_currentY = m_pVoxWindow->GetCursorY();
 	m_pressedX = m_currentX;
@@ -353,15 +186,19 @@ void VoxGame::MouseRightPressed()
 
 void VoxGame::MouseRightReleased()
 {
+	m_pGUI->MouseReleased(MOUSE_BUTTON2);
+
 	m_bCameraZoom = false;
 }
 
 void VoxGame::MouseMiddlePressed()
 {
+	m_pGUI->MousePressed(MOUSE_BUTTON3);
 }
 
 void VoxGame::MouseMiddleReleased()
 {
+	m_pGUI->MouseReleased(MOUSE_BUTTON3);
 }
 
 void VoxGame::MouseScroll(double x, double y)
@@ -390,7 +227,8 @@ void VoxGame::MouseCameraRotate(int x, int y)
 		changeX = -changeX;
 	}
 
-	m_pGameCamera->RotateAroundPoint(changeY*0.5f, -changeX*0.5f);
+	m_pGameCamera->RotateAroundPoint(changeY*0.5f, -changeX*0.5f, 0.0f);
+	//m_pGameCamera->Rotate(changeY*0.5f, -changeX*0.5f, 0.0f);
 
 	m_currentX = x;
 	m_currentY = y;

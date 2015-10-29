@@ -1,6 +1,7 @@
 #include <cmath>
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
-#include "../Maths/3dmaths.h"
 #include "Renderer.h"
 
 #include "camera.h"
@@ -23,10 +24,10 @@ Camera::Camera(Renderer* pRenderer)
 {
 	m_pRenderer = pRenderer;
 
-	SetPosition(Vector3d(0.0f, 0.0f, 0.0f));
-	SetFacing(Vector3d(0.0f, 0.0f, -1.0f));
-	SetUp(Vector3d(0.0f, 1.0f, 0.0f));
-	SetRight(Vector3d(1.0f, 0.0f, 0.0f));
+	SetPosition(vec3(0.0f, 0.0f, 0.0f));
+	SetFacing(vec3(0.0f, 0.0f, -1.0f));
+	SetUp(vec3(0.0f, 1.0f, 0.0f));
+	SetRight(vec3(1.0f, 0.0f, 0.0f));
 
 	m_zoomAmount = 3.0f;
 	m_minZoomAmount = 0.1f;
@@ -43,9 +44,9 @@ void Camera::Fly(const float speed)
 
 void Camera::Move(const float speed)
 {
-	Vector3d directionToMove = m_facing;
+	vec3 directionToMove = m_facing;
 	directionToMove.y = 0.0f;
-	directionToMove.Normalize();
+	directionToMove = glm::normalize(directionToMove);
 
 	m_position.x = m_position.x + directionToMove.x * speed;
 	m_position.z = m_position.z + directionToMove.z * speed;
@@ -65,41 +66,35 @@ void Camera::Strafe(const float speed)
 
 void Camera::Rotate(const float xAmount, const float yAmount, const float zAmount)
 {
-	Quaternion xRotation;
-	xRotation.SetAxis(m_right, xAmount);
-	Quaternion yRotation;
-	yRotation.SetAxis(m_up, yAmount);
-	Quaternion zRotation;
-	zRotation.SetAxis(m_facing, zAmount);
+	quat xRotation(DegToRad(xAmount), m_right.x, m_right.y, m_right.z);
+	quat yRotation(DegToRad(yAmount), m_up.x, m_up.y, m_up.z);
+	quat zRotation(DegToRad(zAmount), m_facing.x, m_facing.y, m_facing.z);
 
-	Quaternion rotation = xRotation * yRotation * zRotation;
+	quat rotation = xRotation * yRotation * zRotation;
 
-	m_right = (rotation * m_right).GetUnit();
-	m_up = (rotation * m_up).GetUnit();
-	m_facing = (rotation * m_facing).GetUnit();
+	m_right = normalize(rotation * m_right);
+	m_up = normalize(rotation * m_up);
+	m_facing = normalize(rotation * m_facing);
 }
 
-void Camera::RotateAroundPoint(const float xAmount, const float yAmount)
+void Camera::RotateAroundPoint(const float xAmount, const float yAmount, const float zAmount)
 {
-	Quaternion xRotation;
-	xRotation.SetAxis(m_right, xAmount);
-	Quaternion yRotation;
-	yRotation.SetAxis(m_up, yAmount);
+	quat xRotation(DegToRad(xAmount), m_right.x, m_right.y, m_right.z);
+	quat yRotation(DegToRad(yAmount), m_up.x, m_up.y, m_up.z);
+	quat zRotation(DegToRad(zAmount), m_facing.x, m_facing.y, m_facing.z);
 
-	Quaternion rotation = xRotation * yRotation;
+	quat rotation = xRotation * yRotation * zRotation;
 
 	// Get the view position, based on the facing and the zoom amount
-	Vector3d view = m_position + (m_facing*m_zoomAmount);
+	vec3 view = m_position + (m_facing*m_zoomAmount);
 
-	// Translate the position to the origin, relative to the view position (that is the facing zoomed)
-	m_position -= view;
+	m_position -= view;  // Translate the position to the origin, relative to the view position (that is the facing zoomed)
 	m_position = (rotation * m_position);
-	// Translate back to relative view position
-	m_position += view;
+	m_position += view;  // Translate back to relative view position
 
-	m_right = (rotation * m_right).GetUnit();
-	m_facing = (rotation * m_facing).GetUnit();
-	m_up = (rotation * m_up).GetUnit();
+	m_right = normalize(rotation * m_right);
+	m_facing = normalize(rotation * m_facing);
+	m_up = normalize(rotation * m_up);
 }
 
 void Camera::Zoom(const float amount)
@@ -124,7 +119,7 @@ void Camera::Zoom(const float amount)
 // Viewing
 void Camera::Look() const
 {
-	Vector3d view = m_position + m_facing;
+	vec3 view = m_position + m_facing;
 	gluLookAt(m_position.x, m_position.y, m_position.z, view.x, view.y, view.z, m_up.x, m_up.y, m_up.z);
-    m_pRenderer->GetFrustum(m_pRenderer->GetActiveViewPort())->SetCamera(m_position, view, m_up);
+	m_pRenderer->GetFrustum(m_pRenderer->GetActiveViewPort())->SetCamera(m_position, view, m_up);
 }

@@ -26,12 +26,78 @@ BlockParticleEmitter::BlockParticleEmitter(Renderer* pRenderer, BlockParticleMan
 	m_pRenderer = pRenderer;
 	m_pBlockParticleManager = pBlockParticleManager;
 
+	m_erase = false;
+
 	m_started = false;
 	m_paused = false;
 
 	m_pParent = NULL;
 	m_pParentParticle = NULL;
 	m_isReferenceEmitter = false;
+
+	m_emitterName = "";
+	m_creationTime = 0.0f;
+	m_creationTimer = 0.0f;
+	// Number of particles to spawn
+	m_numParticlesToSpawn = 0;
+	// Should particles follow emitter movement
+	m_particlesFollowEmitter = false;
+	// Emitter orbiting
+	m_orbit = 0.0f;
+	m_orbitReverse = 0.0f;
+	m_orbitRadius = 0.0f;
+	m_orbitTime = 0.0f;
+	m_orbitTimer = 0.0f;
+	// Playback controls
+	m_started = false;
+	m_paused = false;
+	// Emitter type
+	m_emitterType = EmitterType_Point;
+	// Emitter radius and lengths
+	m_emitterRadius = 0.0f;
+	m_emitterLengthX = 0.0f;
+	m_emitterLengthY = 0.0f;
+	m_emitterLengthZ = 0.0f;
+	// Are we spawning on the outside of the shape
+	m_spawnOutline = false;
+	// Particle creation params
+	m_gravityMultiplier = 0.0f;
+	m_startScale = 0.0f;
+	m_startScaleVariance = 0.0f;
+	m_endScale = 0.0f;
+	m_endScaleVariance = 0.0f;
+	m_startRed = 0.0f;
+	m_startRedVariance = 0.0f;
+	m_endRed = 0.0f;
+	m_endRedVariance = 0.0f;
+	m_startGreen = 0.0f;
+	m_startGreenVariance = 0.0f;
+	m_endGreen = 0.0f;
+	m_endGreenVariance = 0.0f;
+	m_startBlue = 0.0f;
+	m_startBlueVariance = 0.0f;
+	m_endBlue = 0.0f;
+	m_endBlueVariance = 0.0f;
+	m_startAlpha = 0.0f;
+	m_startAlphaVariance = 0.0f;
+	m_endAlpha = 0.0f;
+	m_endAlphaVariance = 0.0f;
+	m_lifeTime = 0.0f;
+	m_lifeTimeVariance = 0.0f;
+	m_velocityTowardsPoint = 0.0f;
+	m_accelerationTowardsPoint = 0.0f;
+	m_checkWorldCollisions = false;
+	m_destoryOnCollision = false;
+	m_startLifeDecayOnCollision = false;
+	m_randomStartRotation = false;
+	m_tangentialVelocityXY = 0.0f;
+	m_tangentialAccelerationXY = 0.0f;
+	m_tangentialVelocityXZ = 0.0f;
+	m_tangentialAccelerationXZ = 0.0f;
+	m_tangentialVelocityYZ = 0.0f;
+	m_tangentialAccelerationYZ = 0.0f;
+	m_createEmitters = false;
+	m_createEmitterName = "";
 }
 
 BlockParticleEmitter::~BlockParticleEmitter()
@@ -188,7 +254,7 @@ void BlockParticleEmitter::Update(float dt)
 		if(m_orbitReverse)
 			rot_angle = -rot_angle;
 
-		m_position = m_startingPosition + Vector3d(cos(rot_angle) * m_orbitRadius, 0.0f, sin(rot_angle) * m_orbitRadius);
+		m_position = m_startingPosition + vec3(cos(rot_angle) * m_orbitRadius, 0.0f, sin(rot_angle) * m_orbitRadius);
 	}
 }
 

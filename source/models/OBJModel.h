@@ -6,9 +6,9 @@
 
 // OBJ Model structs
 typedef struct {
-	Vector3d position;
+	vec3 position;
 	int massID;
-	Vector3d massOffset;
+	vec3 massOffset;
 } OBJ_Vertex;
 
 typedef struct {
@@ -57,7 +57,7 @@ private:
 
 	// Normals
 	int m_numNormals;
-	Vector3d *m_pNormals;
+	vec3 *m_pNormals;
 
 	// Faces
 	int m_numFaces;	

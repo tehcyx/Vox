@@ -57,7 +57,7 @@ void VoxelWeapon::Reset()
 	m_matrixName = "";
 	m_matrixIndex = -1;
 
-	m_renderOffset = Vector3d(0.0f, 0.0f, 0.0f);
+	m_renderOffset = vec3(0.0f, 0.0f, 0.0f);
 
 	m_renderScale = 1.0f;
 
@@ -116,7 +116,7 @@ void VoxelWeapon::LoadWeapon(const char *weaponFilename, bool useManager)
 			float offsetY = 0.0f;
 			float offsetZ = 0.0f;
 			file >> tempString >> offsetX >> offsetY >> offsetZ;
-			m_pAnimatedSections[i].m_renderOffset = Vector3d(offsetX, offsetY, offsetZ);
+			m_pAnimatedSections[i].m_renderOffset = vec3(offsetX, offsetY, offsetZ);
 
 			file >> tempString >> m_pAnimatedSections[i].m_autoStart;
 			file >> tempString >> m_pAnimatedSections[i].m_loopingAnimation;
@@ -154,7 +154,7 @@ void VoxelWeapon::LoadWeapon(const char *weaponFilename, bool useManager)
 			float rotationPointY = 0.0f;
 			float rotationPointZ = 0.0f;
 			file >> tempString >> rotationPointX >> rotationPointY >> rotationPointZ;
-			m_pAnimatedSections[i].m_rotationPoint = Vector3d(rotationPointX, rotationPointY, rotationPointZ);
+			m_pAnimatedSections[i].m_rotationPoint = vec3(rotationPointX, rotationPointY, rotationPointZ);
 
 			file >> tempString >> m_pAnimatedSections[i].m_rotationSpeedX;
 			file >> tempString >> m_pAnimatedSections[i].m_rotationSpeedY;
@@ -198,7 +198,7 @@ void VoxelWeapon::LoadWeapon(const char *weaponFilename, bool useManager)
 			float offsetY = 0.0f;
 			float offsetZ = 0.0f;
 			file >> tempString >> offsetX >> offsetY >> offsetZ;
-			m_pLights[i].m_lightOffset = Vector3d(offsetX, offsetY, offsetZ);
+			m_pLights[i].m_lightOffset = vec3(offsetX, offsetY, offsetZ);
 
 			file >> tempString >> m_pLights[i].m_lightRadius;
 
@@ -230,7 +230,7 @@ void VoxelWeapon::LoadWeapon(const char *weaponFilename, bool useManager)
 			float offsetY = 0.0f;
 			float offsetZ = 0.0f;
 			file >> tempString >> offsetX >> offsetY >> offsetZ;
-			m_pParticleEffects[i].m_positionOffset = Vector3d(offsetX, offsetY, offsetZ);
+			m_pParticleEffects[i].m_positionOffset = vec3(offsetX, offsetY, offsetZ);
 
 			file >> tempString >> m_pParticleEffects[i].m_connectedToSectionIndex;
 		}
@@ -252,13 +252,13 @@ void VoxelWeapon::LoadWeapon(const char *weaponFilename, bool useManager)
 			float startOffsetY = 0.0f;
 			float startOffsetZ = 0.0f;
 			file >> tempString >> startOffsetX >> startOffsetY >> startOffsetZ;
-			m_pWeaponTrails[i].m_startOffsetPoint = Vector3d(startOffsetX, startOffsetY, startOffsetZ);
+			m_pWeaponTrails[i].m_startOffsetPoint = vec3(startOffsetX, startOffsetY, startOffsetZ);
 
 			float endOffsetX = 0.0f;
 			float endOffsetY = 0.0f;
 			float endOffsetZ = 0.0f;
 			file >> tempString >> endOffsetX >> endOffsetY >> endOffsetZ;
-			m_pWeaponTrails[i].m_endOffsetPoint = Vector3d(endOffsetX, endOffsetY, endOffsetZ);
+			m_pWeaponTrails[i].m_endOffsetPoint = vec3(endOffsetX, endOffsetY, endOffsetZ);
 
 			float r = 1.0f;
 			float g = 1.0f;
@@ -379,12 +379,12 @@ void VoxelWeapon::SetBoneAttachment(const char* boneName)
 	}	
 }
 
-void VoxelWeapon::SetRenderOffset(Vector3d offset)
+void VoxelWeapon::SetRenderOffset(vec3 offset)
 {
 	m_renderOffset = offset;
 }
 
-Vector3d VoxelWeapon::GetRenderOffset()
+vec3 VoxelWeapon::GetRenderOffset()
 {
 	return m_renderOffset;
 }
@@ -399,9 +399,9 @@ float VoxelWeapon::GetRenderScale()
 	return m_renderScale;
 }
 
-Vector3d VoxelWeapon::GetCenter()
+vec3 VoxelWeapon::GetCenter()
 {
-	Vector3d centerPos;
+	vec3 centerPos;
 	for(int i = 0; i < m_numAnimatedSections; i++)
 	{
 		centerPos += m_pAnimatedSections[i].m_renderOffset*m_pAnimatedSections[i].m_renderScale;
@@ -456,6 +456,11 @@ void VoxelWeapon::StopWeaponTrails()
 	m_weaponTrailsStarted = false;
 }
 
+bool VoxelWeapon::IsWeaponTrailsActive()
+{
+	return m_weaponTrailsStarted;
+}
+
 // Lighting
 int VoxelWeapon::GetNumLights()
 {
@@ -467,7 +472,7 @@ void VoxelWeapon::SetLightingId(int lightIndex, unsigned int lightId)
 	m_pLights[lightIndex].m_lightId = lightId;
 }
 
-void VoxelWeapon::GetLightParams(int lightIndex, unsigned int *lightId, Vector3d *position, float *radius, float *diffuseMultiplier, Colour *colour, bool *connectedToSegment)
+void VoxelWeapon::GetLightParams(int lightIndex, unsigned int *lightId, vec3 *position, float *radius, float *diffuseMultiplier, Colour *colour, bool *connectedToSegment)
 {
 	*lightId = m_pLights[lightIndex].m_lightId;
 	*radius = m_pLights[lightIndex].m_lightRadius;
@@ -496,7 +501,7 @@ void VoxelWeapon::SetParticleEffectId(int particleEffectIndex, unsigned int part
 	m_pParticleEffects[particleEffectIndex].m_particleEffectId = particleEffectId;
 }
 
-void VoxelWeapon::GetParticleEffectParams(int particleEffectIndex, unsigned int *particleEffectId, Vector3d *position, string* name, bool *connectedToSegment)
+void VoxelWeapon::GetParticleEffectParams(int particleEffectIndex, unsigned int *particleEffectId, vec3 *position, string* name, bool *connectedToSegment)
 {
 	*particleEffectId = m_pParticleEffects[particleEffectIndex].m_particleEffectId;
 	*position = m_pParticleEffects[particleEffectIndex].m_particleEffectPosition;
@@ -594,13 +599,13 @@ void VoxelWeapon::UpdateWeaponTrails(float dt, Matrix4x4 originMatrix, float sca
 		{
 			if(m_pWeaponTrails[i].m_nextTrailTimer <= 0.0f)
 			{
-				Vector3d startPosition = m_pWeaponTrails[i].m_startOffsetPoint;
-				Vector3d endPosition = m_pWeaponTrails[i].m_endOffsetPoint;
+				vec3 startPosition = m_pWeaponTrails[i].m_startOffsetPoint;
+				vec3 endPosition = m_pWeaponTrails[i].m_endOffsetPoint;
 
 				// Scale to render size
 				// Translate for initial block offset
-				startPosition += (Vector3d(m_renderOffset.x, m_renderOffset.y, m_renderOffset.z) * m_renderScale);
-				endPosition += (Vector3d(m_renderOffset.x, m_renderOffset.y, m_renderOffset.z) * m_renderScale);
+				startPosition += (vec3(m_renderOffset.x, m_renderOffset.y, m_renderOffset.z) * m_renderScale);
+				endPosition += (vec3(m_renderOffset.x, m_renderOffset.y, m_renderOffset.z) * m_renderScale);
 
 				// Rotation due to the weapon facing forwards for hand directions
 				if(m_pParentCharacter != NULL)
@@ -613,11 +618,11 @@ void VoxelWeapon::UpdateWeaponTrails(float dt, Matrix4x4 originMatrix, float sca
 
 				if(m_matrixIndex != -1)
 				{
-					Vector3d handBoneOffset = m_pParentCharacter->GetBoneMatrixRenderOffset(m_matrixName.c_str());
+					vec3 handBoneOffset = m_pParentCharacter->GetBoneMatrixRenderOffset(m_matrixName.c_str());
 
 					// Translate for external matrix offset value
-					startPosition += Vector3d(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
-					endPosition += Vector3d(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
+					startPosition += vec3(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
+					endPosition += vec3(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
 				}
 
 				// Rotation due to 3dsmax export affecting the bone rotations
@@ -636,15 +641,15 @@ void VoxelWeapon::UpdateWeaponTrails(float dt, Matrix4x4 originMatrix, float sca
 					float amountX = 0.75f;
 					float amountY = 0.75f;
 					float amountZ = 0.5f;
-					rotationMatrix.SetTranslation(Vector3d(amountX, amountY, -amountZ));
+					rotationMatrix.SetTranslation(vec3(amountX, amountY, -amountZ));
 					rotationMatrix.SetRotation(0.0f, DegToRad(m_cameraYRotation), 0.0f);
 					startPosition = rotationMatrix * startPosition;
 					endPosition = rotationMatrix * endPosition;
 				}
 
 				// Translate for initial block offset
-				//startPosition -= Vector3d(0.5f, 0.5f, 0.5f);
-				//endPosition -= Vector3d(0.5f, 0.5f, 0.5f);
+				//startPosition -= vec3(0.5f, 0.5f, 0.5f);
+				//endPosition -= vec3(0.5f, 0.5f, 0.5f);
 
 				if(m_pParentCharacter != NULL)
 				{
@@ -681,15 +686,15 @@ void VoxelWeapon::UpdateWeaponTrails(float dt, Matrix4x4 originMatrix, float sca
 
 						// Looking direction, since we are attached to a character who is holding us.
 						{
-							Vector3d lForward = m_pParentCharacter->GetFaceLookingDirection().GetUnit();
+							vec3 lForward = normalize(m_pParentCharacter->GetFaceLookingDirection());
 							lForward.y = 0.0f;
-							lForward.Normalize();
-							Vector3d forwardDiff = lForward - Vector3d(0.0f, 0.0f, 1.0f);
-							lForward = (Vector3d(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f)).GetUnit();
+							lForward = normalize(lForward);
+							vec3 forwardDiff = lForward - vec3(0.0f, 0.0f, 1.0f);
+							lForward = normalize(vec3(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f));
 
-							Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-							Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-							lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+							vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+							vec3 lRight = normalize(cross(lUp, lForward));
+							lUp = normalize(cross(lForward, lRight));
 
 							float lMatrix[16] =
 							{
@@ -707,8 +712,8 @@ void VoxelWeapon::UpdateWeaponTrails(float dt, Matrix4x4 originMatrix, float sca
 
 						// Breathing animation
 						float offsetAmount = m_pParentCharacter->GetBreathingAnimationOffsetForBone(m_boneIndex);
-						startPosition += Vector3d(0.0f, offsetAmount, 0.0f);
-						endPosition += Vector3d(0.0f, offsetAmount, 0.0f);
+						startPosition += vec3(0.0f, offsetAmount, 0.0f);
+						endPosition += vec3(0.0f, offsetAmount, 0.0f);
 					}
 				}
 
@@ -1047,7 +1052,7 @@ void VoxelWeapon::Update(float dt)
 
 			// Scale to render size
 			// Translate for initial block offset
-			Vector3d lightPosition = m_pLights[i].m_lightOffset;
+			vec3 lightPosition = m_pLights[i].m_lightOffset;
 
 			// Rotation due to the weapon facing forwards for hand directions
 			if(m_pParentCharacter != NULL)
@@ -1065,11 +1070,11 @@ void VoxelWeapon::Update(float dt)
 		}
 
 		// Get the weapon position
-		Vector3d lightPosition = m_pLights[i].m_lightOffset;
+		vec3 lightPosition = m_pLights[i].m_lightOffset;
 
 		// Scale to render size
 		// Translate for initial block offset
-		lightPosition += (Vector3d(m_renderOffset.x, m_renderOffset.y, m_renderOffset.z) * m_renderScale);
+		lightPosition += (vec3(m_renderOffset.x, m_renderOffset.y, m_renderOffset.z) * m_renderScale);
 
 		// Rotation due to the weapon facing forwards for hand directions
 		if(m_pParentCharacter != NULL)
@@ -1081,10 +1086,10 @@ void VoxelWeapon::Update(float dt)
 
 		if(m_matrixIndex != -1)
 		{
-			Vector3d handBoneOffset = m_pParentCharacter->GetBoneMatrixRenderOffset(m_matrixName.c_str());
+			vec3 handBoneOffset = m_pParentCharacter->GetBoneMatrixRenderOffset(m_matrixName.c_str());
 
 			// Translate for external matrix offset value
-			lightPosition += Vector3d(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
+			lightPosition += vec3(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
 		}
 
 		// Rotation due to 3dsmax export affecting the bone rotations
@@ -1102,13 +1107,13 @@ void VoxelWeapon::Update(float dt)
 			float amountX = 0.75f;
 			float amountY = 0.75f;
 			float amountZ = 0.5f;
-			rotationMatrix.SetTranslation(Vector3d(amountX, amountY, -amountZ));
+			rotationMatrix.SetTranslation(vec3(amountX, amountY, -amountZ));
 			rotationMatrix.SetRotation(0.0f, DegToRad(m_cameraYRotation), 0.0f);
 			lightPosition = rotationMatrix * lightPosition;
 		}
 
 		// Translate for initial block offset
-		//lightPosition -= Vector3d(0.5f, 0.5f, 0.5f);
+		//lightPosition -= vec3(0.5f, 0.5f, 0.5f);
 
 		if(m_pParentCharacter != NULL)
 		{
@@ -1144,15 +1149,15 @@ void VoxelWeapon::Update(float dt)
 
 				// Looking direction, since we are attached to a character who is holding us.
 				{
-					Vector3d lForward = m_pParentCharacter->GetFaceLookingDirection().GetUnit();
+					vec3 lForward = normalize(m_pParentCharacter->GetFaceLookingDirection());
 					lForward.y = 0.0f;
-					lForward.Normalize();
-					Vector3d forwardDiff = lForward - Vector3d(0.0f, 0.0f, 1.0f);
-					lForward = (Vector3d(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f)).GetUnit();
+					lForward = normalize(lForward);
+					vec3 forwardDiff = lForward - vec3(0.0f, 0.0f, 1.0f);
+					lForward = normalize(vec3(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f));
 
-					Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-					Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-					lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+					vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+					vec3 lRight = normalize(cross(lUp, lForward));
+					lUp = normalize(cross(lForward, lRight));
 
 					float lMatrix[16] =
 					{
@@ -1169,7 +1174,7 @@ void VoxelWeapon::Update(float dt)
 
 				// Breathing animation
 				float offsetAmount = m_pParentCharacter->GetBreathingAnimationOffsetForBone(m_boneIndex);
-				lightPosition += Vector3d(0.0f, offsetAmount, 0.0f);
+				lightPosition += vec3(0.0f, offsetAmount, 0.0f);
 			}
 		}
 
@@ -1186,7 +1191,7 @@ void VoxelWeapon::Update(float dt)
 
 			// Scale to render size
 			// Translate for initial block offset
-			Vector3d particleEffectPosition = m_pParticleEffects[i].m_positionOffset;
+			vec3 particleEffectPosition = m_pParticleEffects[i].m_positionOffset;
 
 			// Rotation due to the weapon facing forwards for hand directions
 			if(m_pParentCharacter != NULL)
@@ -1203,11 +1208,11 @@ void VoxelWeapon::Update(float dt)
 			continue;
 		}
 
-		Vector3d particleEffectPosition = m_pParticleEffects[i].m_positionOffset;
+		vec3 particleEffectPosition = m_pParticleEffects[i].m_positionOffset;
 
 		// Scale to render size
 		// Translate for initial block offset
-		particleEffectPosition += (Vector3d(m_renderOffset.x, m_renderOffset.y, m_renderOffset.z) * m_renderScale);
+		particleEffectPosition += (vec3(m_renderOffset.x, m_renderOffset.y, m_renderOffset.z) * m_renderScale);
 
 		// Rotation due to the weapon facing forwards for hand directions
 		if(m_pParentCharacter != NULL)
@@ -1219,10 +1224,10 @@ void VoxelWeapon::Update(float dt)
 
 		if(m_matrixIndex != -1)
 		{
-			Vector3d handBoneOffset = m_pParentCharacter->GetBoneMatrixRenderOffset(m_matrixName.c_str());
+			vec3 handBoneOffset = m_pParentCharacter->GetBoneMatrixRenderOffset(m_matrixName.c_str());
 
 			// Translate for external matrix offset value
-			particleEffectPosition += Vector3d(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
+			particleEffectPosition += vec3(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
 		}
 
 		// Rotation due to 3dsmax export affecting the bone rotations
@@ -1240,13 +1245,13 @@ void VoxelWeapon::Update(float dt)
 			float amountX = 0.75f;
 			float amountY = 0.75f;
 			float amountZ = 0.5f;
-			rotationMatrix.SetTranslation(Vector3d(amountX, amountY, -amountZ));
+			rotationMatrix.SetTranslation(vec3(amountX, amountY, -amountZ));
 			rotationMatrix.SetRotation(0.0f, DegToRad(m_cameraYRotation), 0.0f);
 			particleEffectPosition = rotationMatrix * particleEffectPosition;
 		}
 
 		// Translate for initial block offset
-		//particleEffectPosition -= Vector3d(0.5f, 0.5f, 0.5f);
+		//particleEffectPosition -= vec3(0.5f, 0.5f, 0.5f);
 
 		if(m_pParentCharacter != NULL)
 		{
@@ -1282,15 +1287,15 @@ void VoxelWeapon::Update(float dt)
 
 				// Looking direction, since we are attached to a character who is holding us.
 				{
-					Vector3d lForward = m_pParentCharacter->GetFaceLookingDirection().GetUnit();
+					vec3 lForward = normalize(m_pParentCharacter->GetFaceLookingDirection());
 					lForward.y = 0.0f;
-					lForward.Normalize();
-					Vector3d forwardDiff = lForward - Vector3d(0.0f, 0.0f, 1.0f);
-					lForward = (Vector3d(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f)).GetUnit();
+					lForward = normalize(lForward);
+					vec3 forwardDiff = lForward - vec3(0.0f, 0.0f, 1.0f);
+					lForward = normalize(vec3(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f));
 
-					Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-					Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-					lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+					vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+					vec3 lRight = normalize(cross(lUp, lForward));
+					lUp = normalize(cross(lForward, lRight));
 
 					float lMatrix[16] =
 					{
@@ -1307,7 +1312,7 @@ void VoxelWeapon::Update(float dt)
 
 				// Breathing animation
 				float offsetAmount = m_pParentCharacter->GetBreathingAnimationOffsetForBone(m_boneIndex);
-				particleEffectPosition += Vector3d(0.0f, offsetAmount, 0.0f);
+				particleEffectPosition += vec3(0.0f, offsetAmount, 0.0f);
 			}
 		}
 
@@ -1356,15 +1361,15 @@ void VoxelWeapon::Render(bool renderOutline, bool refelction, bool silhouette, C
 				if( m_boneIndex == m_pParentCharacter->GetLeftHandBoneIndex() ||
 					m_boneIndex == m_pParentCharacter->GetRightHandBoneIndex() )
 				{
-					Vector3d lForward = m_pParentCharacter->GetFaceLookingDirection().GetUnit();
+					vec3 lForward = normalize(m_pParentCharacter->GetFaceLookingDirection());
 					lForward.y = 0.0f;
-					lForward.Normalize();
-					Vector3d forwardDiff = lForward - Vector3d(0.0f, 0.0f, 1.0f);
-					lForward = (Vector3d(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f)).GetUnit();
+					lForward = normalize(lForward);
+					vec3 forwardDiff = lForward - vec3(0.0f, 0.0f, 1.0f);
+					lForward = normalize(vec3(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f));
 
-					Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-					Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-					lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+					vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+					vec3 lRight = normalize(cross(lUp, lForward));
+					lUp = normalize(cross(lForward, lRight));
 
 					float lMatrix[16] =
 					{
@@ -1388,7 +1393,7 @@ void VoxelWeapon::Render(bool renderOutline, bool refelction, bool silhouette, C
 
 		if(m_matrixIndex != -1)
 		{
-			Vector3d handBoneOffset = m_pParentCharacter->GetBoneMatrixRenderOffset(m_matrixName.c_str());
+			vec3 handBoneOffset = m_pParentCharacter->GetBoneMatrixRenderOffset(m_matrixName.c_str());
 
 			// Translate for external matrix offset value
 			m_pRenderer->TranslateWorldMatrix(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
@@ -1452,15 +1457,15 @@ void VoxelWeapon::RenderPaperdoll()
 				if( m_boneIndex == m_pParentCharacter->GetLeftHandBoneIndex() ||
 					m_boneIndex == m_pParentCharacter->GetRightHandBoneIndex() )
 				{
-					Vector3d lForward = m_pParentCharacter->GetFaceLookingDirection().GetUnit();
+					vec3 lForward = normalize(m_pParentCharacter->GetFaceLookingDirection());
 					lForward.y = 0.0f;
-					lForward.Normalize();
-					Vector3d forwardDiff = lForward - Vector3d(0.0f, 0.0f, 1.0f);
-					lForward = (Vector3d(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f)).GetUnit();
+					lForward = normalize(lForward);
+					vec3 forwardDiff = lForward - vec3(0.0f, 0.0f, 1.0f);
+					lForward = normalize(vec3(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f));
 
-					Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-					Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-					lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+					vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+					vec3 lRight = normalize(cross(lUp, lForward));
+					lUp = normalize(cross(lForward, lRight));
 
 					float lMatrix[16] =
 					{
@@ -1484,7 +1489,7 @@ void VoxelWeapon::RenderPaperdoll()
 
 		if(m_matrixIndex != -1)
 		{
-			Vector3d handBoneOffset = m_pParentCharacter->GetBoneMatrixRenderOffset(m_matrixName.c_str());
+			vec3 handBoneOffset = m_pParentCharacter->GetBoneMatrixRenderOffset(m_matrixName.c_str());
 
 			// Translate for external matrix offset value
 			m_pRenderer->TranslateWorldMatrix(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
@@ -1560,8 +1565,8 @@ void VoxelWeapon::RenderWeaponTrails()
 						float alpha1 = (float)trailCounter / (float)m_pWeaponTrails[i].m_numTrailPoints;
 						float alpha2 = (float)(trailCounter-1) / (float)m_pWeaponTrails[i].m_numTrailPoints;
 
-						alpha1 += 0.2f;
-						alpha2 += 0.2f;
+						alpha1 += 0.35f;
+						alpha2 += 0.35f;
 						m_pRenderer->ImmediateColourAlpha(m_pWeaponTrails[i].m_trailColour.GetRed(), m_pWeaponTrails[i].m_trailColour.GetGreen(), m_pWeaponTrails[i].m_trailColour.GetBlue(), alpha2);						
 						m_pRenderer->ImmediateVertex(m_pWeaponTrails[i].m_pTrailPoints[indexToUse1].m_startPoint.x, m_pWeaponTrails[i].m_pTrailPoints[indexToUse1].m_startPoint.y, m_pWeaponTrails[i].m_pTrailPoints[indexToUse1].m_startPoint.z);
 

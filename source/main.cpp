@@ -14,6 +14,9 @@ int main(void)
 		/* Update */
 		m_pVoxGame->Update();
 
+		/* PreRender */
+		m_pVoxGame->PreRender();
+
 		/* Render */
 		m_pVoxGame->Render();
 	}

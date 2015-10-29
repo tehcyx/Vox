@@ -54,7 +54,7 @@ void LightingManager::ClearLights()
 	m_vpDynamicLightList.clear();
 }
 
-void LightingManager::AddLight(Vector3d position, float radius, float diffuseModifier, Colour colour, unsigned int *pID)
+void LightingManager::AddLight(vec3 position, float radius, float diffuseModifier, Colour colour, unsigned int *pID)
 {
 	DynamicLight* pNewLight = new DynamicLight();
 
@@ -71,7 +71,7 @@ void LightingManager::AddLight(Vector3d position, float radius, float diffuseMod
 	m_vpDynamicLightList.push_back(pNewLight);
 }
 
-void LightingManager::AddDyingLight(Vector3d position, float radius, float diffuseModifier, Colour colour, float lifeTime, unsigned int *pID)
+void LightingManager::AddDyingLight(vec3 position, float radius, float diffuseModifier, Colour colour, float lifeTime, unsigned int *pID)
 {
 	DynamicLight* pNewLight = new DynamicLight();
 
@@ -118,7 +118,7 @@ void LightingManager::RemoveLight(unsigned int lightId)
 	m_vpDynamicLightList.erase( remove_if(m_vpDynamicLightList.begin(), m_vpDynamicLightList.end(), needs_erasing), m_vpDynamicLightList.end() );
 }
 
-void LightingManager::UpdateLight(unsigned int lightId, Vector3d position, float radius, float diffuseModifier, Colour colour)
+void LightingManager::UpdateLight(unsigned int lightId, vec3 position, float radius, float diffuseModifier, Colour colour)
 {
 	for(unsigned int i = 0; i < m_vpDynamicLightList.size(); i++)
 	{
@@ -160,7 +160,7 @@ void LightingManager::UpdateLightDiffuseMultiplier(unsigned int lightId, float d
 	}
 }
 
-void LightingManager::UpdateLightPosition(unsigned int lightId, Vector3d position)
+void LightingManager::UpdateLightPosition(unsigned int lightId, vec3 position)
 {
 	for(unsigned int i = 0; i < m_vpDynamicLightList.size(); i++)
 	{

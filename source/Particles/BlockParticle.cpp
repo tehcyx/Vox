@@ -76,12 +76,12 @@ void BlockParticle::CreateStartingParams()
 	m_lifeTime = m_lifeTime + ((GetRandomNumber(-1, 1, 2) * m_lifeTimeVariance) * m_lifeTime);
 	m_maxLifeTime = m_lifeTime;
 
-	m_velocity = m_velocity + Vector3d(GetRandomNumber(-100, 100, 2)*0.01f*m_startVelocityVariance.x, GetRandomNumber(-100, 100, 2)*0.01f*m_startVelocityVariance.y, GetRandomNumber(-100, 100, 2)*0.01f*m_startVelocityVariance.z);
-	m_angularVelocity = m_angularVelocity + Vector3d(GetRandomNumber(-100, 100, 2)*0.01f*m_startAngularVelocityVariance.x, GetRandomNumber(-100, 100, 2)*0.01f*m_startAngularVelocityVariance.y, GetRandomNumber(-100, 100, 2)*0.01f*m_startAngularVelocityVariance.z);
+	m_velocity = m_velocity + vec3(GetRandomNumber(-100, 100, 2)*0.01f*m_startVelocityVariance.x, GetRandomNumber(-100, 100, 2)*0.01f*m_startVelocityVariance.y, GetRandomNumber(-100, 100, 2)*0.01f*m_startVelocityVariance.z);
+	m_angularVelocity = m_angularVelocity + vec3(GetRandomNumber(-100, 100, 2)*0.01f*m_startAngularVelocityVariance.x, GetRandomNumber(-100, 100, 2)*0.01f*m_startAngularVelocityVariance.y, GetRandomNumber(-100, 100, 2)*0.01f*m_startAngularVelocityVariance.z);
 
 	if(m_randomStartRotation)
 	{
-		m_rotation = Vector3d(GetRandomNumber(-360, 360, 2), GetRandomNumber(-360, 360, 2), GetRandomNumber(-360, 360, 2));
+		m_rotation = vec3(GetRandomNumber(-360, 360, 2), GetRandomNumber(-360, 360, 2), GetRandomNumber(-360, 360, 2));
 	}
 	else
 	{
@@ -94,7 +94,7 @@ void BlockParticle::CalculateWorldTransformMatrix()
 	m_worldMatrix.LoadIdentity();
 	m_worldMatrix.SetRotation(DegToRad(m_rotation.x), DegToRad(m_rotation.y), DegToRad(m_rotation.z));
 
-	Vector3d pos = m_position;
+	vec3 pos = m_position;
 	if(m_pParent != NULL && m_pParent->m_particlesFollowEmitter)
 	{
 		// If we have a parent and we are locked to their position
@@ -107,10 +107,10 @@ void BlockParticle::CalculateWorldTransformMatrix()
 		}
 	}
 
-	m_worldMatrix.SetTranslation(pos);
+	m_worldMatrix.SetTranslation(vec3(pos.x, pos.y, pos.z));
 
 	Matrix4x4 scaleMat;
-	scaleMat.SetScale(Vector3d(m_currentScale, m_currentScale, m_currentScale));
+	scaleMat.SetScale(vec3(m_currentScale, m_currentScale, m_currentScale));
 
 	m_worldMatrix = scaleMat * m_worldMatrix;
 }
@@ -163,7 +163,7 @@ void BlockParticle::Update(float dt)
 		if(m_pParent != NULL)
 		{
 			// Velocity towards point origin
-			Vector3d pointOrigin = m_pointOrigin;
+			vec3 pointOrigin = m_pointOrigin;
 			if(m_pParent != NULL && m_pParent->m_particlesFollowEmitter == false)
 			{
 				if(m_pParent->m_pParent != NULL)
@@ -171,34 +171,34 @@ void BlockParticle::Update(float dt)
 					pointOrigin += m_pParent->m_pParent->m_position; // Add on parent's particle effect position
 				}
 			}
-			Vector3d toPoint = pointOrigin - m_position;
-			if(toPoint.GetLength() > 0.001f)
+			vec3 toPoint = pointOrigin - m_position;
+			if(length(toPoint) > 0.001f)
 			{
 				m_velocityTowardsPoint += m_accelerationTowardsPoint * dt;
-				Vector3d velToPoint = toPoint * m_velocityTowardsPoint;
+				vec3 velToPoint = toPoint * m_velocityTowardsPoint;
 				m_pointVelocity += (velToPoint) * dt;
 
 				// Tangential velocity
-				Vector3d x_axis = Vector3d(m_velocity.y<0.0f?-1.0f:1.0f, 0.0f, 0.0f);
-				Vector3d cross_x = Vector3d::CrossProduct(toPoint, x_axis);
-				Vector3d y_axis = Vector3d(0.0f, m_velocity.z<0.0f?-1.0f:1.0f, 0.0f);
-				Vector3d cross_y = Vector3d::CrossProduct(toPoint, y_axis);
-				Vector3d z_axis = Vector3d(0.0f, 0.0f, m_velocity.y<0.0f?-1.0f:1.0f);
-				Vector3d cross_z = Vector3d::CrossProduct(toPoint, z_axis);
+				vec3 x_axis = vec3(m_velocity.y<0.0f?-1.0f:1.0f, 0.0f, 0.0f);
+				vec3 cross_x = cross(toPoint, x_axis);
+				vec3 y_axis = vec3(0.0f, m_velocity.z<0.0f?-1.0f:1.0f, 0.0f);
+				vec3 cross_y = cross(toPoint, y_axis);
+				vec3 z_axis = vec3(0.0f, 0.0f, m_velocity.y<0.0f?-1.0f:1.0f);
+				vec3 cross_z = cross(toPoint, z_axis);
 
 				m_tangentialVelocityXY += m_tangentialAccelerationXY * dt;
 				m_tangentialVelocityXZ += m_tangentialAccelerationXZ * dt;
 				m_tangentialVelocityYZ += m_tangentialAccelerationYZ * dt;
-				Vector3d velTangentXY = (cross_z/* * toPoint.GetLength()*/) * m_tangentialVelocityXY;
-				Vector3d velTangentXZ = (cross_y/* * toPoint.GetLength()*/) * m_tangentialVelocityXZ;
-				Vector3d velTangentYZ = (cross_x/* * toPoint.GetLength()*/) * m_tangentialVelocityYZ;
+				vec3 velTangentXY = (cross_z/* * toPoint.GetLength()*/) * m_tangentialVelocityXY;
+				vec3 velTangentXZ = (cross_y/* * toPoint.GetLength()*/) * m_tangentialVelocityXZ;
+				vec3 velTangentYZ = (cross_x/* * toPoint.GetLength()*/) * m_tangentialVelocityYZ;
 				
 				m_tangentialVelocity = velTangentXY+velTangentXZ+velTangentYZ;
 			}
 		}
 
 		// Position integration
-		Vector3d acceleration = (m_gravityDirection * 9.81f) * m_gravityMultiplier;
+		vec3 acceleration = (m_gravityDirection * 9.81f) * m_gravityMultiplier;
 		m_velocity += acceleration * dt;
 		m_position += m_velocity * dt;
 
@@ -207,7 +207,7 @@ void BlockParticle::Update(float dt)
 		m_position += m_pointVelocity * dt;
 
 		// Rotation integration
-		Vector3d angularAcceleration(0.0f, 0.0f, 0.0f);
+		vec3 angularAcceleration(0.0f, 0.0f, 0.0f);
 		m_angularVelocity += angularAcceleration * dt;
 		m_rotation += m_angularVelocity * dt;
 

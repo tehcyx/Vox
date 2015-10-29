@@ -5,6 +5,8 @@
 #pragma once
 
 #include "../Maths/3dGeometry.h"
+#include <glm/vec3.hpp>
+using namespace glm;
 
 
 class Frustum
@@ -14,11 +16,11 @@ public:
 	~Frustum();
 
 	void SetFrustum(float angle, float ratio, float nearD, float farD);
-	void SetCamera(const Vector3d &pos, const Vector3d &target, const Vector3d &up);
+	void SetCamera(const vec3 &pos, const vec3 &target, const vec3 &up);
 
-	int PointInFrustum(const Vector3d &point);
-	int SphereInFrustum(const Vector3d &point, float radius);
-	int CubeInFrustum(const Vector3d &center, float x, float y, float z);
+	int PointInFrustum(const vec3 &point);
+	int SphereInFrustum(const vec3 &point, float radius);
+	int CubeInFrustum(const vec3 &center, float x, float y, float z);
 
 public:
 	enum {
@@ -38,8 +40,8 @@ public:
 
 	Plane3D planes[6];
 
-	Vector3d nearTopLeft, nearTopRight, nearBottomLeft, nearBottomRight;
-	Vector3d farTopLeft, farTopRight, farBottomLeft, farBottomRight;
+	vec3 nearTopLeft, nearTopRight, nearBottomLeft, nearBottomRight;
+	vec3 farTopLeft, farTopRight, farBottomLeft, farBottomRight;
 
 	float nearDistance, farDistance;
 	float nearWidth, nearHeight;

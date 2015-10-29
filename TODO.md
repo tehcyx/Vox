@@ -24,14 +24,22 @@
   * ~~Make deferred lighting and SSAO optional toggles separate.~~
   * ~~Allow for phong shading and deferred lighting together.~~
 * ~~Shadow shader.~~
-* App player class and put voxel character functionalit in player class.
-* Switch over to using glm maths lib.
-* Enable cross platform compiling and support, linux.
-* Better readme file.
-* Weapon trails controlled by the animation file.
-* Convert shaders over to be more unified.
 * ~~Decouple shadow rendering from SSAO shader.~~
 * ~~Decouple dynamic lighting from SSAO shader.~~
+* ~~Better readme file.~~
+* ~~Split up VoxGame file into VoxRender, VoxUpdate, VoxSetup(?), etc.~~
+* ~~App player class and put voxel character functionality in player class.~~
+* ~~Add ability to switch voxel character model.~~
+* ~~Rebuild vs2013 libs using non-dll version of linking~~
+* ~~Fix up cmake for the different visual studio versions and also for the different lib linking.~~
+* ~~Weapon trails controlled by the animation file.~~
+* ~~Create vs2012 libs and VS2012 project files~~
+* Switch over to using glm maths lib.
+* Enable cross platform compiling and support, linux, mac
+* Solution to allow for running the exe from Visual studio, because atm the working directory needs to be ../
+* Convert shaders over to be more unified.
 * Add blur shader.
-* Add toon shading and different lighting shaders.
-* Split up VoxGame file into VoxRender, VoxUpdate, VoxSetup(?), etc.
+* Implement MSAA (or other AA) in glsl shader.
+* Add audio and music playback.
+* Convert shadow rendering calls to use renderer - remove GL from gamecode.
+* Add LUA bindings.

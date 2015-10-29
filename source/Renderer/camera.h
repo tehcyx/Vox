@@ -1,5 +1,8 @@
 #pragma once
 
+#include <glm/vec3.hpp>
+using namespace glm;
+
 class Renderer;
 
 
@@ -8,15 +11,15 @@ public:
 	Camera(Renderer* pRenderer);
 
 	// Set/Get
-	void SetPosition(const Vector3d &position) { m_position = position; }
-	void SetFacing(const Vector3d &facing) { m_facing = facing; }
-	void SetUp(const Vector3d &up) { m_up = up; }
-	void SetRight(const Vector3d &right) { m_right = right; }
+	void SetPosition(const vec3 &position) { m_position = position; }
+	void SetFacing(const vec3 &facing) { m_facing = facing; }
+	void SetUp(const vec3 &up) { m_up = up; }
+	void SetRight(const vec3 &right) { m_right = right; }
 	const void SetZoomAmount(float amount) { m_zoomAmount = amount; }
-	const Vector3d GetPosition() const { return m_position; }
-	const Vector3d GetFacing()const { return m_facing; }
-	const Vector3d GetUp() const { return m_up; }
-	const Vector3d GetRight() const { return m_right; }
+	const vec3 GetPosition() const { return m_position; }
+	const vec3 GetFacing()const { return vec3(m_facing.x, m_facing.y, m_facing.z); }
+	const vec3 GetUp() const { return m_up; }
+	const vec3 GetRight() const { return m_right; }
 	const float GetZoomAmount() const { return m_zoomAmount; }
 
 	// Camera movement
@@ -25,7 +28,7 @@ public:
 	void Levitate(const float speed);
 	void Strafe(const float speed);
 	void Rotate(const float xAmount, const float yAmount, const float zAmount);
-	void RotateAroundPoint(const float xAmount, const float yAmount);
+	void RotateAroundPoint(const float xAmount, const float yAmount, const float zAmount);
 	void Zoom(const float amount);
 
 	// Viewing
@@ -34,11 +37,11 @@ public:
 private:
 	Renderer *m_pRenderer;
 
-	Vector3d m_position;
+	vec3 m_position;
 
-	Vector3d m_up;
-	Vector3d m_facing;
-	Vector3d m_right;
+	vec3 m_up;
+	vec3 m_facing;
+	vec3 m_right;
 
 	float m_zoomAmount;
 	float m_minZoomAmount;

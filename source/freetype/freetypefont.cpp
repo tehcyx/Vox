@@ -1,7 +1,7 @@
 // ******************************************************************************
 //
 // Filename:	freetypefont.cpp
-// Project:		OpenGLRenderer
+// Project:		Vox
 // Author:		Steven Ball
 //
 // Purpose:

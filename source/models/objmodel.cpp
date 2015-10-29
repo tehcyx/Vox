@@ -82,12 +82,12 @@ bool OBJModel::Load(const char *modelFileName, const char *textureFileName)
 	// Allocate the arrays
 	m_pVertices = new OBJ_Vertex[m_numVertices];
 	m_pTextureCoordinates = new OBJ_TextureCoordinate[m_numTexCoordinates];
-	m_pNormals = new Vector3d[m_numNormals];
+	m_pNormals = new vec3[m_numNormals];
 	m_pFaces = new OBJ_Face[m_numFaces];
 
 	memset(m_pVertices, 0, sizeof(OBJ_Vertex) * m_numVertices);
 	memset(m_pTextureCoordinates, 0, sizeof(OBJ_TextureCoordinate) * m_numTexCoordinates);
-	memset(m_pNormals, 0, sizeof(Vector3d) * m_numNormals);
+	memset(m_pNormals, 0, sizeof(vec3) * m_numNormals);
 	memset(m_pFaces, 0, sizeof(OBJ_Face) * m_numFaces);
 
 	// Reset the buffer
@@ -477,12 +477,12 @@ void OBJModel::RenderMesh()
 				int vertexIndex3 = m_pFaces[i].pIndices[6] - 1;
 
 				// Calculate the normal for the triangle, since flat shading only requires a normal for each face
-				Vector3d triangle[3];
+				vec3 triangle[3];
 				triangle[0] = m_pVertices[vertexIndex1].position;
 				triangle[1] = m_pVertices[vertexIndex2].position;
 				triangle[2] = m_pVertices[vertexIndex3].position;
 
-				Vector3d normal = PolygonNormal(triangle);
+				vec3 normal = PolygonNormal(triangle);
 				mpRenderer->ImmediateNormal(normal.x, normal.y, normal.z);
 			}
 			*/
@@ -498,8 +498,8 @@ void OBJModel::RenderMesh()
 				if(m_numNormals != 0)
 				{
 					// Normals from each vertex
-					Vector3d normal(m_pNormals[normalIndex].x, m_pNormals[normalIndex].y, m_pNormals[normalIndex].z);
-					normal.Normalize();
+					vec3 normal(m_pNormals[normalIndex].x, m_pNormals[normalIndex].y, m_pNormals[normalIndex].z);
+					normal = normalize(normal);
 					mpRenderer->ImmediateNormal(normal.x, normal.y, normal.z);
 				}
 				*/

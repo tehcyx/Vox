@@ -37,14 +37,14 @@ public:
 
 	void ClearLights();
 
-	void AddLight(Vector3d position, float radius, float diffuseModifier, Colour colour , unsigned int *pID);
-	void AddDyingLight(Vector3d position, float radius, float diffuseModifier, Colour colour, float lifeTime, unsigned int *pID);
+	void AddLight(vec3 position, float radius, float diffuseModifier, Colour colour , unsigned int *pID);
+	void AddDyingLight(vec3 position, float radius, float diffuseModifier, Colour colour, float lifeTime, unsigned int *pID);
 	void RemoveLight(unsigned int lightId);
 
-	void UpdateLight(unsigned int lightId, Vector3d position, float radius, float diffuseModifier, Colour colour);
+	void UpdateLight(unsigned int lightId, vec3 position, float radius, float diffuseModifier, Colour colour);
 	void UpdateLightRadius(unsigned int lightId, float radius);
 	void UpdateLightDiffuseMultiplier(unsigned int lightId, float diffuseMultiplier);
-	void UpdateLightPosition(unsigned int lightId, Vector3d position);
+	void UpdateLightPosition(unsigned int lightId, vec3 position);
 	void UpdateLightColour(unsigned int lightId, Colour colour);
 
 	void Update(float dt);

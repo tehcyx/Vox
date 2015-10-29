@@ -32,9 +32,9 @@ float BoundingBox::GetHeight() const
 	return mMaxY - mMinY;
 }
 
-Vector3d BoundingBox::GetCenter() const
+vec3 BoundingBox::GetCenter() const
 {
-	return Vector3d(mMaxX - mMinX * 0.5f, mMaxY - mMinY * 0.5f, mMaxY - mMinY * 0.5f);
+	return vec3(mMaxX - mMinX * 0.5f, mMaxY - mMinY * 0.5f, mMaxY - mMinY * 0.5f);
 }
 
 float BoundingBox::GetMinX() const

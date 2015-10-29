@@ -30,6 +30,14 @@ typedef struct Animation
 	double startTime;
 	double endTime;
 	bool looping;
+	int startRightWeaponTrailFrame;
+	int endRightWeaponTrailFrame;
+	double startRightWeaponTrailTime;
+	double endRightWeaponTrailTime;
+	int startLeftWeaponTrailFrame;
+	int endLeftWeaponTrailFrame;
+	double startLeftWeaponTrailTime;
+	double endLeftWeaponTrailTime;
 	char animationName[MAX_ANIMATION_NAME];
 } Animation;
 
@@ -73,6 +81,9 @@ public:
 	void GetCurrentBlendTranslation(int jointIndex, float* x, float* y, float* z);
 	void GetCurrentBlendRotation(int jointIndex, float* x, float* y, float* z);
 
+	bool GetRightWeaponTrailActive();
+	bool GetLeftWeaponTrailActive();
+
 	void Restart();
 
 	void SetTimerForStartOfAnimation();
@@ -105,6 +116,12 @@ private:
 	int mCurrentAnimationIndex;
 	double mCurrentAnimationStartTime;
 	double mCurrentAnimationEndTime;
+
+	// Current animation timers for the weapon trail start and stop times
+	double mCurrentAnimationRightWeaponTrailStartTime;
+	double mCurrentAnimationRightWeaponTrailEndTime;
+	double mCurrentAnimationLeftWeaponTrailStartTime;
+	double mCurrentAnimationLeftWeaponTrailEndTime;
 
 	// Current animation timer and local looping variable
 	double m_timer;

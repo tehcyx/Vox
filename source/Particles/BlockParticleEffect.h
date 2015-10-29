@@ -35,8 +35,8 @@ public:
 
 	void ClearEmitters();
 
-	void SetPosition(Vector3d pos);
-	Vector3d GetPosition();
+	void SetPosition(vec3 pos);
+	vec3 GetPosition();
 
 	void Import(const char* fileName);
 	void Export(const char* fileName);
@@ -76,7 +76,7 @@ public:
 	string m_effectName;
 
 	// Position
-	Vector3d m_position;
+	vec3 m_position;
 
 	// Life
 	bool m_endless;

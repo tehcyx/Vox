@@ -17,6 +17,8 @@
 #pragma once
 
 #include "3dmaths.h"
+#include <glm/vec3.hpp>
+using namespace glm;
 
 
 class Plane3D
@@ -24,16 +26,16 @@ class Plane3D
 public:
 	// Constructors
 	Plane3D();
-	Plane3D(Vector3d lNormal, Vector3d lPoint);
-	Plane3D(Vector3d lv1, Vector3d lv2, Vector3d lv3);
+	Plane3D(vec3 lNormal, vec3 lPoint);
+	Plane3D(vec3 lv1, vec3 lv2, vec3 lv3);
 	Plane3D(float a, float b, float c, float d);
 
 	// Operations
-	float GetPointDistance(Vector3d lPoint);
+	float GetPointDistance(vec3 lPoint);
 
 public:
-	Vector3d mPoint;
-	Vector3d mNormal;
+	vec3 mPoint;
+	vec3 mNormal;
 	float d;
 };
 
@@ -43,21 +45,21 @@ class Line3D
 public:
 	// Constructors
 	Line3D();
-	Line3D(Vector3d lStart, Vector3d lEnd);
+	Line3D(vec3 lStart, vec3 lEnd);
 	Line3D(float x1, float y1, float z1, float x2, float y2, float z2);
 
 	// Properties
-	const Vector3d GetMidPoint() const;
-	const Vector3d GetVector() const;
+	const vec3 GetMidPoint() const;
+	const vec3 GetVector() const;
 	const float GetLength() const;
 	const float GetLengthSquared() const;
 
 	// Operations
-	const Vector3d GetInterpolatedPoint(float t) const;
+	const vec3 GetInterpolatedPoint(float t) const;
 
 public:
-	Vector3d mStartPoint;
-	Vector3d mEndPoint;
+	vec3 mStartPoint;
+	vec3 mEndPoint;
 };
 
 
@@ -66,16 +68,16 @@ class Bezier3
 public:
 	// Constructors
 	Bezier3();
-	Bezier3(Vector3d lStart, Vector3d lEnd, Vector3d lControl);
+	Bezier3(vec3 lStart, vec3 lEnd, vec3 lControl);
 	Bezier3(float xStart, float yStart, float zStart, float xEnd, float yEnd, float zEnd, float xControl, float yControl, float zControl);
 
 	// Operations
-	const Vector3d GetInterpolatedPoint(float t) const;
+	const vec3 GetInterpolatedPoint(float t) const;
 
 public:
-	Vector3d mStartPoint;
-	Vector3d mEndPoint;
-	Vector3d mControlPoint;
+	vec3 mStartPoint;
+	vec3 mEndPoint;
+	vec3 mControlPoint;
 };
 
 
@@ -84,15 +86,15 @@ class Bezier4
 public:
 	// Constructors
 	Bezier4();
-	Bezier4(Vector3d lStart, Vector3d lEnd, Vector3d lControl1, Vector3d lControl2);
+	Bezier4(vec3 lStart, vec3 lEnd, vec3 lControl1, vec3 lControl2);
 	Bezier4(float xStart, float yStart, float zStart, float xEnd, float yEnd, float zEnd, float xControl1, float yControl1, float zControl1, float xControl2, float yControl2, float zControl2);
 
 	// Operations
-	const Vector3d GetInterpolatedPoint(float t) const;
+	const vec3 GetInterpolatedPoint(float t) const;
 
 public:
-	Vector3d mStartPoint;
-	Vector3d mEndPoint;
-	Vector3d mControlPoint1;
-	Vector3d mControlPoint2;
+	vec3 mStartPoint;
+	vec3 mEndPoint;
+	vec3 mControlPoint1;
+	vec3 mControlPoint2;
 };

@@ -35,7 +35,7 @@ public:
 	QubicleBinary* GetQubicleModel();
 	Matrix4x4 GetModelMatrix(int qubicleMatrixIndex);
 
-	Vector3d GetCenter();
+	vec3 GetCenter();
 
 	void LoadObject(const char *qbFilename, bool useManager = true);
 	void UnloadObject();

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../Maths/3dmaths.h"
+#include <glm/vec3.hpp>
+using namespace glm;
 
 
 class BoundingBox
@@ -13,7 +14,7 @@ public:
 	float GetLength() const;
 	float GetHeight() const;
 
-	Vector3d GetCenter() const;
+	vec3 GetCenter() const;
 
 	float GetMinX() const;
 	float GetMinY() const;

@@ -152,8 +152,8 @@ Renderer::~Renderer()
 	// Delete the shaders
 	for (i = 0; i < m_shaders.size(); i++)
 	{
-		delete m_shaders[i];
-		m_shaders[i] = 0;
+		//delete m_shaders[i];
+		//m_shaders[i] = 0;
 	}
 	m_shaders.clear();
 
@@ -562,7 +562,7 @@ void Renderer::TranslateWorldMatrix(float x, float y, float z)
 	glTranslatef(x, y, z);
 
 	Matrix4x4 translate;
-	translate.SetTranslation(Vector3d(x, y, z));
+	translate.SetTranslation(vec3(x, y, z));
 	m_model = translate * m_model;
 }
 
@@ -588,7 +588,7 @@ void Renderer::ScaleWorldMatrix(float x, float y, float z)
 	glScalef(x, y, z);
 
 	Matrix4x4 scale;
-	scale.SetScale(Vector3d(x, y, z));
+	scale.SetScale(vec3(x, y, z));
 	m_model = scale * m_model;
 }
 
@@ -641,8 +641,20 @@ void Renderer::PopTextureMatrix()
 	glMatrixMode(GL_MODELVIEW);
 }
 
+// Scissor testing
+void Renderer::EnableScissorTest(int x, int y, int width, int height)
+{
+	glEnable(GL_SCISSOR_TEST);
+	glScissor(x, y, width, height);
+}
+
+void Renderer::DisableScissorTest()
+{
+	glDisable(GL_SCISSOR_TEST);
+}
+
 // Camera functionality
-void Renderer::SetLookAtCamera(Vector3d pos, Vector3d target, Vector3d up)
+void Renderer::SetLookAtCamera(vec3 pos, vec3 target, vec3 up)
 {
 	gluLookAt(pos.x, pos.y, pos.z, target.x, target.y, target.z, up.x, up.y, up.z);
 }
@@ -854,12 +866,12 @@ void Renderer::DrawBezier(Bezier3 curve, int lPoints)
 	float ratio = 1.0f / (float)lPoints;
 	for (float i = 0.0f; i <= 1.0f; i += ratio)
 	{
-		Vector3d point = curve.GetInterpolatedPoint(i);
+		vec3 point = curve.GetInterpolatedPoint(i);
 
 		glVertex3f(point.x, point.y, point.z);
 	}
 
-	Vector3d point = curve.GetInterpolatedPoint(1.0f);
+	vec3 point = curve.GetInterpolatedPoint(1.0f);
 	glVertex3f(point.x, point.y, point.z);
 
 	glEnd();
@@ -872,12 +884,12 @@ void Renderer::DrawBezier(Bezier4 curve, int lPoints)
 	float ratio = 1.0f / (float)lPoints;
 	for (float i = 0.0f; i <= 1.0f; i += ratio)
 	{
-		Vector3d point = curve.GetInterpolatedPoint(i);
+		vec3 point = curve.GetInterpolatedPoint(i);
 
 		glVertex3f(point.x, point.y, point.z);
 	}
 
-	Vector3d point = curve.GetInterpolatedPoint(1.0f);
+	vec3 point = curve.GetInterpolatedPoint(1.0f);
 	glVertex3f(point.x, point.y, point.z);
 
 	glEnd();
@@ -994,7 +1006,7 @@ int Renderer::GetFreeTypeTextDescent(unsigned int fontID)
 }
 
 // Lighting
-bool Renderer::CreateLight(const Colour &ambient, const Colour &diffuse, const Colour &specular, Vector3d &position, Vector3d &direction, float exponent, float cutoff, float cAtten, float lAtten, float qAtten, bool point, bool spot, unsigned int *pID)
+bool Renderer::CreateLight(const Colour &ambient, const Colour &diffuse, const Colour &specular, vec3 &position, vec3 &direction, float exponent, float cutoff, float cAtten, float lAtten, float qAtten, bool point, bool spot, unsigned int *pID)
 {
 	Light *pLight = new Light();
 
@@ -1020,7 +1032,7 @@ bool Renderer::CreateLight(const Colour &ambient, const Colour &diffuse, const C
 	return true;
 }
 
-bool Renderer::EditLight(unsigned int id, const Colour &ambient, const Colour &diffuse, const Colour &specular, Vector3d &position, Vector3d &direction, float exponent, float cutoff, float cAtten, float lAtten, float qAtten, bool point, bool spot)
+bool Renderer::EditLight(unsigned int id, const Colour &ambient, const Colour &diffuse, const Colour &specular, vec3 &position, vec3 &direction, float exponent, float cutoff, float cAtten, float lAtten, float qAtten, bool point, bool spot)
 {
 	Light *pLight = m_lights[id];
 
@@ -1040,7 +1052,7 @@ bool Renderer::EditLight(unsigned int id, const Colour &ambient, const Colour &d
 	return true;
 }
 
-bool Renderer::EditLightPosition(unsigned int id, Vector3d &position)
+bool Renderer::EditLightPosition(unsigned int id, vec3 &position)
 {
 	Light *pLight = m_lights[id];
 
@@ -1090,7 +1102,7 @@ Colour Renderer::GetLightSpecular(unsigned int id)
 	return m_lights[id]->Specular();
 }
 
-Vector3d Renderer::GetLightPosition(unsigned int id)
+vec3 Renderer::GetLightPosition(unsigned int id)
 {
 	return m_lights[id]->Position();
 }
@@ -1745,7 +1757,7 @@ void Renderer::ClearMesh(OpenGLTriangleMesh* pMesh)
 	pMesh = NULL;
 }
 
-unsigned int Renderer::AddVertexToMesh(Vector3d p, Vector3d n, float r, float g, float b, float a, OpenGLTriangleMesh* pMesh)
+unsigned int Renderer::AddVertexToMesh(vec3 p, vec3 n, float r, float g, float b, float a, OpenGLTriangleMesh* pMesh)
 {
 	OpenGLMesh_Vertex* pNewVertex = new OpenGLMesh_Vertex();
 	pNewVertex->vertexPosition[0] = p.x;
@@ -2136,21 +2148,21 @@ Frustum* Renderer::GetFrustum(unsigned int frustumid)
 	return pFrustum;
 }
 
-int Renderer::PointInFrustum(unsigned int frustumid, const Vector3d &point)
+int Renderer::PointInFrustum(unsigned int frustumid, const vec3 &point)
 {
 	Frustum* pFrustum = m_frustums[frustumid];
 
 	return pFrustum->PointInFrustum(point);
 }
 
-int Renderer::SphereInFrustum(unsigned int frustumid, const Vector3d &point, float radius)
+int Renderer::SphereInFrustum(unsigned int frustumid, const vec3 &point, float radius)
 {
 	Frustum* pFrustum = m_frustums[frustumid];
 
 	return pFrustum->SphereInFrustum(point, radius);
 }
 
-int Renderer::CubeInFrustum(unsigned int frustumid, const Vector3d &center, float x, float y, float z)
+int Renderer::CubeInFrustum(unsigned int frustumid, const vec3 &center, float x, float y, float z)
 {
 	Frustum* pFrustum = m_frustums[frustumid];
 

@@ -79,6 +79,8 @@ BlockParticleManager::BlockParticleManager(Renderer* pRenderer)
 
 	m_particleEffectCounter = 0;
 
+	m_renderWireFrame = false;
+
 	m_vertexArray = -1;
 	m_positionBuffer = -1;
 	m_normalBuffer = -1;
@@ -233,10 +235,10 @@ int BlockParticleManager::GetNumRenderableParticles()
 // Creation
 BlockParticle* BlockParticleManager::CreateBlockParticleFromEmitterParams(BlockParticleEmitter* pEmitter)
 {
-	Vector3d posToSpawn = pEmitter->m_position;
+	vec3 posToSpawn = pEmitter->m_position;
 	if(pEmitter->m_particlesFollowEmitter)
 	{
-		posToSpawn = Vector3d(0.0f, 0.0f, 0.0f);
+		posToSpawn = vec3(0.0f, 0.0f, 0.0f);
 	}
 	else if(pEmitter->m_pParent != NULL && pEmitter->m_pParentParticle == NULL)
 	{
@@ -244,7 +246,7 @@ BlockParticle* BlockParticleManager::CreateBlockParticleFromEmitterParams(BlockP
 		posToSpawn += pEmitter->m_pParent->m_position;
 	}
 
-	Vector3d posOffset;
+	vec3 posOffset;
 	if(pEmitter->m_emitterType == EmitterType_Point)
 	{
 		// No position offset since we are emitting from a point
@@ -256,31 +258,31 @@ BlockParticle* BlockParticleManager::CreateBlockParticleFromEmitterParams(BlockP
 			float lRandPoint = float((rand()%100)/100.0f);
 			int lRandSide = rand()%4;
 
-			Vector3d lSquarePosition;
+			vec3 lSquarePosition;
 			float lHalfLength = pEmitter->m_emitterLengthX;
 			float lHalfWidth = pEmitter->m_emitterLengthZ;
 			if(lRandSide == 0)
 			{
-				lSquarePosition = Vector3d(pEmitter->m_emitterLengthX*2.0f * lRandPoint - lHalfLength, 0.0f, -lHalfWidth);
+				lSquarePosition = vec3(pEmitter->m_emitterLengthX*2.0f * lRandPoint - lHalfLength, 0.0f, -lHalfWidth);
 			}
 			else if(lRandSide == 1)
 			{
-				lSquarePosition = Vector3d(pEmitter->m_emitterLengthX*2.0f * lRandPoint - lHalfLength, 0.0f, lHalfWidth);
+				lSquarePosition = vec3(pEmitter->m_emitterLengthX*2.0f * lRandPoint - lHalfLength, 0.0f, lHalfWidth);
 			}
 			else if(lRandSide == 2)
 			{
-				lSquarePosition = Vector3d(-lHalfLength, 0.0f, pEmitter->m_emitterLengthZ*2.0f * lRandPoint - lHalfWidth);
+				lSquarePosition = vec3(-lHalfLength, 0.0f, pEmitter->m_emitterLengthZ*2.0f * lRandPoint - lHalfWidth);
 			}
 			else if(lRandSide == 3)
 			{
-				lSquarePosition = Vector3d(lHalfLength, 0.0f, pEmitter->m_emitterLengthZ*2.0f * lRandPoint - lHalfWidth);
+				lSquarePosition = vec3(lHalfLength, 0.0f, pEmitter->m_emitterLengthZ*2.0f * lRandPoint - lHalfWidth);
 			}
 
 			posOffset = lSquarePosition;
 		}
 		else
 		{
-			posOffset = Vector3d(GetRandomNumber(-1, 1, 2)*pEmitter->m_emitterLengthX, 0.0f, GetRandomNumber(-1, 1, 2)*pEmitter->m_emitterLengthZ);
+			posOffset = vec3(GetRandomNumber(-1, 1, 2)*pEmitter->m_emitterLengthX, 0.0f, GetRandomNumber(-1, 1, 2)*pEmitter->m_emitterLengthZ);
 		}
 	}
 	else if(pEmitter->m_emitterType == EmitterType_Cube)
@@ -291,64 +293,64 @@ BlockParticle* BlockParticleManager::CreateBlockParticleFromEmitterParams(BlockP
 
 		if(pEmitter->m_spawnOutline)
 		{
-			Vector3d lCubePosition;
+			vec3 lCubePosition;
 			float lHalfLength = pEmitter->m_emitterLengthX;
 			float lHalfHeight = pEmitter->m_emitterLengthY;
 			float lHalfWidth = pEmitter->m_emitterLengthZ;		
 			if(lRandEdge == 0)
 			{
-				lCubePosition = Vector3d(pEmitter->m_emitterLengthX*2.0f * lRandPoint - lHalfLength, -lHalfHeight, -lHalfWidth);
+				lCubePosition = vec3(pEmitter->m_emitterLengthX*2.0f * lRandPoint - lHalfLength, -lHalfHeight, -lHalfWidth);
 			}
 			else if(lRandEdge == 1)
 			{
-				lCubePosition = Vector3d(pEmitter->m_emitterLengthX*2.0f * lRandPoint - lHalfLength, -lHalfHeight, lHalfWidth);
+				lCubePosition = vec3(pEmitter->m_emitterLengthX*2.0f * lRandPoint - lHalfLength, -lHalfHeight, lHalfWidth);
 			}
 			else if(lRandEdge == 2)
 			{
-				lCubePosition = Vector3d(-lHalfLength, -lHalfHeight, pEmitter->m_emitterLengthZ*2.0f * lRandPoint - lHalfWidth);
+				lCubePosition = vec3(-lHalfLength, -lHalfHeight, pEmitter->m_emitterLengthZ*2.0f * lRandPoint - lHalfWidth);
 			}
 			else if(lRandEdge == 3)
 			{
-				lCubePosition = Vector3d(lHalfLength, -lHalfHeight, pEmitter->m_emitterLengthZ*2.0f * lRandPoint - lHalfWidth);
+				lCubePosition = vec3(lHalfLength, -lHalfHeight, pEmitter->m_emitterLengthZ*2.0f * lRandPoint - lHalfWidth);
 			}
 			else if(lRandEdge == 4)
 			{
-				lCubePosition = Vector3d(pEmitter->m_emitterLengthX*2.0f * lRandPoint - lHalfLength, lHalfHeight, -lHalfWidth);
+				lCubePosition = vec3(pEmitter->m_emitterLengthX*2.0f * lRandPoint - lHalfLength, lHalfHeight, -lHalfWidth);
 			}
 			else if(lRandEdge == 5)
 			{
-				lCubePosition = Vector3d(pEmitter->m_emitterLengthX*2.0f * lRandPoint - lHalfLength, lHalfHeight, lHalfWidth);
+				lCubePosition = vec3(pEmitter->m_emitterLengthX*2.0f * lRandPoint - lHalfLength, lHalfHeight, lHalfWidth);
 			}
 			else if(lRandEdge == 6)
 			{
-				lCubePosition = Vector3d(-lHalfLength, lHalfHeight, pEmitter->m_emitterLengthZ*2.0f * lRandPoint - lHalfWidth);
+				lCubePosition = vec3(-lHalfLength, lHalfHeight, pEmitter->m_emitterLengthZ*2.0f * lRandPoint - lHalfWidth);
 			}
 			else if(lRandEdge == 7)
 			{
-				lCubePosition = Vector3d(lHalfLength, lHalfHeight, pEmitter->m_emitterLengthZ*2.0f * lRandPoint - lHalfWidth);
+				lCubePosition = vec3(lHalfLength, lHalfHeight, pEmitter->m_emitterLengthZ*2.0f * lRandPoint - lHalfWidth);
 			}
 			else if(lRandEdge == 8)
 			{
-				lCubePosition = Vector3d(-lHalfLength, pEmitter->m_emitterLengthY*2.0f * lRandPoint - lHalfHeight, -lHalfWidth);
+				lCubePosition = vec3(-lHalfLength, pEmitter->m_emitterLengthY*2.0f * lRandPoint - lHalfHeight, -lHalfWidth);
 			}
 			else if(lRandEdge == 9)
 			{
-				lCubePosition = Vector3d(-lHalfLength, pEmitter->m_emitterLengthY*2.0f * lRandPoint - lHalfHeight, lHalfWidth);
+				lCubePosition = vec3(-lHalfLength, pEmitter->m_emitterLengthY*2.0f * lRandPoint - lHalfHeight, lHalfWidth);
 			}
 			else if(lRandEdge == 10)
 			{
-				lCubePosition = Vector3d(lHalfLength, pEmitter->m_emitterLengthY*2.0f * lRandPoint - lHalfHeight, -lHalfWidth);
+				lCubePosition = vec3(lHalfLength, pEmitter->m_emitterLengthY*2.0f * lRandPoint - lHalfHeight, -lHalfWidth);
 			}
 			else if(lRandEdge == 11)
 			{
-				lCubePosition = Vector3d(lHalfLength, pEmitter->m_emitterLengthY*2.0f * lRandPoint - lHalfHeight, lHalfWidth);
+				lCubePosition = vec3(lHalfLength, pEmitter->m_emitterLengthY*2.0f * lRandPoint - lHalfHeight, lHalfWidth);
 			}
 
 			posOffset = lCubePosition;
 		}
 		else
 		{
-			posOffset = Vector3d(GetRandomNumber(-1, 1, 2)*pEmitter->m_emitterLengthX, GetRandomNumber(-1, 1, 2)*pEmitter->m_emitterLengthY, GetRandomNumber(-1, 1, 2)*pEmitter->m_emitterLengthZ);
+			posOffset = vec3(GetRandomNumber(-1, 1, 2)*pEmitter->m_emitterLengthX, GetRandomNumber(-1, 1, 2)*pEmitter->m_emitterLengthY, GetRandomNumber(-1, 1, 2)*pEmitter->m_emitterLengthZ);
 		}
 	}
 	else if(pEmitter->m_emitterType == EmitterType_Circle)
@@ -359,12 +361,12 @@ BlockParticle* BlockParticleManager::CreateBlockParticleFromEmitterParams(BlockP
 
 		if(pEmitter->m_spawnOutline)
 		{
-			posOffset = Vector3d(cos(lAngle) * pEmitter->m_emitterRadius, 0.0f, sin(lAngle) * pEmitter->m_emitterRadius);
+			posOffset = vec3(cos(lAngle) * pEmitter->m_emitterRadius, 0.0f, sin(lAngle) * pEmitter->m_emitterRadius);
 		}
 		else
 		{
 			float lRandDistance = pEmitter->m_emitterRadius * (float((rand()%100)/100.0f));
-			posOffset = Vector3d(cos(lAngle) * lRandDistance, 0.0f, sin(lAngle) * lRandDistance);
+			posOffset = vec3(cos(lAngle) * lRandDistance, 0.0f, sin(lAngle) * lRandDistance);
 		}
 	}
 	else if(pEmitter->m_emitterType == EmitterType_Sphere)
@@ -375,7 +377,7 @@ BlockParticle* BlockParticleManager::CreateBlockParticleFromEmitterParams(BlockP
 		float w = sqrt( 1.0f - z*z );
 		float x = w * cos( t );
 		float y = w * sin( t );
-		Vector3d outlinePoint = Vector3d(x, y, z);
+		vec3 outlinePoint = vec3(x, y, z);
 
 		if(pEmitter->m_spawnOutline)
 		{
@@ -400,7 +402,7 @@ BlockParticle* BlockParticleManager::CreateBlockParticleFromEmitterParams(BlockP
 	{
 		pCreateEmitterParam = pEmitter->m_pParent->GetEmitter(pEmitter->m_createEmitterName);
 
-		pCreatedEmitter = CreateBlockParticleEmitter("CreatedEmitter", Vector3d(0.0f, 0.0f, 0.0f));
+		pCreatedEmitter = CreateBlockParticleEmitter("CreatedEmitter", vec3(0.0f, 0.0f, 0.0f));
 		pCreatedEmitter->CopyParams(pCreateEmitterParam);
 	}
 
@@ -427,7 +429,7 @@ BlockParticle* BlockParticleManager::CreateBlockParticleFromEmitterParams(BlockP
 	return pBlockParticle;
 }
 
-BlockParticle* BlockParticleManager::CreateBlockParticle(Vector3d pos, Vector3d gravityDir, float gravityMultiplier, Vector3d pointOrigin,
+BlockParticle* BlockParticleManager::CreateBlockParticle(vec3 pos, vec3 gravityDir, float gravityMultiplier, vec3 pointOrigin,
 	float startScale, float startScaleVariance, float endScale, float endScaleVariance,
 	float startR, float startG, float startB, float startA,
 	float startRVariance, float startGVariance, float startBVariance, float startAVariance,
@@ -435,10 +437,10 @@ BlockParticle* BlockParticleManager::CreateBlockParticle(Vector3d pos, Vector3d 
 	float endRVariance, float endGVariance, float endBVariance, float endAVariance,
 	float lifetime, float lifetimeVariance,
 	float velocityTowardPoint, float accelerationTowardsPoint,
-	Vector3d startVelocity, Vector3d startVelocityVariance,
-	Vector3d startAngularVelocity, Vector3d startAngularVelocityVariance,
+	vec3 startVelocity, vec3 startVelocityVariance,
+	vec3 startAngularVelocity, vec3 startAngularVelocityVariance,
 	float tangentialVelocityXY, float tangentialAccelerationXY, float tangentialVelocityXZ, float tangentialAccelerationXZ, float tangentialVelocityYZ, float tangentialAccelerationYZ,
-	bool randomStartRotation, Vector3d startRotation,  bool worldCollision, bool destoryOnCollision, bool startLifeDecayOnCollision,
+	bool randomStartRotation, vec3 startRotation,  bool worldCollision, bool destoryOnCollision, bool startLifeDecayOnCollision,
 	bool createEmitters, BlockParticleEmitter* pCreatedEmitter)
 {
 	BlockParticle* pBlockParticle = new BlockParticle();
@@ -509,7 +511,7 @@ BlockParticle* BlockParticleManager::CreateBlockParticle(Vector3d pos, Vector3d 
 	return pBlockParticle;
 }
 
-BlockParticleEmitter* BlockParticleManager::CreateBlockParticleEmitter(string name, Vector3d pos)
+BlockParticleEmitter* BlockParticleManager::CreateBlockParticleEmitter(string name, vec3 pos)
 {
 	BlockParticleEmitter* pBlockParticleEmitter = new BlockParticleEmitter(m_pRenderer, this);
 
@@ -524,7 +526,7 @@ BlockParticleEmitter* BlockParticleManager::CreateBlockParticleEmitter(string na
 	return pBlockParticleEmitter;
 }
 
-BlockParticleEffect* BlockParticleManager::ImportParticleEffect(string fileName, Vector3d pos, unsigned int* particleEffectId)
+BlockParticleEffect* BlockParticleManager::ImportParticleEffect(string fileName, vec3 pos, unsigned int* particleEffectId)
 {
 	BlockParticleEffect* pBlockParticleEffect = new BlockParticleEffect(m_pRenderer, this);
 
@@ -558,7 +560,7 @@ void BlockParticleManager::DestroyParticleEffect(unsigned int particleEffectId)
 	}
 }
 
-void BlockParticleManager::UpdateParticleEffectPosition(unsigned int particleEffectId, Vector3d position)
+void BlockParticleManager::UpdateParticleEffectPosition(unsigned int particleEffectId, vec3 position)
 {
 	for(unsigned int i = 0; i < m_vpBlockParticleEffectsList.size(); i++)
 	{
@@ -630,33 +632,33 @@ void BlockParticleManager::ExplodeQubicleMatrix(QubicleMatrix* pMatrix, float sc
 
 						a = 1.0f;
 
-						Vector3d blockPosition = Vector3d((float)x, (float)y, (float)z);
+						vec3 blockPosition = vec3((float)x, (float)y, (float)z);
 
 						float startScale = scale;
 						float endScale = scale;
 						startScale *= GetRandomNumber(90, 100, 2) * 0.01f;
 						endScale *= GetRandomNumber(25, 75, 2) * 0.01f;
 
-						Vector3d new_blockPosition;
+						vec3 new_blockPosition;
 						Matrix4x4::Multiply(pMatrix->m_modelMatrix, blockPosition, new_blockPosition);
 						blockPosition = new_blockPosition;
 
 						float rotX; float rotY; float rotZ;
 						pMatrix->m_modelMatrix.GetEuler(&rotX, &rotY, &rotZ);
 
-						Vector3d center = Vector3d((float)pMatrix->m_matrixSizeX*0.5f, (float)pMatrix->m_matrixSizeY*0.5f, (float)pMatrix->m_matrixSizeZ*0.5f);
+						vec3 center = vec3((float)pMatrix->m_matrixSizeX*0.5f, (float)pMatrix->m_matrixSizeY*0.5f, (float)pMatrix->m_matrixSizeZ*0.5f);
 
-						Vector3d new_center;
+						vec3 new_center;
 						Matrix4x4::Multiply(pMatrix->m_modelMatrix, center, new_center);
 						center = new_center;
 
-						Vector3d toOrigin = (center - blockPosition).GetUnit();
+						vec3 toOrigin = normalize(center - blockPosition);
 
 						float lifeTime = 4.0f + GetRandomNumber(-100, 200, 1) * 0.0075f;
 
-						Vector3d gravity = Vector3d(0.0f, -1.0f, 0.0f);
-						Vector3d pointOrigin = Vector3d(0.0f, 0.0f, 0.0f);
-						BlockParticle* pParticle = CreateBlockParticle(blockPosition, gravity, 1.5f, pointOrigin, startScale, 0.0f, endScale, 0.0f, r, g, b, a, 0.0f, 0.0f, 0.0f, 0.0f, r, g, b, a, 0.0f, 0.0f, 0.0f, 0.0f, lifeTime, 0.0f, 0.0f, 0.0f, -toOrigin+Vector3d(0.0f, 2.0f, 0.0f), Vector3d(0.85f, 2.0f, 0.85f), Vector3d(0.0f, 0.0f, 0.0f), Vector3d(180.0f, 180.0f, 180.0f), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, Vector3d(rotX, rotY, rotZ), true, false, false, false, NULL);
+						vec3 gravity = vec3(0.0f, -1.0f, 0.0f);
+						vec3 pointOrigin = vec3(0.0f, 0.0f, 0.0f);
+						BlockParticle* pParticle = CreateBlockParticle(blockPosition, gravity, 1.5f, pointOrigin, startScale, 0.0f, endScale, 0.0f, r, g, b, a, 0.0f, 0.0f, 0.0f, 0.0f, r, g, b, a, 0.0f, 0.0f, 0.0f, 0.0f, lifeTime, 0.0f, 0.0f, 0.0f, -toOrigin+ vec3(0.0f, 2.0f, 0.0f), vec3(0.85f, 2.0f, 0.85f), vec3(0.0f, 0.0f, 0.0f), vec3(180.0f, 180.0f, 180.0f), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, vec3(rotX, rotY, rotZ), true, false, false, false, NULL);
 						if(pParticle != NULL)
 						{
 							pParticle->m_allowFloorSliding = true;
@@ -702,6 +704,12 @@ bool needs_erasing_blockparticle(BlockParticle* aB)
 	}
 
 	return needsErase;
+}
+
+// Rendering modes
+void BlockParticleManager::SetWireFrameRender(bool wireframe)
+{
+	m_renderWireFrame = wireframe;
 }
 
 // Update
@@ -881,7 +889,7 @@ void BlockParticleManager::Render()
 	GLint in_light_ambient = glGetUniformLocation(pShader->GetProgramObject(), "in_light_ambient");
 	GLint in_light_diffuse = glGetUniformLocation(pShader->GetProgramObject(), "in_light_diffuse");
 
-	//Vector3d position = m_pRenderer->GetLightPosition(m_pGameWindow->GetMainLightId());
+	//vec3 position = m_pRenderer->GetLightPosition(m_pGameWindow->GetMainLightId());
 	//Colour ambient = m_pRenderer->GetLightAmbient(m_pGameWindow->GetMainLightId());
 	//Colour diffuse = m_pRenderer->GetLightDiffuse(m_pGameWindow->GetMainLightId());
 	//float constantA = m_pRenderer->GetConstantAttenuation(m_pGameWindow->GetMainLightId());
@@ -894,8 +902,18 @@ void BlockParticleManager::Render()
 	//glUniform1f(in_light_linear_a, linearA*0.5f);
 	//glUniform1f(in_light_quad_a, quadA*0.5f);
 
-	m_pRenderer->SetCullMode(CM_BACK);
-	m_pRenderer->SetRenderMode(RM_SOLID);
+	if (m_renderWireFrame)
+	{
+		m_pRenderer->SetLineWidth(1.0f);
+		m_pRenderer->SetRenderMode(RM_WIREFRAME);
+		m_pRenderer->SetCullMode(CM_NOCULL);
+	}
+	else
+	{
+		m_pRenderer->SetCullMode(CM_BACK);
+		m_pRenderer->SetRenderMode(RM_SOLID);
+	}
+
 	m_pRenderer->EnableTransparency(BF_SRC_ALPHA, BF_ONE_MINUS_SRC_ALPHA);
 
 	glDrawElementsInstanced(GL_QUADS, 24, GL_UNSIGNED_INT, indices, numBlockParticlesRender);

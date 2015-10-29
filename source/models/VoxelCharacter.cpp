@@ -18,6 +18,8 @@
 #include "../utils/Interpolator.h"
 #include "../utils/Random.h"
 
+#include <glm/detail/func_geometric.hpp>
+
 #include <fstream>
 #include <ostream>
 #include <iostream>
@@ -83,8 +85,8 @@ void VoxelCharacter::Reset()
 	m_pFacialExpressions = NULL;
 	m_faceEyesTexture = -1;
 	m_faceMouthTexture = -1;	
-	m_eyesOffset = Vector3d(0.0f, 0.0f, 0.0f);
-	m_mouthOffset = Vector3d(0.0f, 0.0f, 0.0f);
+	m_eyesOffset = vec3(0.0f, 0.0f, 0.0f);
+	m_mouthOffset = vec3(0.0f, 0.0f, 0.0f);
 	m_currentFacialExpression = 0;
 	m_eyesBoneName = "";
 	m_mouthBoneName = "";
@@ -98,10 +100,10 @@ void VoxelCharacter::Reset()
 	m_mouthTextureHeight = 9.0f;
 	
 	// Face looking direction
-	m_faceLookingDirection = Vector3d(0.0f, 0.0f, 1.0f);
-	m_faceLookingDirection.Normalize();
-	m_faceTargetDirection = Vector3d(0.0f, 0.0f, 1.0f);
-	m_faceTargetDirection.Normalize();
+	m_faceLookingDirection = vec3(0.0f, 0.0f, 1.0f);
+	m_faceLookingDirection = normalize(m_faceLookingDirection);
+	m_faceTargetDirection = vec3(0.0f, 0.0f, 1.0f);
+	m_faceTargetDirection = normalize(m_faceTargetDirection);
 	m_faceLookToTargetSpeedMultiplier = 1.0f;
 	m_headBoneIndex = -1;
 	m_bodyBoneIndex = -1;
@@ -253,10 +255,10 @@ bool VoxelCharacter::LoadFaces(const char* characterType, const char *facesFileN
 		float offsetZ;
 
 		file >> tempString >> offsetX >> offsetY >> offsetZ;
-		m_eyesOffset = Vector3d(offsetX, offsetY, offsetZ);
+		m_eyesOffset = vec3(offsetX, offsetY, offsetZ);
 
 		file >> tempString >> offsetX >> offsetY >> offsetZ;
-		m_mouthOffset = Vector3d(offsetX, offsetY, offsetZ);
+		m_mouthOffset = vec3(offsetX, offsetY, offsetZ);
 
 		file >> tempString >> m_eyesTextureWidth >> m_eyesTextureHeight;
 		file >> tempString >> m_mouthTextureWidth >> m_mouthTextureHeight;
@@ -428,7 +430,7 @@ void VoxelCharacter::LoadCharacterFile(const char* characterFilename)
 		float yBoneScale;
 		float zBoneScale;
 		file >> tempString >> xBoneScale >> yBoneScale >> zBoneScale;
-		m_boneScale = Vector3d(xBoneScale, yBoneScale, zBoneScale);
+		m_boneScale = vec3(xBoneScale, yBoneScale, zBoneScale);
 
 		file >> tempString >> numModifiers;
 
@@ -465,7 +467,7 @@ void VoxelCharacter::SaveCharacterFile(const char* characterFilename)
 
 		for(int i = 0; i < m_pVoxelModel->GetNumMatrices(); i++)
 		{
-			Vector3d offset = m_pVoxelModel->GetMatrixOffset(i);
+			vec3 offset = m_pVoxelModel->GetMatrixOffset(i);
 
 			file << "boneName: " << m_pVoxelModel->GetMatrixName(i) << "\n";
 			file << "Scale: " << m_pVoxelModel->GetMatrixScale(i) << "\n";
@@ -559,7 +561,7 @@ float VoxelCharacter::GetBoneMatrixRenderScale(const char* matrixName)
 	return m_pVoxelModel->GetScale(matrixName);
 }
 
-Vector3d VoxelCharacter::GetBoneMatrixRenderOffset(const char* matrixName)
+vec3 VoxelCharacter::GetBoneMatrixRenderOffset(const char* matrixName)
 {
 	return m_pVoxelModel->GetOffset(matrixName);
 }
@@ -695,7 +697,7 @@ QubicleBinary* VoxelCharacter::GetQubicleModel()
 	return m_pVoxelModel;
 }
 
-Vector3d VoxelCharacter::GetBoneScale()
+vec3 VoxelCharacter::GetBoneScale()
 {
 	return m_boneScale;
 }
@@ -905,22 +907,22 @@ const char* VoxelCharacter::GetFacialExpressionName(const int index)
 	return m_pFacialExpressions[index].m_facialExpressionName.c_str();
 }
 
-Vector3d VoxelCharacter::GetEyesOffset()
+vec3 VoxelCharacter::GetEyesOffset()
 {
 	return m_eyesOffset;
 }
 
-Vector3d VoxelCharacter::GetMouthOffset()
+vec3 VoxelCharacter::GetMouthOffset()
 {
 	return m_mouthOffset;
 }
 
-void VoxelCharacter::SetEyesOffset(Vector3d offset)
+void VoxelCharacter::SetEyesOffset(vec3 offset)
 {
 	m_eyesOffset = offset;
 }
 
-void VoxelCharacter::SetMouthOffset(Vector3d offset)
+void VoxelCharacter::SetMouthOffset(vec3 offset)
 {
 	m_mouthOffset = offset;
 }
@@ -1161,37 +1163,37 @@ float VoxelCharacter::GetMouthTextureHeight()
 }
 
 // Face looking
-Vector3d VoxelCharacter::GetFaceLookingDirection()
+vec3 VoxelCharacter::GetFaceLookingDirection()
 {
 	return m_faceLookingDirection;
 }
 
-void VoxelCharacter::SetFaceLookingDirection(Vector3d looking)
+void VoxelCharacter::SetFaceLookingDirection(vec3 looking)
 {
-	if(looking.GetLength() > 0.001f)
+	if(length(looking) > 0.001f)
 	{
-		m_faceLookingDirection = looking.GetUnit();
+		m_faceLookingDirection = normalize(looking);
 	}
 	else
 	{
-		m_faceLookingDirection = Vector3d(0.0f, 0.0f, 1.0f);
+		m_faceLookingDirection = vec3(0.0f, 0.0f, 1.0f);
 	}
 }
 
-Vector3d VoxelCharacter::GetFaceTargetDirection()
+vec3 VoxelCharacter::GetFaceTargetDirection()
 {
 	return m_faceTargetDirection;
 }
 
-void VoxelCharacter::SetFaceTargetDirection(Vector3d target)
+void VoxelCharacter::SetFaceTargetDirection(vec3 target)
 {
-	if(target.GetLength() > 0.001f)
+	if(length(target) > 0.001f)
 	{
-		m_faceTargetDirection = target.GetUnit();
+		m_faceTargetDirection = normalize(target);
 	}
 	else
 	{
-		m_faceTargetDirection = Vector3d(0.0f, 0.0f, 1.0f);
+		m_faceTargetDirection = vec3(0.0f, 0.0f, 1.0f);
 	}	
 }
 
@@ -1497,6 +1499,7 @@ void VoxelCharacter::Update(float dt, float animationSpeed[AnimationSections_NUM
 		}
 	}
 
+	// Update paperdoll animator
 	if(m_pCharacterAnimatorPaperdoll != NULL)
 	{
 		if(m_updateAnimator)
@@ -1533,19 +1536,19 @@ void VoxelCharacter::Update(float dt, float animationSpeed[AnimationSections_NUM
 	}
 
 	// Face looking
-	if((m_faceLookingDirection - m_faceTargetDirection).GetLength() <= 0.01f)
+	if(glm::distance(m_faceLookingDirection, m_faceTargetDirection) <= 0.01f)
 	{
 		if(m_bRandomLookDirectionEnabled)
 		{
-			m_faceTargetDirection = Vector3d(GetRandomNumber(-1, 1, 2)*0.65f, GetRandomNumber(-1, 1, 2)*0.175f, GetRandomNumber(0, 3, 2)+0.35f);
-			m_faceTargetDirection.Normalize();
+			m_faceTargetDirection = vec3(GetRandomNumber(-1, 1, 2)*0.65f, GetRandomNumber(-1, 1, 2)*0.175f, GetRandomNumber(0, 3, 2)+0.35f);
+			m_faceTargetDirection = normalize(m_faceTargetDirection);
 		}
 	}
 	else
 	{
-		Vector3d toTarget = m_faceTargetDirection - m_faceLookingDirection;
+		vec3 toTarget = m_faceTargetDirection - m_faceLookingDirection;
 		m_faceLookingDirection += (toTarget * dt) * m_faceLookToTargetSpeedMultiplier;
-		m_faceLookingDirection.Normalize();
+		m_faceLookingDirection = normalize(m_faceLookingDirection);
 	}
 
 	// Animated weapons
@@ -1562,6 +1565,29 @@ void VoxelCharacter::Update(float dt, float animationSpeed[AnimationSections_NUM
 		if(m_rightWeaponLoaded)
 		{
 			m_pRightWeapon->Update(dt);
+		}
+	}
+
+	// Update the weapon trails, based on the animation frames
+	if (m_pCharacterAnimator[0] != NULL)
+	{
+		bool leftWeaponTrailActive = m_pCharacterAnimator[0]->GetLeftWeaponTrailActive();
+		bool rightWeaponTrailActive = m_pCharacterAnimator[0]->GetRightWeaponTrailActive();
+		if (m_pLeftWeapon->IsWeaponTrailsActive() == false && leftWeaponTrailActive == true)
+		{
+			m_pLeftWeapon->StartWeaponTrails();
+		}
+		else if (m_pLeftWeapon->IsWeaponTrailsActive() == true && leftWeaponTrailActive == false)
+		{
+			m_pLeftWeapon->StopWeaponTrails();
+		}
+		if (m_pRightWeapon->IsWeaponTrailsActive() == false && rightWeaponTrailActive == true)
+		{
+			m_pRightWeapon->StartWeaponTrails();
+		}
+		else if (m_pRightWeapon->IsWeaponTrailsActive() == true && rightWeaponTrailActive == false)
+		{
+			m_pRightWeapon->StopWeaponTrails();
 		}
 	}
 }

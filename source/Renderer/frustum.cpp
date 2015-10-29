@@ -5,6 +5,7 @@
 #include "frustum.h"
 
 #include <cmath>
+#include <glm/glm.hpp>
 
 
 Frustum::Frustum()
@@ -31,17 +32,17 @@ void Frustum::SetFrustum(float angle, float ratio, float nearD, float farD)
 	farWidth = farHeight * ratio;
 }
 
-void Frustum::SetCamera(const Vector3d &pos, const Vector3d &target, const Vector3d &up)
+void Frustum::SetCamera(const vec3 &pos, const vec3 &target, const vec3 &up)
 {
-	Vector3d dir, nc, fc, X, Y, Z;
+	vec3 dir, nc, fc, X, Y, Z;
 
 	Z = pos - target;
-	Z.Normalize();
+	Z = normalize(Z);
 
-	X = Vector3d::CrossProduct(up, Z);
-	X.Normalize();
+	X = cross(up, Z);
+	X = normalize(X);
 
-	Y = Vector3d::CrossProduct(Z, X);
+	Y = cross(Z, X);
 
 	nc = pos - Z * nearDistance;
 	fc = pos - Z * farDistance;
@@ -64,7 +65,7 @@ void Frustum::SetCamera(const Vector3d &pos, const Vector3d &target, const Vecto
 	planes[FRUSTUM_FAR] = Plane3D(farTopRight, farTopLeft, farBottomLeft);
 }
 
-int Frustum::PointInFrustum(const Vector3d &point)
+int Frustum::PointInFrustum(const vec3 &point)
 {
 	int result = FRUSTUM_INSIDE;
 
@@ -79,7 +80,7 @@ int Frustum::PointInFrustum(const Vector3d &point)
 	return(result);
 }
 
-int Frustum::SphereInFrustum(const Vector3d &point, float radius)
+int Frustum::SphereInFrustum(const vec3 &point, float radius)
 {
 	int result = FRUSTUM_INSIDE;
 	float distance;
@@ -100,7 +101,7 @@ int Frustum::SphereInFrustum(const Vector3d &point, float radius)
 
 	return(result);
 }
-int Frustum::CubeInFrustum(const Vector3d &center, float x, float y, float z)
+int Frustum::CubeInFrustum(const vec3 &center, float x, float y, float z)
 {
 	int result = FRUSTUM_INSIDE;
 
@@ -110,7 +111,7 @@ int Frustum::CubeInFrustum(const Vector3d &center, float x, float y, float z)
 		int out = 0;
 		int in = 0;
 
-		if(planes[i].GetPointDistance(center + Vector3d(-x, -y, -z)) < 0)
+		if (planes[i].GetPointDistance(center + vec3(-x, -y, -z)) < 0)
 		{
 			out++;
 		}
@@ -119,7 +120,7 @@ int Frustum::CubeInFrustum(const Vector3d &center, float x, float y, float z)
 			in++;
 		}
 
-		if(planes[i].GetPointDistance(center + Vector3d(x, -y, -z)) < 0)
+		if (planes[i].GetPointDistance(center + vec3(x, -y, -z)) < 0)
 		{
 			out++;
 		}
@@ -128,7 +129,7 @@ int Frustum::CubeInFrustum(const Vector3d &center, float x, float y, float z)
 			in++;
 		}
 
-		if(planes[i].GetPointDistance(center + Vector3d(-x, -y, z)) < 0)
+		if (planes[i].GetPointDistance(center + vec3(-x, -y, z)) < 0)
 		{
 			out++;
 		}
@@ -137,7 +138,7 @@ int Frustum::CubeInFrustum(const Vector3d &center, float x, float y, float z)
 			in++;
 		}
 
-		if(planes[i].GetPointDistance(center + Vector3d(x, -y, z)) < 0)
+		if (planes[i].GetPointDistance(center + vec3(x, -y, z)) < 0)
 		{
 			out++;
 		}
@@ -146,7 +147,7 @@ int Frustum::CubeInFrustum(const Vector3d &center, float x, float y, float z)
 			in++;
 		}
 
-		if(planes[i].GetPointDistance(center + Vector3d(-x, y, -z)) < 0)
+		if (planes[i].GetPointDistance(center + vec3(-x, y, -z)) < 0)
 		{
 			out++;
 		}
@@ -155,7 +156,7 @@ int Frustum::CubeInFrustum(const Vector3d &center, float x, float y, float z)
 			in++;
 		}
 
-		if(planes[i].GetPointDistance(center + Vector3d(x, y, -z)) < 0)
+		if (planes[i].GetPointDistance(center + vec3(x, y, -z)) < 0)
 		{
 			out++;
 		}
@@ -164,7 +165,7 @@ int Frustum::CubeInFrustum(const Vector3d &center, float x, float y, float z)
 			in++;
 		}
 
-		if(planes[i].GetPointDistance(center + Vector3d(-x, y, z)) < 0)
+		if (planes[i].GetPointDistance(center + vec3(-x, y, z)) < 0)
 		{
 			out++;
 		}
@@ -173,7 +174,7 @@ int Frustum::CubeInFrustum(const Vector3d &center, float x, float y, float z)
 			in++;
 		}
 
-		if(planes[i].GetPointDistance(center + Vector3d(x, y, z)) < 0)
+		if (planes[i].GetPointDistance(center + vec3(x, y, z)) < 0)
 		{
 			out++;
 		}

@@ -1,7 +1,7 @@
 // ******************************************************************************
 //
 // Filename:	freetypefont.h
-// Project:		OpenGLRenderer
+// Project:		Vox
 // Author:		Steven Ball
 //
 // Purpose:

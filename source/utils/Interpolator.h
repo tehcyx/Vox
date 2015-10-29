@@ -91,7 +91,7 @@ public:
 	void SetPaused(bool pause);
 	bool IsPaused();
 
-	void Update();
+	void Update(float dt);
 	void UpdateFloatInterpolators(float delta);
 	void UpdateIntInterpolators(float delta);
 
@@ -122,6 +122,7 @@ private:
 	FloatInterpolationList m_vpFloatInterpolations;
 	FloatInterpolationList m_vpCreateFloatInterpolations;
 
+	// A dynamic array of our int interpolation variables
 	IntInterpolationList m_vpIntInterpolations;
 	IntInterpolationList m_vpCreateIntInterpolations;
 

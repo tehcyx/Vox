@@ -19,6 +19,18 @@ void MouseScrollCallback(GLFWwindow* window, double x, double y);
 
 VoxWindow::VoxWindow()
 {
+	/* Minimized flag */
+	m_minimized = false;
+
+	/* Set default cursor positions */
+	m_cursorX = 0;
+	m_cursorY = 0;
+
+	/* Default windows dimensions */
+	m_windowWidth = 900;
+	m_windowHeight = 900;
+	m_oldWindowWidth = m_windowWidth;
+	m_oldWindowHeight = m_windowHeight;
 }
 
 VoxWindow::~VoxWindow()
@@ -40,10 +52,6 @@ void VoxWindow::Create()
 	glGetIntegerv(GL_SAMPLES_ARB, &samples);
 
 	/* Create a windowed mode window and it's OpenGL context */
-	m_windowWidth = 800;
-	m_windowHeight = 800;
-	m_oldWindowWidth = m_windowWidth;
-	m_oldWindowHeight = m_windowHeight;
 	window = glfwCreateWindow(m_windowWidth, m_windowHeight, "Vox", NULL, NULL);
 	if (!window)
 	{
@@ -51,31 +59,8 @@ void VoxWindow::Create()
 		exit(EXIT_FAILURE);
 	}
 
-	m_minimized = false;
-
-	/* Set default cursor positions */
-	m_cursorX = 0;
-	m_cursorY = 0;
-
-	/* Window callbacks */
-	glfwSetWindowSizeCallback(window, WindowResizeCallback);
-
-	/* Input callbacks */
-	glfwSetKeyCallback(window, KeyCallback);
-	glfwSetMouseButtonCallback(window, MouseButtonCallback);
-	glfwSetScrollCallback(window, MouseScrollCallback);
-
-	/* Center on screen */
-	const GLFWvidmode* vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	glfwGetWindowSize(window, &m_windowWidth, &m_windowHeight);
-	glfwSetWindowPos(window, (vidmode->width - m_windowWidth) / 2, (vidmode->height - m_windowHeight) / 2);
-
-	/* Make the window's context current */
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(0); // Disable v-sync
-
-	/* Show the window */
-	glfwShowWindow(window);
+	/* Initialize this window object */
+	InitializeWindowContext(window);
 }
 
 void VoxWindow::Destroy()
@@ -98,6 +83,32 @@ void VoxWindow::Render()
 {
 	/* Swap front and back buffers */
 	glfwSwapBuffers(window);
+}
+
+void VoxWindow::InitializeWindowContext(GLFWwindow* window)
+{
+	/* Window callbacks */
+	glfwSetWindowSizeCallback(window, WindowResizeCallback);
+
+	/* Input callbacks */
+	glfwSetKeyCallback(window, KeyCallback);
+	glfwSetMouseButtonCallback(window, MouseButtonCallback);
+	glfwSetScrollCallback(window, MouseScrollCallback);
+
+	/* Center on screen */
+	const GLFWvidmode* vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	glfwGetWindowSize(window, &m_windowWidth, &m_windowHeight);
+	glfwSetWindowPos(window, (vidmode->width - m_windowWidth) / 2, (vidmode->height - m_windowHeight) / 2);
+
+	/* Make the window's context current */
+	glfwMakeContextCurrent(window);
+	glfwSwapInterval(0); // Disable v-sync
+
+	/* Force resize */
+	WindowResizeCallback(window, m_windowWidth, m_windowHeight);
+
+	/* Show the window */
+	glfwShowWindow(window);
 }
 
 // Windows dimensions
@@ -157,29 +168,10 @@ void VoxWindow::ToggleFullScreen(bool fullscreen)
 	// Create new window
 	GLFWwindow* newWindow = glfwCreateWindow(m_windowWidth, m_windowHeight, "Vox", fullscreen ? glfwGetPrimaryMonitor() : NULL, window);
 
-	/* Make the window's context current */
-	glfwMakeContextCurrent(newWindow);
-	glfwSwapInterval(0); // Disable v-sync
+	/* Initialize this new window object */
+	InitializeWindowContext(newWindow);
 
-	/* Window callbacks */
-	glfwSetWindowSizeCallback(newWindow, WindowResizeCallback);
-
-	/* Input callbacks */
-	glfwSetKeyCallback(newWindow, KeyCallback);
-	glfwSetMouseButtonCallback(newWindow, MouseButtonCallback);
-	glfwSetScrollCallback(newWindow, MouseScrollCallback);
-
-	/* Center on screen */
-	const GLFWvidmode* vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	glfwGetWindowSize(newWindow, &m_windowWidth, &m_windowHeight);
-	glfwSetWindowPos(newWindow, (vidmode->width - m_windowWidth) / 2, (vidmode->height - m_windowHeight) / 2);
-
-	/* Show the window */
-	glfwShowWindow(newWindow);
-
-	/* Force resize */
-	WindowResizeCallback(newWindow, m_windowWidth, m_windowHeight);
-
+	// Destroy the existing window pointer and assign new one, since we are context switching
 	glfwDestroyWindow(window);
 	window = newWindow;
 }

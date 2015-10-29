@@ -141,7 +141,7 @@ void main(void)
 	vec4 transparencyColor = vec4(readTransparency(gl_TexCoord[0].xy), texture2D(bgl_TransparentTexture, gl_TexCoord[0].xy).w);
 	if(transparencyColor.w > 0 && transparencyDepth < depth)
 	{
-		SSAOColor = transparencyColor;
+		SSAOColor = mix(SSAOColor, transparencyColor, transparencyColor.a);
 	}
 
 	gl_FragColor = SSAOColor;

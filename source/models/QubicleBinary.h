@@ -142,20 +142,20 @@ public:
 	void SetForceTransparency(bool force);
 
 	void CreateMesh();
-	void UpdateMergedSide(int *merged, int matrixIndex, int blockx, int blocky, int blockz, int width, int height, Vector3d *p1, Vector3d *p2, Vector3d *p3, Vector3d *p4, int startX, int startY, int maxX, int maxY, bool positive, bool zFace, bool xFace, bool yFace);
+	void UpdateMergedSide(int *merged, int matrixIndex, int blockx, int blocky, int blockz, int width, int height, vec3 *p1, vec3 *p2, vec3 *p3, vec3 *p4, int startX, int startY, int maxX, int maxY, bool positive, bool zFace, bool xFace, bool yFace);
 
 	int GetNumMatrices();
 	QubicleMatrix* GetQubicleMatrix(int index);
 	QubicleMatrix* GetQubicleMatrix(const char* matrixName);
 	const char* GetMatrixName(int index);
 	float GetMatrixScale(int index);
-	Vector3d GetMatrixOffset(int index);
+	vec3 GetMatrixOffset(int index);
 
 	void SetupMatrixBones(MS3DAnimator* pSkeleton);
 	
 	void SetScaleAndOffsetForMatrix(const char* matrixName, float scale, float xOffset, float yOffset, float zOffset);
 	float GetScale(const char* matrixName);
-	Vector3d GetOffset(const char* matrixName);
+	vec3 GetOffset(const char* matrixName);
 
 	void SwapMatrix(const char* matrixName, QubicleMatrix* pMatrix, bool copyMatrixParams);
 	void AddQubicleMatrix(QubicleMatrix* pNewMatrix, bool copyMatrixParams);

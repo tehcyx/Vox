@@ -1,10 +1,24 @@
 # Vox
-Vox is a voxel based RPG adventure game with a heavy focus on player customization and creation.
+Vox engine is an open source voxel engine that is written in C++ and OpenGL and can be used to create easy and fast voxel based games and applications. The engine is written to be highly functional and very efficient at allowing voxel game creation and provides a simple framework for creating 3d voxel games.
 
 ## Features
+* GLSL shader support.
+* Support for deferred or forward rendering.
+* Fully dynamic and unlimited lighting system using deferred lighting model.
+* Advanced graphics shaders included - SSAO, shadow mapping, dynamic lighting.
+* Full 3d maths and geometry library (vector, matrix, quaternion, plane, bezier).
+* Extensive camera functionality, either 3d person or 1st person.
+* In-built GUI that can be easily hooked up to gameplay functioanlity.
 * Qubicle Binary (.qb) voxel model loading.
 * Polygon model loading via ms3d and obj files.
 * Keyframe and skeleton animation support.
+* Basic 'player' functionality - movement, controls, animation.
+* Block/cube particle effect system.
+* Voxel world and terrain generation. *[coming soon!]*
+* Procedural content creation. *[coming soon!]*
+* In-built voxel editor for creation/editing of in-game assets. *[coming soon!]*
+* Audio and music playback. *[coming soon!]*
+* Gamepad and controller support. *[coming soon!]*
 
 ## License
 This software is provided under the **GNU General Public License**, more information is provided in the [license file](https://github.com/AlwaysGeeky/Vox/blob/master/LICENSE.md).
@@ -14,7 +28,7 @@ Setting up and compiling the project is a fairly simple process. Cmake can be us
 
 **Windows**
 
-Visual Studio 2015 projects are included.
+Visual Studio projects are included inside the ```\project``` sub-folder.
 
 **Linux**
 
@@ -24,8 +38,19 @@ Visual Studio 2015 projects are included.
 
 // Todo //
 
-## How To Contribute
-Contributions are always welcome, either reporting issues and bugs or forking the repository and then issuing pull requests when you have completed some additional coding that you feel will be beneficial to the main project.
+## Running
+The Vox executable needs to be run from the root directory so that it has access at the top level to the ```\media``` folder that contains all the game content files. If you want to run the game's executable from within the Visual Studio projects then you will need to set the working directy in the Debugging options to ```'..\..\'``` since the visual studio projects files reside in sub-directories above the root.
 
-# Screenshots
+Alternatively you can run the pre-built executable ```VoxGame.exe``` that is containted within this github repo. *Please note however that there is no guarantee that this exe will contain the latest code from the repo.*
+
+## How To Contribute
+Contributions are always welcome, either reporting issues/bugs or forking the repository and then issuing pull requests when you have completed some additional coding that you feel will be beneficial to the main project. If you are interested in contributing in a more dedicated capacity, then please contact me.
+
+## Contact
+You can contact me via twitter at http://www.twitter.com/AlwaysGeeky. I am always happy to answer questions or help with any issues you might have, and please be sure to share any additional work or your creations with me, I love seeing what other people are making.
+
+## Screenshots
 ![Vox](http://i.imgur.com/usPCqJt.png)
+![Vox](http://i.imgur.com/mZ85dWP.png)
+
+## Videos

@@ -1,6 +1,6 @@
 // ******************************************************************************
 //
-// Filename:	vector2d.cpp
+// Filename:	Matrix4x4.cpp
 // Project:		3DMaths
 // Author:		Steven Ball
 //
@@ -18,6 +18,7 @@
 #include <cmath>
 
 #include "3dmaths.h"
+#include <glm/glm.hpp>
 
 
 // Constructors
@@ -104,7 +105,7 @@ void Matrix4x4::SetTranslation(float trans[3]) {
 	m[14] = trans[2];
 }
 
-void Matrix4x4::SetTranslation(Vector3d trans) {
+void Matrix4x4::SetTranslation(vec3 trans) {
 	//LoadIdentity();
 
 	m[12] = trans.x;
@@ -112,7 +113,7 @@ void Matrix4x4::SetTranslation(Vector3d trans) {
 	m[14] = trans.z;
 }
 
-void Matrix4x4::SetScale(Vector3d scale)
+void Matrix4x4::SetScale(vec3 scale)
 {
 	m[0] = scale.x;
 	m[5] = scale.y;
@@ -209,24 +210,24 @@ const Matrix4x4 Matrix4x4::GetOrthoNormal() const {
 	return normal;
 }
 
-const Vector3d Matrix4x4::GetRightVector() const
+const vec3 Matrix4x4::GetRightVector() const
 {
-	return Vector3d(m[0], m[1], m[2]);
+	return vec3(m[0], m[1], m[2]);
 }
 
-const Vector3d Matrix4x4::GetUpVector() const
+const vec3 Matrix4x4::GetUpVector() const
 {
-	return Vector3d(m[4], m[5], m[6]);
+	return vec3(m[4], m[5], m[6]);
 }
 
-const Vector3d Matrix4x4::GetForwardVector() const
+const vec3 Matrix4x4::GetForwardVector() const
 {
-	return Vector3d(m[8], m[9], m[10]);
+	return vec3(m[8], m[9], m[10]);
 }
 
-const Vector3d Matrix4x4::GetTranslationVector() const
+const vec3 Matrix4x4::GetTranslationVector() const
 {
-	return Vector3d(m[12], m[13], m[14]);
+	return vec3(m[12], m[13], m[14]);
 }
 
 const void Matrix4x4::GetEuler(float *x, float *y, float *z) const
@@ -312,16 +313,16 @@ void Matrix4x4::Inverse() {
 }
 
 void Matrix4x4::OrthoNormalize() {
-	Vector3d x(m[0], m[4], m[8]);
-	Vector3d y(m[1], m[5], m[9]);
-	Vector3d z;
+	vec3 x(m[0], m[4], m[8]);
+	vec3 y(m[1], m[5], m[9]);
+	vec3 z;
 
-	z = Vector3d::CrossProduct(x, y); 
-	y = Vector3d::CrossProduct(z, x);
+	z = cross(x, y); 
+	y = cross(z, x);
 
-	x.Normalize();
-	y.Normalize();
-	z.Normalize();
+	x = normalize(x);
+	y = normalize(y);
+	z = normalize(z);
 
 	m[0]  = x.x;  m[1]  = y.x;  m[2]  = z.x;  m[3]  = 0.0f;
 	m[4]  = x.y;  m[5]  = y.y;  m[6]  = z.y;  m[7]  = 0.0f;
@@ -465,7 +466,7 @@ Matrix4x4 &Matrix4x4::Multiply(const Matrix4x4 &m1, const Matrix4x4 &m2, Matrix4
 	return result;
 }
 
-Vector3d &Matrix4x4::Multiply(const Matrix4x4 &m1, const Vector3d &v, Vector3d &result) {
+vec3 &Matrix4x4::Multiply(const Matrix4x4 &m1, const vec3 &v, vec3 &result) {
 	int index, alpha;
 
 	float vect[4], r[4];
@@ -478,16 +479,16 @@ Vector3d &Matrix4x4::Multiply(const Matrix4x4 &m1, const Vector3d &v, Vector3d &
 	vect[2] = v.z;
 	vect[3] = 1;
 
-	for(index = 0; index < 4; index++) {
+	for (index = 0; index < 4; index++) {
 		sum = 0;
 
-		for(alpha = 0; alpha < 4; alpha++)
-			sum += m1.m[index + alpha*4] * vect[alpha];
+		for (alpha = 0; alpha < 4; alpha++)
+			sum += m1.m[index + alpha * 4] * vect[alpha];
 
 		r[index] = (float)sum;
 	}
 
-	result = Vector3d(r[0], r[1], r[2]);
+	result = vec3(r[0], r[1], r[2]);
 
 	return(result);
 }
@@ -500,101 +501,3 @@ bool Matrix4x4::equal(const Matrix4x4 &m1, const Matrix4x4 &m2) {
 
 	return true;
 }
-
-
-/*
-// Test the Matrix4x4 class
-void Matrix4x4Tester() {
-	// Test all constructors
-	Matrix4x4 matrix1;
-	float m[16] = { 1, 2, 1, 2,
-				    7, 1, 2, 4,
-					6, 7, 1, 2,
-					8, 3, 6, 1, };
-	Matrix4x4 matrix2(m);
-
-	cout << matrix1 << endl << endl;
-	cout << matrix2 << endl << endl;
-
-
-	// Test all Setup matrices
-	Matrix4x4 matrix3;
-	matrix3.SetXRotation(DegToRad(90.0f));
-	Matrix4x4 matrix4;
-	matrix4.SetYRotation(DegToRad(90.0f));
-	Matrix4x4 matrix5;
-	matrix5.SetZRotation(DegToRad(90.0f));
-	Matrix4x4 matrix6;
-	matrix6.SetRotation(DegToRad(5.0f), DegToRad(10.0f), DegToRad(15.0f));
-	Matrix4x4 matrix7;
-	float t[3] = { 10.0f, -4.0f, 7.5f };
-	matrix7.SetTranslation(t);
-	Matrix4x4 matrix8;
-	Vector3d v(10.0f, -4.0f, 7.5f);
-	matrix8.SetTranslation(v);
-
-	cout << matrix3 << endl << endl;
-	cout << matrix4 << endl << endl;
-	cout << matrix5 << endl << endl;
-	cout << matrix6 << endl << endl;
-	cout << matrix7 << endl << endl;
-	cout << matrix8 << endl << endl;
-
-	// Test all properties
-	cout << matrix2.GetDeterminant() << endl << endl;
-	cout << matrix2.GetNegative() << endl << endl;
-	cout << matrix2.GetTranspose() << endl << endl;
-	cout << matrix2.GetInverse() << endl << endl;
-	Matrix4x4 matrix2Inverse = matrix2.GetInverse();
-	cout << matrix2Inverse * matrix2 << endl << endl;  // Should be identity!
-	cout << matrix2.GetOrthoNormal() << endl << endl;
-	Matrix4x4 matrix2Transpose = matrix2.GetTranspose();
-	Matrix4x4 matrix2Ortho = matrix2.GetOrthoNormal();
-	cout << matrix2.GetOrthoNormal().GetDeterminant() << endl << endl;  // Should be 1!
-
-	// Test all operations
-	Matrix4x4 matrix9 = matrix8;
-	matrix9.LoadIdentity();
-	cout << matrix9 << endl << endl;
-	Matrix4x4 matrix10 = matrix2;
-	matrix10.Negate();
-	cout << matrix10 << endl << endl;
-	Matrix4x4 matrix11 = matrix2;
-	matrix11.Transpose();
-	cout << matrix11 << endl << endl;
-	Matrix4x4 matrix12 = matrix2;
-	matrix12.Inverse();
-	cout << matrix12 << endl << endl;
-	Matrix4x4 matrix13 = matrix2;
-	matrix13.OrthoNormalize();
-	cout << matrix13 << endl << endl;
-
-	// Test all operators
-	cout << matrix2 + matrix2 << endl << endl;
-	cout << matrix1 - matrix2 << endl << endl;
-	cout << matrix2 * 10 << endl << endl;
-	cout << matrix2 / 10 << endl << endl;
-
-	// Test vector multiplication
-	Vector3d vector1(8.0f, 0.0f, 0.0f);
-	Vector3d vector2(0.0f, 7.0f, 0.0f);
-	Vector3d vector3(0.0f, 0.0f, 6.0f);
-
-	cout << matrix3 * vector1 << endl;
-	cout << matrix4 * vector1 << endl;
-	cout << matrix5 * vector1 << endl << endl;
-
-	cout << matrix3 * vector2 << endl;
-	cout << matrix4 * vector2 << endl;
-	cout << matrix5 * vector2 << endl << endl;
-
-	cout << matrix3 * vector3 << endl;
-	cout << matrix4 * vector3 << endl;
-	cout << matrix5 * vector3 << endl << endl;
-
-	// Test streaming
-	Matrix4x4 matrixIn;
-	cin >> matrixIn;
-	cout << matrixIn << endl;
-}
-*/

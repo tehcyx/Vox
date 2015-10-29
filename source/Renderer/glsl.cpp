@@ -1668,8 +1668,15 @@ glShader* glShaderManager::loadfromFile(char* vertexFile, char* fragmentFile)
      delete tFragmentShader;
      return 0;
   }
-  cout << "***GLSL Linker Log:\n";
-  cout << o->getLinkerLog() << endl;
+  if (o->is_linked)
+  {
+	  cout << "Shader " << vertexFile << ", " << fragmentFile << " compiled & linked successfully" << endl;
+  }
+  else
+  {
+	  cout << "***GLSL Linker Log:\n";
+	  cout << o->getLinkerLog() << endl;
+  }
   
   _shaderObjectList.push_back(o);
   o->manageMemory();

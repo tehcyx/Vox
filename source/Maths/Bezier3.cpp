@@ -22,7 +22,7 @@ Bezier3::Bezier3()
 {
 }
 
-Bezier3::Bezier3(Vector3d lStart, Vector3d lEnd, Vector3d lControl)
+Bezier3::Bezier3(vec3 lStart, vec3 lEnd, vec3 lControl)
 {
 	mStartPoint = lStart;
 	mEndPoint = lEnd;
@@ -31,13 +31,13 @@ Bezier3::Bezier3(Vector3d lStart, Vector3d lEnd, Vector3d lControl)
 
 Bezier3::Bezier3(float xStart, float yStart, float zStart, float xEnd, float yEnd, float zEnd, float xControl, float yControl, float zControl)
 {
-	mStartPoint = Vector3d(xStart, yStart, zStart);
-	mEndPoint = Vector3d(xEnd, yEnd, zEnd);
-	mControlPoint = Vector3d(xControl, yControl, zControl);
+	mStartPoint = vec3(xStart, yStart, zStart);
+	mEndPoint = vec3(xEnd, yEnd, zEnd);
+	mControlPoint = vec3(xControl, yControl, zControl);
 }
 
 // Operations
-const Vector3d Bezier3::GetInterpolatedPoint(float t) const
+const vec3 Bezier3::GetInterpolatedPoint(float t) const
 {
 	float iT = 1.0f - t;
 	float b0 = iT * iT;
@@ -48,5 +48,5 @@ const Vector3d Bezier3::GetInterpolatedPoint(float t) const
 	float ly = mStartPoint.y * b0 + mControlPoint.y * b1 + mEndPoint.y * b2;
 	float lz = mStartPoint.z * b0 + mControlPoint.z * b1 + mEndPoint.z * b2;
 
-	return Vector3d(lx, ly, lz);
+	return vec3(lx, ly, lz);
 }

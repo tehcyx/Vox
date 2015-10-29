@@ -20,6 +20,8 @@ public:
 	void Update(float dt);
 	void Render();
 
+	void InitializeWindowContext(GLFWwindow* window);
+
 	// Windows dimensions
 	int GetWindowWidth();
 	int GetWindowHeight();

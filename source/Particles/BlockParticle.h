@@ -51,23 +51,23 @@ public:
 	bool m_allowFloorSliding;
 
 	// Position
-	Vector3d m_position;
+	vec3 m_position;
 
 	// Velocity
-	Vector3d m_velocity;
-	Vector3d m_startVelocityVariance;
+	vec3 m_velocity;
+	vec3 m_startVelocityVariance;
 
 	// Rotation
-	Vector3d m_rotation;
-	Vector3d m_startRotation;
+	vec3 m_rotation;
+	vec3 m_startRotation;
 	bool m_randomStartRotation;
 
 	// Angular velocity
-	Vector3d m_angularVelocity;
-	Vector3d m_startAngularVelocityVariance;
+	vec3 m_angularVelocity;
+	vec3 m_startAngularVelocityVariance;
 
 	// Gravity
-	Vector3d m_gravityDirection;
+	vec3 m_gravityDirection;
 	float m_gravityMultiplier;
 
 	// World matrix
@@ -103,13 +103,13 @@ public:
 	float m_endScaleVariance;
 
 	// Velocity towards point origin
-	Vector3d m_pointOrigin;
-	Vector3d m_pointVelocity;
+	vec3 m_pointOrigin;
+	vec3 m_pointVelocity;
 	float m_velocityTowardsPoint;
 	float m_accelerationTowardsPoint;
 
 	// Tangential velocity
-	Vector3d m_tangentialVelocity;
+	vec3 m_tangentialVelocity;
 	float m_tangentialVelocityXY;
 	float m_tangentialAccelerationXY;
 	float m_tangentialVelocityXZ;

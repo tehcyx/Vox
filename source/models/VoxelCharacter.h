@@ -86,7 +86,7 @@ public:
 
 	void SetCharacterMatrixRenderParams(const char* matrixName, float scale, float xOffset, float yOffset, float zOffset);
 	float GetBoneMatrixRenderScale(const char* matrixName);
-	Vector3d GetBoneMatrixRenderOffset(const char* matrixName);
+	vec3 GetBoneMatrixRenderOffset(const char* matrixName);
 
 	// Weapons
 	void LoadRightWeapon(const char *weaponFilename);
@@ -108,7 +108,7 @@ public:
 	MS3DModel* GetMS3DModel();
 	MS3DAnimator* GetMS3DAnimator(AnimationSections section);
 	QubicleBinary* GetQubicleModel();
-	Vector3d GetBoneScale();
+	vec3 GetBoneScale();
 	void SetBoneScale(float scale);
 
 	// Rendering modes
@@ -129,10 +129,10 @@ public:
 	// Facial expressions
 	int GetNumFacialExpressions() const;
 	const char* GetFacialExpressionName(const int index);
-	Vector3d GetEyesOffset();
-	Vector3d GetMouthOffset();
-	void SetEyesOffset(Vector3d offset);
-	void SetMouthOffset(Vector3d offset);
+	vec3 GetEyesOffset();
+	vec3 GetMouthOffset();
+	void SetEyesOffset(vec3 offset);
+	void SetMouthOffset(vec3 offset);
 	void PlayFacialExpression(const char *lFacialExpressionName);
 	void PlayFacialExpression(int facialAnimationIndex);
 	int GetCurrentFacialAnimation();
@@ -152,10 +152,10 @@ public:
 	float GetMouthTextureHeight();
 
 	// Face looking
-	Vector3d GetFaceLookingDirection();
-	void SetFaceLookingDirection(Vector3d looking);
-	Vector3d GetFaceTargetDirection();
-	void SetFaceTargetDirection(Vector3d target);
+	vec3 GetFaceLookingDirection();
+	void SetFaceLookingDirection(vec3 looking);
+	vec3 GetFaceTargetDirection();
+	void SetFaceTargetDirection(vec3 target);
 	float GetFaceLookToTargetSpeedMultiplier();
 	void SetFaceLookToTargetSpeedMultiplier(float speedMultiplier);
 	int GetHeadBoneIndex();
@@ -270,7 +270,7 @@ private:
 	float m_characterAlpha;
 
 	// Bone scale
-	Vector3d m_boneScale;
+	vec3 m_boneScale;
 
 	// Tilt the character upper body and head, used for weapon rotation with camera look
 	float m_lookRotationAngle;
@@ -288,8 +288,8 @@ private:
 	FacialExpression *m_pFacialExpressions;
 	unsigned int m_faceEyesTexture;
 	unsigned int m_faceMouthTexture;
-	Vector3d m_eyesOffset;
-	Vector3d m_mouthOffset;
+	vec3 m_eyesOffset;
+	vec3 m_mouthOffset;
 	int m_currentFacialExpression;
 	int m_eyesBone;
 	int m_mouthBone;
@@ -301,8 +301,8 @@ private:
 	float m_mouthTextureHeight;
 
 	// Face looking
-	Vector3d m_faceLookingDirection;
-	Vector3d m_faceTargetDirection;
+	vec3 m_faceLookingDirection;
+	vec3 m_faceTargetDirection;
 	float m_faceLookToTargetSpeedMultiplier;
 	int m_headBoneIndex;
 	int m_bodyBoneIndex;

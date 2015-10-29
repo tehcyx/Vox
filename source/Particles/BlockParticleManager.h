@@ -53,7 +53,7 @@ public:
 
 	// Creation
 	BlockParticle* CreateBlockParticleFromEmitterParams(BlockParticleEmitter* pEmitter);
-	BlockParticle* CreateBlockParticle(Vector3d pos, Vector3d gravityDir, float gravityMultiplier, Vector3d pointOrigin,
+	BlockParticle* CreateBlockParticle(vec3 pos, vec3 gravityDir, float gravityMultiplier, vec3 pointOrigin,
 									   float startScale, float startScaleVariance, float endScale, float endScaleVariance,
 									   float startR, float startG, float startB, float startA,
 									   float startRVariance, float startGVariance, float startBVariance, float startAVariance,
@@ -61,20 +61,23 @@ public:
 									   float endRVariance, float endGVariance, float endBVariance, float endAVariance,
 									   float lifetime, float lifetimeVariance,
 									   float velocityTowardPoint, float accelerationTowardsPoint,
-									   Vector3d startVelocity, Vector3d startVelocityVariance,
-									   Vector3d startAngularVelocity, Vector3d startAngularVelocityVariance,
+									   vec3 startVelocity, vec3 startVelocityVariance,
+									   vec3 startAngularVelocity, vec3 startAngularVelocityVariance,
 									   float tangentialVelocityXY, float tangentialAccelerationXY, float tangentialVelocityXZ, float tangentialAccelerationXZ, float tangentialVelocityYZ, float tangentialAccelerationYZ,
-									   bool randomStartRotation, Vector3d startRotation, bool worldCollision, bool destoryOnCollision, bool startLifeDecayOnCollision,
+									   bool randomStartRotation, vec3 startRotation, bool worldCollision, bool destoryOnCollision, bool startLifeDecayOnCollision,
 									   bool createEmitters, BlockParticleEmitter* pCreatedEmitter);
-	BlockParticleEmitter* CreateBlockParticleEmitter(string name, Vector3d pos);
-	BlockParticleEffect* CreateBlockParticleEffect(string name, Vector3d pos);
+	BlockParticleEmitter* CreateBlockParticleEmitter(string name, vec3 pos);
+	BlockParticleEffect* CreateBlockParticleEffect(string name, vec3 pos);
 	
-	BlockParticleEffect* ImportParticleEffect(string fileName, Vector3d pos, unsigned int* particleEffectId);
+	BlockParticleEffect* ImportParticleEffect(string fileName, vec3 pos, unsigned int* particleEffectId);
 	void DestroyParticleEffect(unsigned int particleEffectId);
-	void UpdateParticleEffectPosition(unsigned int particleEffectId, Vector3d position);
+	void UpdateParticleEffectPosition(unsigned int particleEffectId, vec3 position);
 
 	void ExplodeQubicleBinary(QubicleBinary* pQubicleBinary, float scale, int particleSpawnChance);
 	void ExplodeQubicleMatrix(QubicleMatrix* pMatrix, float scale, int particleSpawnChance, bool allSameColour, float sameR, float sameG, float sameB, float sameA);
+
+	// Rendering modes
+	void SetWireFrameRender(bool wireframe);
 
 	// Update
 	void Update(float dt);
@@ -101,20 +104,29 @@ private:
 	/* Private members */
 	Renderer* m_pRenderer;
 
+	// Particle effect counter
 	int m_particleEffectCounter;
 
+	// Render modes
+	bool m_renderWireFrame;
+
+	// Array buffers
 	GLuint m_vertexArray;
 	GLuint m_positionBuffer;
 	GLuint m_normalBuffer;
 	GLuint m_colourBuffer;
 	GLuint m_matrixBuffer;
 
+	// Shader
 	unsigned int m_instanceShader;
 
+	// Block particles list
 	BlockParticlesList m_vpBlockParticlesList;
 
+	// Block particle emitters list
 	BlockParticlesEmitterList m_vpBlockParticleEmittersList;
 	BlockParticlesEmitterList m_vpBlockParticleEmittersAddList;
 
+	// Block particle effects list
 	BlockParticleEffectList m_vpBlockParticleEffectsList;
 };

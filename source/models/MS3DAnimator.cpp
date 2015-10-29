@@ -2,6 +2,10 @@
 
 #include <assert.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <fstream>
 using namespace std;
 
@@ -27,6 +31,11 @@ MS3DAnimator::MS3DAnimator(Renderer *lpRenderer, MS3DModel* pModel)
 	mCurrentAnimationIndex = 0;
 	mCurrentAnimationStartTime = 0.0;
 	mCurrentAnimationEndTime = 0.0;
+
+	mCurrentAnimationRightWeaponTrailStartTime = 0.0;
+	mCurrentAnimationRightWeaponTrailEndTime = 0.0;
+	mCurrentAnimationLeftWeaponTrailStartTime = 0.0;
+	mCurrentAnimationLeftWeaponTrailEndTime = 0.0;
 
 	m_timer = 0;
 	mblooping = false;
@@ -110,10 +119,26 @@ bool MS3DAnimator::LoadAnimations(const char *animationFileName)
 
 			// Blend frame
 			file >> tempString  >> pAnimations[i].blendFrame;
-			
+
+			// Start right weapon trail
+			file >> tempString >> pAnimations[i].startRightWeaponTrailFrame;
+
+			// End right weapon trail
+			file >> tempString >> pAnimations[i].endRightWeaponTrailFrame;
+
+			// Start left weapon trail
+			file >> tempString >> pAnimations[i].startLeftWeaponTrailFrame;
+
+			// End left weapon trail
+			file >> tempString >> pAnimations[i].endLeftWeaponTrailFrame;
+
 			// Work out the start time and end time
 			pAnimations[i].startTime = pAnimations[i].startFrame * 1000.0/mpModel->mAnimationFPS;
 			pAnimations[i].endTime = pAnimations[i].endFrame * 1000.0/mpModel->mAnimationFPS;
+			pAnimations[i].startRightWeaponTrailTime = pAnimations[i].startRightWeaponTrailFrame * 1000.0 / mpModel->mAnimationFPS;
+			pAnimations[i].endRightWeaponTrailTime = pAnimations[i].endRightWeaponTrailFrame * 1000.0 / mpModel->mAnimationFPS;
+			pAnimations[i].startLeftWeaponTrailTime = pAnimations[i].startLeftWeaponTrailFrame * 1000.0 / mpModel->mAnimationFPS;
+			pAnimations[i].endLeftWeaponTrailTime = pAnimations[i].endLeftWeaponTrailFrame * 1000.0 / mpModel->mAnimationFPS;
 		}
 
 		// Close the file
@@ -136,7 +161,7 @@ void MS3DAnimator::CalculateBoundingBox()
 		}
 
 		Matrix4x4& final = pJointAnimations[mpModel->pVertices[i].boneID].final;
-		Vector3d newVertex( mpModel->pVertices[i].location[0], mpModel->pVertices[i].location[1], mpModel->pVertices[i].location[2]);
+		vec3 newVertex( mpModel->pVertices[i].location[0], mpModel->pVertices[i].location[1], mpModel->pVertices[i].location[2]);
 
 		newVertex = final * newVertex;
 
@@ -207,6 +232,12 @@ void MS3DAnimator::PlayAnimation(int lAnimationIndex)
 	mCurrentAnimationStartTime = pAnimations[lAnimationIndex].startTime;
 	mCurrentAnimationEndTime = pAnimations[lAnimationIndex].endTime;
 	mblooping = pAnimations[lAnimationIndex].looping;
+
+	// Set the weapon trail start and end params
+	mCurrentAnimationRightWeaponTrailStartTime = pAnimations[lAnimationIndex].startRightWeaponTrailTime;
+	mCurrentAnimationRightWeaponTrailEndTime = pAnimations[lAnimationIndex].endRightWeaponTrailTime;
+	mCurrentAnimationLeftWeaponTrailStartTime = pAnimations[lAnimationIndex].startLeftWeaponTrailTime;
+	mCurrentAnimationLeftWeaponTrailEndTime = pAnimations[lAnimationIndex].endLeftWeaponTrailTime;
 
 	// Reset the timer to the start of the animation
 	Restart();
@@ -520,6 +551,16 @@ void MS3DAnimator::GetCurrentBlendRotation(int jointIndex, float* x, float* y, f
 	*z = pJointAnimation->currentBlendRot[2];
 }
 
+bool MS3DAnimator::GetRightWeaponTrailActive()
+{
+	return (m_timer > mCurrentAnimationRightWeaponTrailStartTime) && (m_timer < mCurrentAnimationRightWeaponTrailEndTime);
+}
+
+bool MS3DAnimator::GetLeftWeaponTrailActive()
+{
+	return (m_timer > mCurrentAnimationLeftWeaponTrailStartTime) && (m_timer < mCurrentAnimationLeftWeaponTrailEndTime);
+}
+
 void MS3DAnimator::Restart()
 {
 	for ( int i = 0; i < numJointAnimations; i++ )
@@ -666,13 +707,13 @@ void MS3DAnimator::Update(float dt)
 				float timeDelta = curFrame.time-prevFrame.time;
 				float interpValue = ( float )(( m_timer-prevFrame.time )/timeDelta );
 
-				Quaternion q1;
-				q1.SetEuler(RadToDeg(prevFrame.parameter[0]), RadToDeg(prevFrame.parameter[1]), RadToDeg(prevFrame.parameter[2]));
-				Quaternion q2;
-				q2.SetEuler(RadToDeg(curFrame.parameter[0]), RadToDeg(curFrame.parameter[1]), RadToDeg(curFrame.parameter[2]));
-				Quaternion q3 = Quaternion::Slerp(q1, q2, interpValue);
-
-				transform = q3.GetMatrix();
+				quat q1(vec3(prevFrame.parameter[0], prevFrame.parameter[1], prevFrame.parameter[2]));
+				quat q2(vec3(curFrame.parameter[0], curFrame.parameter[1], curFrame.parameter[2]));
+				quat q3 = slerp(q1, q2, interpValue);
+				
+				mat4 trans = mat4_cast(q3);
+				float *pM = value_ptr(trans);
+				transform.SetValues(pM);
 
 				// To preserve blending, since the matrix-to-angles functionality is broken
 				rotVec[0] = prevFrame.parameter[0]+( curFrame.parameter[0]-prevFrame.parameter[0] )*interpValue;
@@ -743,14 +784,15 @@ void MS3DAnimator::UpdateBlending(float dt)
 		rotVec[0] = pJointAnimation->startBlendRot[0]+( pJointAnimation->endBlendRot[0]-pJointAnimation->startBlendRot[0] )*interpValue;
 		rotVec[1] = pJointAnimation->startBlendRot[1]+( pJointAnimation->endBlendRot[1]-pJointAnimation->startBlendRot[1] )*interpValue;
 		rotVec[2] = pJointAnimation->startBlendRot[2]+( pJointAnimation->endBlendRot[2]-pJointAnimation->startBlendRot[2] )*interpValue;
-
-		Quaternion q1;
-		q1.SetEuler(RadToDeg(pJointAnimation->startBlendRot[0]), RadToDeg(pJointAnimation->startBlendRot[1]), RadToDeg(pJointAnimation->startBlendRot[2]));
-		Quaternion q2;
-		q2.SetEuler(RadToDeg(pJointAnimation->endBlendRot[0]), RadToDeg(pJointAnimation->endBlendRot[1]), RadToDeg(pJointAnimation->endBlendRot[2]));
-		Quaternion q3 = Quaternion::Slerp(q1, q2, interpValue);
-		transform = q3.GetMatrix();
 		
+		quat q1(vec3(pJointAnimation->startBlendRot[0], pJointAnimation->startBlendRot[1], pJointAnimation->startBlendRot[2]));
+		quat q2(vec3(pJointAnimation->endBlendRot[0], pJointAnimation->endBlendRot[1], pJointAnimation->endBlendRot[2]));
+		quat q3 = slerp(q1, q2, interpValue);
+
+		mat4 trans = mat4_cast(q3);
+		float *pM = value_ptr(trans);
+		transform.SetValues(pM);
+
 		transform.SetTranslation(transVec);
 
 		Matrix4x4 relativeFinal(pJoint->relative);
@@ -830,11 +872,11 @@ void MS3DAnimator::RenderMesh()
 						glTexCoord2f( pTri->s[k], pTri->t[k] );
 
 						// Normal
-						Vector3d newNormal( pTri->vertexNormals[k][0], pTri->vertexNormals[k][1], pTri->vertexNormals[k][2]);
+						vec3 newNormal( pTri->vertexNormals[k][0], pTri->vertexNormals[k][1], pTri->vertexNormals[k][2]);
 
 						newNormal = final * newNormal;
 
-						newNormal = newNormal.GetUnit();
+						newNormal = normalize(newNormal);
 
 						float tempNormal[3];
 						tempNormal[0] = newNormal.x;
@@ -843,7 +885,7 @@ void MS3DAnimator::RenderMesh()
 						glNormal3fv( tempNormal );
 
 						// Vertex
-						Vector3d newVertex( mpModel->pVertices[index].location[0], mpModel->pVertices[index].location[1], mpModel->pVertices[index].location[2]);
+						vec3 newVertex( mpModel->pVertices[index].location[0], mpModel->pVertices[index].location[1], mpModel->pVertices[index].location[2]);
 
 						newVertex = final * newVertex;
 
@@ -892,11 +934,11 @@ void MS3DAnimator::RenderNormals()
 						Matrix4x4& final = mpModel->pJoints[mpModel->pVertices[index].boneID].absolute;
 
 						// Normal
-						Vector3d newNormal( pTri->vertexNormals[k][0], pTri->vertexNormals[k][1], pTri->vertexNormals[k][2]);
+						vec3 newNormal( pTri->vertexNormals[k][0], pTri->vertexNormals[k][1], pTri->vertexNormals[k][2]);
 
 						newNormal = final * newNormal;
 
-						newNormal = newNormal.GetUnit();
+						newNormal = normalize(newNormal);
 						newNormal *= 0.3f; // Scale normal down
 
 						float tempNormal[3];
@@ -905,7 +947,7 @@ void MS3DAnimator::RenderNormals()
 						tempNormal[2] = newNormal.z;
 
 						// Vertex
-						Vector3d newVertex( mpModel->pVertices[index].location[0], mpModel->pVertices[index].location[1], mpModel->pVertices[index].location[2]);
+						vec3 newVertex( mpModel->pVertices[index].location[0], mpModel->pVertices[index].location[1], mpModel->pVertices[index].location[2]);
 
 						newVertex = final * newVertex;
 
@@ -934,7 +976,7 @@ void MS3DAnimator::RenderBones()
 	{
 		glBegin( GL_LINES );
 		{
-			Vector3d newVertex;
+			vec3 newVertex;
 
 			newVertex = pJointAnimations[i].final * newVertex;
 
@@ -947,7 +989,7 @@ void MS3DAnimator::RenderBones()
 			if ( mpModel->pJoints[i].parent != -1 )
 			{
 				Matrix4x4& final = pJointAnimations[mpModel->pJoints[i].parent].final;
-				Vector3d newPVertex;
+				vec3 newPVertex;
 
 				newPVertex =  final * newPVertex;
 

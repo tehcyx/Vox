@@ -6,7 +6,7 @@
 #pragma once
 
 #include "colour.h"
-#include "../Maths/3dmaths.h"
+#include <glm/glm.hpp>
 
 class Light {
 public:
@@ -17,8 +17,8 @@ public:
 	void Ambient(const Colour &ambient) { m_ambient = ambient; }
 	void Diffuse(const Colour &diffuse) { m_diffuse = diffuse; }
 	void Specular(const Colour &specular) { m_specular = specular; }
-	void Position(const Vector3d &position) { m_position = position; }
-	void Direction(const Vector3d &direction) { m_direction = direction; }
+	void Position(const vec3 &position) { m_position = position; }
+	void Direction(const vec3 &direction) { m_direction = direction; }
 	void Exponent(const float exponent) { m_exponent = exponent; }
 	void Cutoff(const float cutoff) { m_cutoff = cutoff; }
 	void ConstantAttenuation(const float constantAttenuation) { m_constantAttenuation = constantAttenuation; }
@@ -29,8 +29,8 @@ public:
 	const Colour Ambient() const { return m_ambient; }
 	const Colour Diffuse() const { return m_diffuse; }
 	const Colour Specular() const { return m_specular; }
-	const Vector3d Position() const { return m_position; }
-	const Vector3d Direction() const { return m_direction; }
+	const vec3 Position() const { return m_position; }
+	const vec3 Direction() const { return m_direction; }
 	const float Exponent() const { return m_exponent; }
 	const float Cutoff() const { return m_cutoff; }
 	const float ConstantAttenuation() const { return m_constantAttenuation; }
@@ -48,8 +48,8 @@ private:
 	Colour m_ambient;
 	Colour m_diffuse;
 	Colour m_specular;
-	Vector3d m_position;
-	Vector3d m_direction;
+	vec3 m_position;
+	vec3 m_direction;
 	float m_exponent;
 	float m_cutoff;
 	float m_constantAttenuation;
@@ -210,7 +210,7 @@ inline void Light::Render()
 		// Render spotlight direction
 		if(m_spotlight)
 		{
-			Vector3d lDirectionUnit = m_direction.GetUnit();
+			vec3 lDirectionUnit = normalize(m_direction);
 
 			glLineWidth(2.0f);
 

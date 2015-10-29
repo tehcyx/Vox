@@ -497,16 +497,16 @@ void QubicleBinary::CreateMesh()
 
 						a = 1.0f;
 
-						Vector3d p1(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						Vector3d p2(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						Vector3d p3(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						Vector3d p4(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						Vector3d p5(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						Vector3d p6(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						Vector3d p7(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						Vector3d p8(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						vec3 p1(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						vec3 p2(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						vec3 p3(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						vec3 p4(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						vec3 p5(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						vec3 p6(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						vec3 p7(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						vec3 p8(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
 
-						Vector3d n1;
+						vec3 n1;
 						unsigned int v1, v2, v3, v4;
 						unsigned int t1, t2, t3, t4;
 
@@ -525,7 +525,7 @@ void QubicleBinary::CreateMesh()
 
 							UpdateMergedSide(l_merged, matrixIndex, x, y, z, pMatrix->m_matrixSizeX, pMatrix->m_matrixSizeY, &p1, &p2, &p3, &p4, x, y, endX, endY, true, true, false, false);
 
-							n1 = Vector3d(0.0f, 0.0f, 1.0f);
+							n1 = vec3(0.0f, 0.0f, 1.0f);
 							v1 = m_pRenderer->AddVertexToMesh(p1, n1, r, g, b, a, pMatrix->m_pMesh);
 							t1 = m_pRenderer->AddTextureCoordinatesToMesh(0.0f, 0.0f, pMatrix->m_pMesh);
 							v2 = m_pRenderer->AddVertexToMesh(p2, n1, r, g, b, a, pMatrix->m_pMesh);
@@ -539,14 +539,14 @@ void QubicleBinary::CreateMesh()
 							m_pRenderer->AddTriangleToMesh(v1, v3, v4, pMatrix->m_pMesh);
 						}
 
-						p1 = Vector3d(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p2 = Vector3d(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p3 = Vector3d(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p4 = Vector3d(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p5 = Vector3d(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p6 = Vector3d(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p7 = Vector3d(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p8 = Vector3d(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p1 = vec3(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p2 = vec3(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p3 = vec3(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p4 = vec3(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p5 = vec3(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p6 = vec3(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p7 = vec3(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p8 = vec3(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
 
 						// Back
 						if(doZNegative && ((z == 0) || (z > 0 && GetActive(matrixIndex, x, y, z-1) == false)))
@@ -556,7 +556,7 @@ void QubicleBinary::CreateMesh()
 
 							UpdateMergedSide(l_merged, matrixIndex, x, y, z, pMatrix->m_matrixSizeX, pMatrix->m_matrixSizeY, &p6, &p5, &p8, &p7, x, y, endX, endY, false, true, false, false);
 
-							n1 = Vector3d(0.0f, 0.0f, -1.0f);
+							n1 = vec3(0.0f, 0.0f, -1.0f);
 							v1 = m_pRenderer->AddVertexToMesh(p5, n1, r, g, b, a, pMatrix->m_pMesh);
 							t1 = m_pRenderer->AddTextureCoordinatesToMesh(0.0f, 0.0f, pMatrix->m_pMesh);
 							v2 = m_pRenderer->AddVertexToMesh(p6, n1, r, g, b, a, pMatrix->m_pMesh);
@@ -570,14 +570,14 @@ void QubicleBinary::CreateMesh()
 							m_pRenderer->AddTriangleToMesh(v1, v3, v4, pMatrix->m_pMesh);
 						}
 
-						p1 = Vector3d(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p2 = Vector3d(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p3 = Vector3d(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p4 = Vector3d(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p5 = Vector3d(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p6 = Vector3d(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p7 = Vector3d(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p8 = Vector3d(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p1 = vec3(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p2 = vec3(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p3 = vec3(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p4 = vec3(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p5 = vec3(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p6 = vec3(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p7 = vec3(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p8 = vec3(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
 
 						// Right
 						if(doXPositive && ((x == pMatrix->m_matrixSizeX-1) || (x < pMatrix->m_matrixSizeX-1 && GetActive(matrixIndex, x+1, y, z) == false)))
@@ -587,7 +587,7 @@ void QubicleBinary::CreateMesh()
 
 							UpdateMergedSide(l_merged, matrixIndex, x, y, z, pMatrix->m_matrixSizeX, pMatrix->m_matrixSizeY, &p5, &p2, &p3, &p8, z, y, endX, endY, true, false, true, false);
 
-							n1 = Vector3d(1.0f, 0.0f, 0.0f);
+							n1 = vec3(1.0f, 0.0f, 0.0f);
 							v1 = m_pRenderer->AddVertexToMesh(p2, n1, r, g, b, a, pMatrix->m_pMesh);
 							t1 = m_pRenderer->AddTextureCoordinatesToMesh(0.0f, 0.0f, pMatrix->m_pMesh);
 							v2 = m_pRenderer->AddVertexToMesh(p5, n1, r, g, b, a, pMatrix->m_pMesh);
@@ -601,14 +601,14 @@ void QubicleBinary::CreateMesh()
 							m_pRenderer->AddTriangleToMesh(v1, v3, v4, pMatrix->m_pMesh);
 						}
 
-						p1 = Vector3d(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p2 = Vector3d(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p3 = Vector3d(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p4 = Vector3d(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p5 = Vector3d(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p6 = Vector3d(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p7 = Vector3d(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p8 = Vector3d(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p1 = vec3(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p2 = vec3(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p3 = vec3(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p4 = vec3(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p5 = vec3(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p6 = vec3(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p7 = vec3(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p8 = vec3(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
 
 						// Left
 						if(doXNegative && ((x == 0) || (x > 0 && GetActive(matrixIndex, x-1, y, z) == false)))
@@ -618,7 +618,7 @@ void QubicleBinary::CreateMesh()
 
 							UpdateMergedSide(l_merged, matrixIndex, x, y, z, pMatrix->m_matrixSizeX, pMatrix->m_matrixSizeY, &p6, &p1, &p4, &p7, z, y, endX, endY, false, false, true, false);
 
-							n1 = Vector3d(-1.0f, 0.0f, 0.0f);
+							n1 = vec3(-1.0f, 0.0f, 0.0f);
 							v1 = m_pRenderer->AddVertexToMesh(p6, n1, r, g, b, a, pMatrix->m_pMesh);
 							t1 = m_pRenderer->AddTextureCoordinatesToMesh(0.0f, 0.0f, pMatrix->m_pMesh);
 							v2 = m_pRenderer->AddVertexToMesh(p1, n1, r, g, b, a, pMatrix->m_pMesh);
@@ -632,14 +632,14 @@ void QubicleBinary::CreateMesh()
 							m_pRenderer->AddTriangleToMesh(v1, v3, v4, pMatrix->m_pMesh);
 						}
 
-						p1 = Vector3d(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p2 = Vector3d(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p3 = Vector3d(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p4 = Vector3d(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p5 = Vector3d(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p6 = Vector3d(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p7 = Vector3d(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p8 = Vector3d(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p1 = vec3(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p2 = vec3(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p3 = vec3(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p4 = vec3(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p5 = vec3(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p6 = vec3(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p7 = vec3(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p8 = vec3(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
 
 						// Top
 						if(doYPositive && ((y == pMatrix->m_matrixSizeY-1) || (y < pMatrix->m_matrixSizeY-1 && GetActive(matrixIndex, x, y+1, z) == false)))
@@ -649,7 +649,7 @@ void QubicleBinary::CreateMesh()
 
 							UpdateMergedSide(l_merged, matrixIndex, x, y, z, pMatrix->m_matrixSizeX, pMatrix->m_matrixSizeY, &p7, &p8, &p3, &p4, x, z, endX, endY, true, false, false, true);
 
-							n1 = Vector3d(0.0f, 1.0f, 0.0f);
+							n1 = vec3(0.0f, 1.0f, 0.0f);
 							v1 = m_pRenderer->AddVertexToMesh(p4, n1, r, g, b, a, pMatrix->m_pMesh);
 							t1 = m_pRenderer->AddTextureCoordinatesToMesh(0.0f, 0.0f, pMatrix->m_pMesh);
 							v2 = m_pRenderer->AddVertexToMesh(p3, n1, r, g, b, a, pMatrix->m_pMesh);
@@ -663,14 +663,14 @@ void QubicleBinary::CreateMesh()
 							m_pRenderer->AddTriangleToMesh(v1, v3, v4, pMatrix->m_pMesh);
 						}
 
-						p1 = Vector3d(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p2 = Vector3d(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p3 = Vector3d(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p4 = Vector3d(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
-						p5 = Vector3d(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p6 = Vector3d(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p7 = Vector3d(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
-						p8 = Vector3d(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p1 = vec3(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p2 = vec3(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p3 = vec3(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p4 = vec3(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z+BLOCK_RENDER_SIZE);
+						p5 = vec3(x+BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p6 = vec3(x-BLOCK_RENDER_SIZE, y-BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p7 = vec3(x-BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
+						p8 = vec3(x+BLOCK_RENDER_SIZE, y+BLOCK_RENDER_SIZE, z-BLOCK_RENDER_SIZE);
 
 						// Bottom
 						if(doYNegative && ((y == 0) || (y > 0 && GetActive(matrixIndex, x, y-1, z) == false)))
@@ -680,7 +680,7 @@ void QubicleBinary::CreateMesh()
 
 							UpdateMergedSide(l_merged, matrixIndex, x, y, z, pMatrix->m_matrixSizeX, pMatrix->m_matrixSizeY, &p6, &p5, &p2, &p1, x, z, endX, endY, false, false, false, true);
 
-							n1 = Vector3d(0.0f, -1.0f, 0.0f);
+							n1 = vec3(0.0f, -1.0f, 0.0f);
 							v1 = m_pRenderer->AddVertexToMesh(p6, n1, r, g, b, a, pMatrix->m_pMesh);
 							t1 = m_pRenderer->AddTextureCoordinatesToMesh(0.0f, 0.0f, pMatrix->m_pMesh);
 							v2 = m_pRenderer->AddVertexToMesh(p5, n1, r, g, b, a, pMatrix->m_pMesh);
@@ -705,7 +705,7 @@ void QubicleBinary::CreateMesh()
 	}
 }
 
-void QubicleBinary::UpdateMergedSide(int *merged, int matrixIndex, int blockx, int blocky, int blockz, int width, int height, Vector3d *p1, Vector3d *p2, Vector3d *p3, Vector3d *p4, int startX, int startY, int maxX, int maxY, bool positive, bool zFace, bool xFace, bool yFace)
+void QubicleBinary::UpdateMergedSide(int *merged, int matrixIndex, int blockx, int blocky, int blockz, int width, int height, vec3 *p1, vec3 *p2, vec3 *p3, vec3 *p4, int startX, int startY, int maxX, int maxY, bool positive, bool zFace, bool xFace, bool yFace)
 {
 	QubicleMatrix* pMatrix = m_vpMatrices[matrixIndex];
 
@@ -1084,9 +1084,9 @@ float QubicleBinary::GetMatrixScale(int index)
 	return m_vpMatrices[index]->m_scale;
 }
 
-Vector3d QubicleBinary::GetMatrixOffset(int index)
+vec3 QubicleBinary::GetMatrixOffset(int index)
 {
-	return Vector3d(m_vpMatrices[index]->m_offsetX, m_vpMatrices[index]->m_offsetY, m_vpMatrices[index]->m_offsetZ);
+	return vec3(m_vpMatrices[index]->m_offsetX, m_vpMatrices[index]->m_offsetY, m_vpMatrices[index]->m_offsetZ);
 }
 
 void QubicleBinary::SetupMatrixBones(MS3DAnimator* pSkeleton)
@@ -1129,17 +1129,17 @@ float QubicleBinary::GetScale(const char* matrixName)
 	return 1.0f;
 }
 
-Vector3d QubicleBinary::GetOffset(const char* matrixName)
+vec3 QubicleBinary::GetOffset(const char* matrixName)
 {
 	for(unsigned int i = 0; i < m_numMatrices; i++)
 	{
 		if(strcmp(m_vpMatrices[i]->m_name, matrixName) == 0)
 		{
-			return Vector3d(m_vpMatrices[i]->m_offsetX, m_vpMatrices[i]->m_offsetY, m_vpMatrices[i]->m_offsetZ);
+			return vec3(m_vpMatrices[i]->m_offsetX, m_vpMatrices[i]->m_offsetY, m_vpMatrices[i]->m_offsetZ);
 		}
 	}
 
-	return Vector3d(0.0f, 0.0f, 0.0f);
+	return vec3(0.0f, 0.0f, 0.0f);
 }
 
 void QubicleBinary::SwapMatrix(const char* matrixName, QubicleMatrix* pMatrix, bool copyMatrixParams)
@@ -1425,15 +1425,15 @@ void QubicleBinary::RenderWithAnimator(MS3DAnimator** pSkeleton, VoxelCharacter*
 							m_vpMatrices[i]->m_boneIndex == pVoxelCharacter->GetRightShoulderBoneIndex() ||
 							m_vpMatrices[i]->m_boneIndex == pVoxelCharacter->GetRightHandBoneIndex() )
 						{
-							Vector3d lForward = pVoxelCharacter->GetFaceLookingDirection().GetUnit();
+							vec3 lForward = normalize(pVoxelCharacter->GetFaceLookingDirection());
 							lForward.y = 0.0f;
-							lForward.Normalize();
-							Vector3d forwardDiff = lForward - Vector3d(0.0f, 0.0f, 1.0f);
-							lForward = (Vector3d(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f)).GetUnit();
+							lForward = normalize(lForward);
+							vec3 forwardDiff = lForward - vec3(0.0f, 0.0f, 1.0f);
+							lForward = normalize(vec3(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f));
 
-							Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-							Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-							lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+							vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+							vec3 lRight = normalize(cross(lUp, lForward));
+							lUp = normalize(cross(lForward, lRight));
 
 							float lMatrix[16] =
 							{
@@ -1452,7 +1452,7 @@ void QubicleBinary::RenderWithAnimator(MS3DAnimator** pSkeleton, VoxelCharacter*
 					if(m_vpMatrices[i]->m_boneIndex != -1)
 					{
 						Matrix4x4 boneMatrix = pSkeletonToUse->GetBoneMatrix(m_vpMatrices[i]->m_boneIndex);
-						Vector3d boneScale = pVoxelCharacter->GetBoneScale();
+						vec3 boneScale = pVoxelCharacter->GetBoneScale();
 						m_pRenderer->ScaleWorldMatrix(boneScale.x, boneScale.y, boneScale.z);
 						m_pRenderer->MultiplyWorldMatrix(boneMatrix);
 						m_pRenderer->ScaleWorldMatrix(1.0f/boneScale.x, 1.0f/boneScale.y, 1.0f/boneScale.z);
@@ -1466,10 +1466,10 @@ void QubicleBinary::RenderWithAnimator(MS3DAnimator** pSkeleton, VoxelCharacter*
 					{
 						if(m_vpMatrices[i]->m_boneIndex == pVoxelCharacter->GetHeadBoneIndex())
 						{
-							Vector3d lForward = pVoxelCharacter->GetFaceLookingDirection().GetUnit();
-							Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-							Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-							lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+							vec3 lForward = normalize(pVoxelCharacter->GetFaceLookingDirection());
+							vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+							vec3 lRight = normalize(cross(lUp, lForward));
+							lUp = normalize(cross(lForward, lRight));
 
 							float lMatrix[16] =
 							{
@@ -1658,15 +1658,15 @@ void QubicleBinary::RenderSingleMatrix(MS3DAnimator** pSkeleton, VoxelCharacter*
 						m_vpMatrices[matrixIndex]->m_boneIndex == pVoxelCharacter->GetRightShoulderBoneIndex() ||
 						m_vpMatrices[matrixIndex]->m_boneIndex == pVoxelCharacter->GetRightHandBoneIndex() )
 					{
-						Vector3d lForward = pVoxelCharacter->GetFaceLookingDirection().GetUnit();
+						vec3 lForward = normalize(pVoxelCharacter->GetFaceLookingDirection());
 						lForward.y = 0.0f;
-						lForward.Normalize();
-						Vector3d forwardDiff = lForward - Vector3d(0.0f, 0.0f, 1.0f);
-						lForward = (Vector3d(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f)).GetUnit();
+						lForward = normalize(lForward);
+						vec3 forwardDiff = lForward - vec3(0.0f, 0.0f, 1.0f);
+						lForward = normalize(vec3(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f));
 
-						Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-						Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-						lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+						vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+						vec3 lRight = normalize(cross(lUp, lForward));
+						lUp = normalize(cross(lForward, lRight));
 
 						float lMatrix[16] =
 						{
@@ -1685,7 +1685,7 @@ void QubicleBinary::RenderSingleMatrix(MS3DAnimator** pSkeleton, VoxelCharacter*
 				if(m_vpMatrices[matrixIndex]->m_boneIndex != -1)
 				{
 					Matrix4x4 boneMatrix = pSkeletonToUse->GetBoneMatrix(m_vpMatrices[matrixIndex]->m_boneIndex);
-					Vector3d boneScale = pVoxelCharacter->GetBoneScale();
+					vec3 boneScale = pVoxelCharacter->GetBoneScale();
 					m_pRenderer->ScaleWorldMatrix(boneScale.x, boneScale.y, boneScale.z);
 					m_pRenderer->MultiplyWorldMatrix(boneMatrix);
 					m_pRenderer->ScaleWorldMatrix(1.0f/boneScale.x, 1.0f/boneScale.y, 1.0f/boneScale.z);
@@ -1699,10 +1699,10 @@ void QubicleBinary::RenderSingleMatrix(MS3DAnimator** pSkeleton, VoxelCharacter*
 				{
 					if(m_vpMatrices[matrixIndex]->m_boneIndex == pVoxelCharacter->GetHeadBoneIndex())
 					{
-						Vector3d lForward = pVoxelCharacter->GetFaceLookingDirection().GetUnit();
-						Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-						Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-						lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+						vec3 lForward = normalize(pVoxelCharacter->GetFaceLookingDirection());
+						vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+						vec3 lRight = normalize(cross(lUp, lForward));
+						lUp = normalize(cross(lForward, lRight));
 
 						float lMatrix[16] =
 						{
@@ -1814,7 +1814,7 @@ void QubicleBinary::RenderFace(MS3DAnimator* pSkeleton, VoxelCharacter* pVoxelCh
 	// Render eyes
 	{
 		int eyesBoneIndex = pVoxelCharacter->GetEyesBone();
-		Vector3d eyeOffset = pVoxelCharacter->GetEyesOffset();
+		vec3 eyeOffset = pVoxelCharacter->GetEyesOffset();
 
 		if(eyesBoneIndex != -1)
 		{
@@ -1842,7 +1842,7 @@ void QubicleBinary::RenderFace(MS3DAnimator* pSkeleton, VoxelCharacter* pVoxelCh
 
 				// Translate by attached bone matrix
 				Matrix4x4 boneMatrix = pSkeleton->GetBoneMatrix(eyesBoneIndex);
-				Vector3d boneScale = pVoxelCharacter->GetBoneScale();
+				vec3 boneScale = pVoxelCharacter->GetBoneScale();
 				m_pRenderer->ScaleWorldMatrix(boneScale.x, boneScale.y, boneScale.z);
 				m_pRenderer->MultiplyWorldMatrix(boneMatrix);
 				m_pRenderer->ScaleWorldMatrix(1.0f/boneScale.x, 1.0f/boneScale.y, 1.0f/boneScale.z);
@@ -1851,10 +1851,10 @@ void QubicleBinary::RenderFace(MS3DAnimator* pSkeleton, VoxelCharacter* pVoxelCh
 				m_pRenderer->RotateWorldMatrix(0.0f, 0.0f, -90.0f);
 
 				// Face looking direction
-				Vector3d lForward = pVoxelCharacter->GetFaceLookingDirection().GetUnit();
-				Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-				Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-				lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+				vec3 lForward = normalize(pVoxelCharacter->GetFaceLookingDirection());
+				vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+				vec3 lRight = normalize(cross(lUp, lForward));
+				lUp = normalize(cross(lForward, lRight));
 
 				float lMatrix[16] =
 				{
@@ -1890,7 +1890,7 @@ void QubicleBinary::RenderFace(MS3DAnimator* pSkeleton, VoxelCharacter* pVoxelCh
 	// Render mouth
 	{
 		int mouthBoneIndex = pVoxelCharacter->GetMouthBone();
-		Vector3d mouthOffset = pVoxelCharacter->GetMouthOffset();
+		vec3 mouthOffset = pVoxelCharacter->GetMouthOffset();
 
 		m_pRenderer->PushMatrix();
 			m_pRenderer->EnableMaterial(m_materialID);
@@ -1916,7 +1916,7 @@ void QubicleBinary::RenderFace(MS3DAnimator* pSkeleton, VoxelCharacter* pVoxelCh
 
 			// Translate by attached bone matrix
 			Matrix4x4 boneMatrix = pSkeleton->GetBoneMatrix(mouthBoneIndex);
-			Vector3d boneScale = pVoxelCharacter->GetBoneScale();
+			vec3 boneScale = pVoxelCharacter->GetBoneScale();
 			m_pRenderer->ScaleWorldMatrix(boneScale.x, boneScale.y, boneScale.z);
 			m_pRenderer->MultiplyWorldMatrix(boneMatrix);
 			m_pRenderer->ScaleWorldMatrix(1.0f/boneScale.x, 1.0f/boneScale.y, 1.0f/boneScale.z);
@@ -1925,10 +1925,10 @@ void QubicleBinary::RenderFace(MS3DAnimator* pSkeleton, VoxelCharacter* pVoxelCh
 			m_pRenderer->RotateWorldMatrix(0.0f, 0.0f, -90.0f);
 
 			// Face looking direction
-			Vector3d lForward = pVoxelCharacter->GetFaceLookingDirection().GetUnit();
-			Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-			Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-			lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+			vec3 lForward = normalize(pVoxelCharacter->GetFaceLookingDirection());
+			vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+			vec3 lRight = normalize(cross(lUp, lForward));
+			lUp = normalize(cross(lForward, lRight));
 
 			float lMatrix[16] =
 			{
@@ -2001,15 +2001,15 @@ void QubicleBinary::RenderPaperdoll(MS3DAnimator* pSkeleton, VoxelCharacter* pVo
 						m_vpMatrices[i]->m_boneIndex == pVoxelCharacter->GetRightShoulderBoneIndex() ||
 						m_vpMatrices[i]->m_boneIndex == pVoxelCharacter->GetRightHandBoneIndex() )
 					{
-						Vector3d lForward = pVoxelCharacter->GetFaceLookingDirection().GetUnit();
+						vec3 lForward = normalize(pVoxelCharacter->GetFaceLookingDirection());
 						lForward.y = 0.0f;
-						lForward.Normalize();
-						Vector3d forwardDiff = lForward - Vector3d(0.0f, 0.0f, 1.0f);
-						lForward = (Vector3d(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f)).GetUnit();
+						lForward = normalize(lForward);
+						vec3 forwardDiff = lForward - vec3(0.0f, 0.0f, 1.0f);
+						lForward = normalize(vec3(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f));
 
-						Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-						Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-						lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+						vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+						vec3 lRight = normalize(cross(lUp, lForward));
+						lUp = normalize(cross(lForward, lRight));
 
 						float lMatrix[16] =
 						{
@@ -2028,7 +2028,7 @@ void QubicleBinary::RenderPaperdoll(MS3DAnimator* pSkeleton, VoxelCharacter* pVo
 				if(m_vpMatrices[i]->m_boneIndex != -1)
 				{
 					Matrix4x4 boneMatrix = pSkeletonToUse->GetBoneMatrix(m_vpMatrices[i]->m_boneIndex);
-					Vector3d boneScale = pVoxelCharacter->GetBoneScale();
+					vec3 boneScale = pVoxelCharacter->GetBoneScale();
 					m_pRenderer->ScaleWorldMatrix(boneScale.x, boneScale.y, boneScale.z);
 					m_pRenderer->MultiplyWorldMatrix(boneMatrix);
 					m_pRenderer->ScaleWorldMatrix(1.0f/boneScale.x, 1.0f/boneScale.y, 1.0f/boneScale.z);
@@ -2042,10 +2042,10 @@ void QubicleBinary::RenderPaperdoll(MS3DAnimator* pSkeleton, VoxelCharacter* pVo
 				{
 					if(m_vpMatrices[i]->m_boneIndex == pVoxelCharacter->GetHeadBoneIndex())
 					{
-						Vector3d lForward = pVoxelCharacter->GetFaceLookingDirection().GetUnit();
-						Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-						Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-						lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+						vec3 lForward = normalize(pVoxelCharacter->GetFaceLookingDirection());
+						vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+						vec3 lRight = normalize(cross(lUp, lForward));
+						lUp = normalize(cross(lForward, lRight));
 
 						float lMatrix[16] =
 						{
@@ -2124,15 +2124,15 @@ void QubicleBinary::RenderPortrait(MS3DAnimator* pSkeleton, VoxelCharacter* pVox
 						m_vpMatrices[matrixIndex]->m_boneIndex == pVoxelCharacter->GetRightShoulderBoneIndex() ||
 						m_vpMatrices[matrixIndex]->m_boneIndex == pVoxelCharacter->GetRightHandBoneIndex() )
 					{
-						Vector3d lForward = pVoxelCharacter->GetFaceLookingDirection().GetUnit();
+						vec3 lForward = normalize(pVoxelCharacter->GetFaceLookingDirection());
 						lForward.y = 0.0f;
-						lForward.Normalize();
-						Vector3d forwardDiff = lForward - Vector3d(0.0f, 0.0f, 1.0f);
-						lForward = (Vector3d(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f)).GetUnit();
+						lForward = normalize(lForward);
+						vec3 forwardDiff = lForward - vec3(0.0f, 0.0f, 1.0f);
+						lForward = normalize(vec3(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f));
 
-						Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-						Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-						lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+						vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+						vec3 lRight = normalize(cross(lUp, lForward));
+						lUp = normalize(cross(lForward, lRight));
 
 						float lMatrix[16] =
 						{
@@ -2151,7 +2151,7 @@ void QubicleBinary::RenderPortrait(MS3DAnimator* pSkeleton, VoxelCharacter* pVox
 				if(m_vpMatrices[matrixIndex]->m_boneIndex != -1)
 				{
 					Matrix4x4 boneMatrix = pSkeletonToUse->GetBoneMatrix(m_vpMatrices[matrixIndex]->m_boneIndex);
-					Vector3d boneScale = pVoxelCharacter->GetBoneScale();
+					vec3 boneScale = pVoxelCharacter->GetBoneScale();
 					m_pRenderer->ScaleWorldMatrix(boneScale.x, boneScale.y, boneScale.z);
 					m_pRenderer->MultiplyWorldMatrix(boneMatrix);
 					m_pRenderer->ScaleWorldMatrix(1.0f/boneScale.x, 1.0f/boneScale.y, 1.0f/boneScale.z);
@@ -2165,10 +2165,10 @@ void QubicleBinary::RenderPortrait(MS3DAnimator* pSkeleton, VoxelCharacter* pVox
 				{
 					if(m_vpMatrices[matrixIndex]->m_boneIndex == pVoxelCharacter->GetHeadBoneIndex())
 					{
-						Vector3d lForward = pVoxelCharacter->GetFaceLookingDirection().GetUnit();
-						Vector3d lUp = Vector3d(0.0f, 1.0f, 0.0f);
-						Vector3d lRight = Vector3d::CrossProduct(lUp, lForward).GetUnit();
-						lUp = Vector3d::CrossProduct(lForward, lRight).GetUnit();
+						vec3 lForward = normalize(pVoxelCharacter->GetFaceLookingDirection());
+						vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+						vec3 lRight = normalize(cross(lUp, lForward));
+						lUp = normalize(cross(lForward, lRight));
 
 						float lMatrix[16] =
 						{

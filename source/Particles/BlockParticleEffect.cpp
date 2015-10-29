@@ -52,18 +52,21 @@ void BlockParticleEffect::ClearEmitters()
 {
 	for(unsigned int i = 0; i < m_vpBlockParticleEmittersList.size(); i++)
 	{
-		m_pBlockParticleManager->RemoveEmitterLinkage(m_vpBlockParticleEmittersList[i]);
-		m_vpBlockParticleEmittersList[i]->m_pParent = NULL; // Remove parent link, since we have deleted this effect
-		m_vpBlockParticleEmittersList[i]->m_erase = true;
+		if(m_vpBlockParticleEmittersList[i]->m_erase == false)
+		{
+			m_pBlockParticleManager->RemoveEmitterLinkage(m_vpBlockParticleEmittersList[i]);
+			m_vpBlockParticleEmittersList[i]->m_pParent = NULL; // Remove parent link, since we have deleted this effect
+			m_vpBlockParticleEmittersList[i]->m_erase = true;
+		}
 	}
 }
 
-void BlockParticleEffect::SetPosition(Vector3d pos)
+void BlockParticleEffect::SetPosition(vec3 pos)
 {
 	m_position = pos;
 }
 
-Vector3d BlockParticleEffect::GetPosition()
+vec3 BlockParticleEffect::GetPosition()
 {
 	return m_position;
 }
@@ -95,7 +98,7 @@ void BlockParticleEffect::Import(const char* fileName)
 			importFile >> tempString >> emitterName;
 			float x, y, z;
 			importFile >> tempString >> x >> y >> z;
-			Vector3d position = Vector3d(x, y, z);
+			vec3 position = vec3(x, y, z);
 			float creationTime;
 			importFile >> tempString >> creationTime;
 			int numParticlesToSpawn;
@@ -124,11 +127,11 @@ void BlockParticleEffect::Import(const char* fileName)
 			bool spawnOutline;
 			importFile >> tempString >> spawnOutline;
 			importFile >> tempString >> x >> y >> z;
-			Vector3d gravityDirection = Vector3d(x, y, z);
+			vec3 gravityDirection = vec3(x, y, z);
 			float gravityMultiplier;
 			importFile >> tempString >> gravityMultiplier;
 			importFile >> tempString >> x >> y >> z;
-			Vector3d pointOrigin = Vector3d(x, y, z);
+			vec3 pointOrigin = vec3(x, y, z);
 			float startScale;
 			importFile >> tempString >> startScale;
 			float startScaleVariance;
@@ -184,17 +187,17 @@ void BlockParticleEffect::Import(const char* fileName)
 			bool startLifeDecayOnCollision;
 			importFile >> tempString >> startLifeDecayOnCollision;
 			importFile >> tempString >> x >> y >> z;
-			Vector3d startVelocity = Vector3d(x, y, z);
+			vec3 startVelocity = vec3(x, y, z);
 			importFile >> tempString >> x >> y >> z;
-			Vector3d startVelocityVariance = Vector3d(x, y, z);
+			vec3 startVelocityVariance = vec3(x, y, z);
 			bool randomStartRotation;
 			importFile >> tempString >> randomStartRotation;
 			importFile >> tempString >> x >> y >> z;
-			Vector3d startRotation = Vector3d(x, y, z);
+			vec3 startRotation = vec3(x, y, z);
 			importFile >> tempString >> x >> y >> z;
-			Vector3d startAngularVelocity = Vector3d(x, y, z);
+			vec3 startAngularVelocity = vec3(x, y, z);
 			importFile >> tempString >> x >> y >> z;
-			Vector3d startAngularVelocityVariance = Vector3d(x, y, z);
+			vec3 startAngularVelocityVariance = vec3(x, y, z);
 			float tangentialVelocityXY;
 			importFile >> tempString >> tangentialVelocityXY;
 			float tangentialAccelerationXY;

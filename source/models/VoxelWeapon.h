@@ -26,13 +26,13 @@ class VoxelWeaponLight
 {
 public:
 	unsigned int m_lightId;
-	Vector3d m_lightOffset;
+	vec3 m_lightOffset;
 	float m_lightRadius;
 	float m_lightDiffuseMultiplier;
 	Colour m_lightColour;
 	int m_connectedToSectionIndex;
 
-	Vector3d m_lightPosition;
+	vec3 m_lightPosition;
 };
 
 class AnimatedSection
@@ -41,7 +41,7 @@ public:
 	string m_fileName;
 	VoxelObject* m_pVoxelObject;
 	float m_renderScale;
-	Vector3d m_renderOffset;
+	vec3 m_renderOffset;
 
 	bool m_autoStart;
 	bool m_playingAnimation;
@@ -61,7 +61,7 @@ public:
 	float m_translateSpeedTurnSpeedY;
 	float m_translateSpeedTurnSpeedZ;
 
-	Vector3d m_rotationPoint;
+	vec3 m_rotationPoint;
 	float m_rotationSpeedX;
 	float m_rotationSpeedY;
 	float m_rotationSpeedZ;
@@ -75,7 +75,7 @@ public:
 	float m_rotationSpeedTurnSpeedY;
 	float m_rotationSpeedTurnSpeedZ;
 
-	Vector3d m_animatedSectionPosition;
+	vec3 m_animatedSectionPosition;
 
 	float m_translateX;
 	float m_translateY;
@@ -109,17 +109,17 @@ class ParticleEffect
 public:
 	unsigned int m_particleEffectId;
 	string m_fileName;
-	Vector3d m_positionOffset;
+	vec3 m_positionOffset;
 	int m_connectedToSectionIndex;
 
-	Vector3d m_particleEffectPosition;
+	vec3 m_particleEffectPosition;
 };
 
 class WeaponTrailPoint
 {
 public:
-	Vector3d m_startPoint;
-	Vector3d m_endPoint;
+	vec3 m_startPoint;
+	vec3 m_endPoint;
 	bool m_pointActive;
 };
 
@@ -128,8 +128,8 @@ class WeaponTrail
 public:
 	int m_numTrailPoints;
 	WeaponTrailPoint* m_pTrailPoints;
-	Vector3d m_startOffsetPoint;
-	Vector3d m_endOffsetPoint;
+	vec3 m_startOffsetPoint;
+	vec3 m_endOffsetPoint;
 	int m_trailNextAddIndex;
 	float m_nextTrailTimer;
 	float m_nextTrailTime;
@@ -158,13 +158,13 @@ public:
 	void SetVoxelCharacterParent(VoxelCharacter* pParentCharacter);
 	void SetBoneAttachment(const char* boneName);
 
-	void SetRenderOffset(Vector3d offset);
-	Vector3d GetRenderOffset();
+	void SetRenderOffset(vec3 offset);
+	vec3 GetRenderOffset();
 
 	void SetRenderScale(float scale);
 	float GetRenderScale();
 
-	Vector3d GetCenter();
+	vec3 GetCenter();
 
 	// Subsection animations
 	void StartSubSectionAnimation();
@@ -174,16 +174,17 @@ public:
 	// Weapon trails
 	void StartWeaponTrails();
 	void StopWeaponTrails();
+	bool IsWeaponTrailsActive();
 
 	// Lighting
 	int GetNumLights();
 	void SetLightingId(int lightIndex, unsigned int lightId);
-	void GetLightParams(int lightIndex, unsigned int *lightId, Vector3d *position, float *radius, float *diffuseMultiplier, Colour *colour, bool *connectedToSegment);
+	void GetLightParams(int lightIndex, unsigned int *lightId, vec3 *position, float *radius, float *diffuseMultiplier, Colour *colour, bool *connectedToSegment);
 
 	// Particle effects
 	int GetNumParticleEffects();
 	void SetParticleEffectId(int particleEffectIndex, unsigned int particleEffectId);
-	void GetParticleEffectParams(int particleEffectIndex, unsigned int *particleEffectId, Vector3d *position, string* name, bool *connectedToSegment);
+	void GetParticleEffectParams(int particleEffectIndex, unsigned int *particleEffectId, vec3 *position, string* name, bool *connectedToSegment);
 
 	// Animated sections
 	int GetNumAimatedSections();
@@ -242,7 +243,7 @@ private:
 	int m_matrixIndex;
 
 	// Render offset from center
-	Vector3d m_renderOffset;
+	vec3 m_renderOffset;
 
 	// Weapon scale
 	float m_renderScale;

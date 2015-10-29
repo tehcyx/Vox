@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Renderer/Renderer.h"
+#include "gui/openglgui.h"
 #include "Renderer/camera.h"
 #include "Lighting/LightingManager.h"
 #include "Particles/BlockParticleManager.h"
-#include "models/VoxelCharacter.h"
+#include "Player/Player.h"
 
 #include <windows.h>
 
@@ -18,8 +19,13 @@ public:
 	/* Public methods */
 	static VoxGame* GetInstance();
 
+	// Creation
 	void Create();
+	void CreateGUI();
+
+	// Destruction
 	void Destroy();
+	void DestroyGUI();
 
 	// Events
 	void PollEvents();
@@ -47,23 +53,42 @@ public:
 	// Updating
 	void Update();
 	void UpdateLights(float dt);
-	void UpdateWeaponLights(float dt);
-	void UpdateWeaponParticleEffects(float dt);
-	void UnloadWeapon(bool left);
+	void UpdateGUI(float dt);
 
 	// Rendering
+	void PreRender();
 	void Render();
 	void RenderWorld();
 	void RenderDeferredLighting();
 	void RenderTransparency();
 	void RenderSSAOTexture();
+	void RenderGUI();
 	void RenderDebugInformation();
+
+	// GUI
+	void UpdateAnimationsPulldown();
 
 protected:
 	/* Protected methods */
 	VoxGame() {};
 	VoxGame(const VoxGame&) {};
 	VoxGame &operator=(const VoxGame&) {};
+
+	// GUI callbacks
+	static void _ToggleFullScreenPressed(void *apData);
+	void ToggleFullScreenPressed();	
+
+	static void _PlayAnimationPressed(void *apData);
+	void PlayAnimationPressed();
+
+	static void _AnimationPullDownChanged(void *apData);
+	void AnimationPullDownChanged();
+	
+	static void _WeaponPullDownChanged(void *apData);
+	void WeaponPullDownChanged();
+
+	static void _CharacterPullDownChanged(void *apData);
+	void CharacterPullDownChanged();
 
 private:
 	/* Private methods */
@@ -82,15 +107,18 @@ private:
 	// Renderer
 	Renderer* m_pRenderer;
 	
+	// GUI
+	OpenGLGUI* m_pGUI;
+
 	// Game camera
 	Camera* m_pGameCamera;
 
 	// Qubicle binary manager
 	QubicleBinaryManager* m_pQubicleBinaryManager;
-
-	// Voxel character
-	VoxelCharacter* m_pVoxelCharacter;
 	
+	// Player
+	Player* m_pPlayer;
+
 	// Lighting manager
 	LightingManager* m_pLightingManager;
 
@@ -109,8 +137,8 @@ private:
 
 	// Lights
 	unsigned int m_defaultLight;
-	Vector3d m_defaultLightPosition;
-	Vector3d m_defaultLightView;
+	vec3 m_defaultLightPosition;
+	vec3 m_defaultLightView;
 
 	// Materials
 	unsigned int m_defaultMaterial;
@@ -155,19 +183,29 @@ private:
 	int m_currentX;
 	int m_currentY;
 
+	// GUI Components
+	GUIWindow* m_pMainWindow;
+	CheckBox* m_pShadowsCheckBox;
+	CheckBox* m_pSSAOCheckBox;
+	CheckBox* m_pDynamicLightingCheckBox;
+	CheckBox* m_pWireframeCheckBox;
+	CheckBox* m_pMSAACheckBox;
+	CheckBox* m_pDeferredCheckBox;
+	CheckBox* m_pUpdateCheckBox;
+	Button* m_pFullscreenButton;
+	Button* m_pPlayAnimationButton;
+	PulldownMenu* m_pAnimationsPulldown;
+	PulldownMenu* m_pWeaponsPulldown;
+	PulldownMenu* m_pCharacterPulldown;
+
 	// Toggle flags
-	int m_renderModeIndex;
-	string m_renderModeString;
-	bool m_displayHelpText;
+	bool m_deferredRendering;
 	bool m_modelWireframe;
-	bool m_modelTalking;
 	int m_modelAnimationIndex;
 	bool m_multiSampling;
 	bool m_ssao;
 	bool m_shadows;
 	bool m_dynamicLighting;
-	int m_weaponIndex;
-	string m_weaponString;
 	bool m_animationUpdate;
 	bool m_fullscreen;
 

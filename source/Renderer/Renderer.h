@@ -18,6 +18,8 @@
 #include "glsl.h"
 
 #include "../Maths/3dmaths.h"
+#include <glm/vec3.hpp>
+using namespace glm;
 #include "../freetype/freetypefont.h"
 
 #include <windows.h>
@@ -206,8 +208,12 @@ public:
 	void PushTextureMatrix();
 	void PopTextureMatrix();
 
+	// Scissor testing
+	void EnableScissorTest(int x, int y, int width, int height);
+	void DisableScissorTest();
+
 	// Camera functionality
-	void SetLookAtCamera(Vector3d pos, Vector3d target, Vector3d up);
+	void SetLookAtCamera(vec3 pos, vec3 target, vec3 up);
 
 	// Transparency
 	void EnableTransparency(BlendFunction source, BlendFunction destination);
@@ -252,9 +258,9 @@ public:
 	int GetFreeTypeTextDescent(unsigned int fontID);
 
 	// Lighting
-	bool CreateLight(const Colour &ambient, const Colour &diffuse, const Colour &specular, Vector3d &position, Vector3d &direction, float exponent, float cutoff, float cAtten, float lAtten, float qAtten, bool point, bool spot, unsigned int *pID);
-	bool EditLight(unsigned int id, const Colour &ambient, const Colour &diffuse, const Colour &specular, Vector3d &position, Vector3d &direction, float exponent, float cutoff, float cAtten, float qAtten, float lAtten, bool point, bool spot);
-	bool EditLightPosition(unsigned int id, Vector3d &position);
+	bool CreateLight(const Colour &ambient, const Colour &diffuse, const Colour &specular, vec3 &position, vec3 &direction, float exponent, float cutoff, float cAtten, float lAtten, float qAtten, bool point, bool spot, unsigned int *pID);
+	bool EditLight(unsigned int id, const Colour &ambient, const Colour &diffuse, const Colour &specular, vec3 &position, vec3 &direction, float exponent, float cutoff, float cAtten, float qAtten, float lAtten, bool point, bool spot);
+	bool EditLightPosition(unsigned int id, vec3 &position);
 	void DeleteLight(unsigned int id);
 	void EnableLight(unsigned int id, unsigned int lightNumber);
 	void DisableLight(unsigned int lightNumber);
@@ -262,7 +268,7 @@ public:
 	Colour GetLightAmbient(unsigned int id);
 	Colour GetLightDiffuse(unsigned int id);
 	Colour GetLightSpecular(unsigned int id);
-	Vector3d GetLightPosition(unsigned int id);
+	vec3 GetLightPosition(unsigned int id);
 	float GetConstantAttenuation(unsigned int id);
 	float GetLinearAttenuation(unsigned int id);
 	float GetQuadraticAttenuation(unsigned int id);
@@ -298,7 +304,7 @@ public:
 	// Mesh
 	OpenGLTriangleMesh* CreateMesh(OGLMeshType meshType);
 	void ClearMesh(OpenGLTriangleMesh* pMesh);
-	unsigned int AddVertexToMesh(Vector3d p, Vector3d n, float r, float g, float b, float a, OpenGLTriangleMesh* pMesh);
+	unsigned int AddVertexToMesh(vec3 p, vec3 n, float r, float g, float b, float a, OpenGLTriangleMesh* pMesh);
 	unsigned int AddTextureCoordinatesToMesh(float s, float t, OpenGLTriangleMesh* pMesh);
 	unsigned int AddTriangleToMesh(unsigned int vertexId1, unsigned int vertexId2, unsigned int vertexId3, OpenGLTriangleMesh* pMesh);
 	void ModifyMeshAlpha(float alpha, OpenGLTriangleMesh* pMesh);
@@ -320,9 +326,9 @@ public:
 
 	// Frustum
 	Frustum* GetFrustum(unsigned int frustumid);
-	int PointInFrustum(unsigned int frustumid, const Vector3d &point);
-	int SphereInFrustum(unsigned int frustumid, const Vector3d &point, float radius);
-	int CubeInFrustum(unsigned int frustumid, const Vector3d &center, float x, float y, float z);
+	int PointInFrustum(unsigned int frustumid, const vec3 &point);
+	int SphereInFrustum(unsigned int frustumid, const vec3 &point, float radius);
+	int CubeInFrustum(unsigned int frustumid, const vec3 &center, float x, float y, float z);
 
 	// Frame buffers
 	bool CreateFrameBuffer(int idToResetup, bool diffuse, bool position, bool normal, bool depth, int width, int height, float viewportScale, string name, unsigned int *pId);
