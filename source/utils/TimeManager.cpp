@@ -18,7 +18,10 @@
 
 #include "TimeManager.h"
 
+#ifdef _WIN32 || WIN32 || WIN64 || _WIN64
 #include <windows.h>
+#endif
+
 #include <stdio.h>
 #include <Mmsystem.h>
 

@@ -22,9 +22,16 @@
 using namespace glm;
 #include "../freetype/freetypefont.h"
 
+#ifdef _WIN32 || WIN32 || WIN64 || _WIN64
 #include <windows.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
+#endif
+
+#ifdef __APPLE__
+#include <GLUT/glut.h>		/* OpenGL Utility Toolkit header */
+#else
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
 
 #pragma comment (lib, "opengl32")
 #pragma comment (lib, "glu32")

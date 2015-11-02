@@ -7,7 +7,9 @@
 #include "Particles/BlockParticleManager.h"
 #include "Player/Player.h"
 
+#ifdef _WIN32 || WIN32 || WIN64 || _WIN64
 #include <windows.h>
+#endif
 
 #include "VoxApplication.h"
 #include "VoxWindow.h"
