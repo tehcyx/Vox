@@ -7,9 +7,8 @@
 #include "Particles/BlockParticleManager.h"
 #include "Player/Player.h"
 
-#ifdef _WIN32 || WIN32 || WIN64 || _WIN64
-#include <windows.h>
-#endif
+#include "blocks/ChunkManager.h"
+#include "frontend/FrontendManager.h"
 
 #include "VoxApplication.h"
 #include "VoxWindow.h"
@@ -24,6 +23,7 @@ public:
 	// Creation
 	void Create();
 	void CreateGUI();
+	void SkinGUI();
 
 	// Destruction
 	void Destroy();
@@ -61,9 +61,13 @@ public:
 	void PreRender();
 	void Render();
 	void RenderWorld();
+	void RenderShadows();
 	void RenderDeferredLighting();
 	void RenderTransparency();
 	void RenderSSAOTexture();
+	void RenderFXAATexture();
+	void RenderFirstPassFullScreen();
+	void RenderSecondPassFullScreen();
 	void RenderGUI();
 	void RenderDebugInformation();
 
@@ -121,11 +125,17 @@ private:
 	// Player
 	Player* m_pPlayer;
 
+	// Chunk manager
+	ChunkManager* m_pChunkManager;
+
 	// Lighting manager
 	LightingManager* m_pLightingManager;
 
 	// Block particle manager
 	BlockParticleManager* m_pBlockParticleManager;
+
+	// Frontend manager
+	FrontendManager* m_pFrontendManager;
 
 	// Window width and height
 	int m_windowWidth;
@@ -150,6 +160,9 @@ private:
 	unsigned int m_shadowFrameBuffer;
 	unsigned int m_lightingFrameBuffer;
 	unsigned int m_transparencyFrameBuffer;
+	unsigned int m_FXAAFrameBuffer;
+	unsigned int m_firstPassFullscreenBuffer;
+	unsigned int m_secondPassFullscreenBuffer;
 
 	// Shaders
 	unsigned int m_defaultShader;
@@ -158,6 +171,9 @@ private:
 	unsigned int m_shadowShader;
 	unsigned int m_lightingShader;
 	unsigned int m_textureShader;
+	unsigned int m_fxaaShader;
+	unsigned int m_blurVerticalShader;
+	unsigned int m_blurHorizontalShader;
 
 	// FPS and deltatime
 	LARGE_INTEGER m_fpsPreviousTicks;
@@ -194,6 +210,8 @@ private:
 	CheckBox* m_pMSAACheckBox;
 	CheckBox* m_pDeferredCheckBox;
 	CheckBox* m_pUpdateCheckBox;
+	CheckBox* m_pBlurCheckBox;
+	CheckBox* m_pDebugRenderCheckBox;
 	Button* m_pFullscreenButton;
 	Button* m_pPlayAnimationButton;
 	PulldownMenu* m_pAnimationsPulldown;
@@ -206,10 +224,12 @@ private:
 	int m_modelAnimationIndex;
 	bool m_multiSampling;
 	bool m_ssao;
+	bool m_blur;
 	bool m_shadows;
 	bool m_dynamicLighting;
 	bool m_animationUpdate;
 	bool m_fullscreen;
+	bool m_debugRender;
 
 	// Singleton instance
 	static VoxGame *c_instance;

@@ -121,22 +121,23 @@ public:
 	vec3 m_startPoint;
 	vec3 m_endPoint;
 	bool m_pointActive;
+	float m_animaionTime;
 };
 
 class WeaponTrail
 {
 public:
-	int m_numTrailPoints;
-	WeaponTrailPoint* m_pTrailPoints;
+	float m_trailTime;
 	vec3 m_startOffsetPoint;
 	vec3 m_endOffsetPoint;
-	int m_trailNextAddIndex;
-	float m_nextTrailTimer;
-	float m_nextTrailTime;
 	Colour m_trailColour;
+	bool m_followOrigin;
+
+	int m_numTrailPoints;
+	int m_trailNextAddIndex;
+	WeaponTrailPoint* m_pTrailPoints;
 	Matrix4x4 m_origin;
 	float m_parentScale;
-	bool m_followOrigin;
 };
 
 
@@ -204,7 +205,8 @@ public:
 	void SetForceTransparency(bool force);
 
 	// Updating
-	void UpdateWeaponTrails(float dt, Matrix4x4 originMatrix, float scale);
+	void SetWeaponTrailsParams(Matrix4x4 originMatrix, float scale);
+	void CreateWeaponTrailPoint();
 	void Update(float dt);
 
 	// Rendering

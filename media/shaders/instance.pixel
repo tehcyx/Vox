@@ -4,12 +4,6 @@ in vec4 out_color;
 in vec4 out_position;
 in vec4 out_normal;
 
-in vec4 out_light_ambient;
-in vec4 out_light_diffuse;
-in vec3 lightDir;
-in vec3 eyeVec;
-in float att;
-
 out vec4 outputColor;
 out vec4 outputPosition;
 out vec4 outputNormal;
@@ -18,19 +12,7 @@ void main()
 {
 	vec3 packedNormal = (normalize(out_normal.xyz) + 1.0)*0.5; // Compress normal
 
-	vec4 light_color = out_light_ambient * att;
-
-	vec3 N = normalize(out_normal).xyz;
-	vec3 L = normalize(lightDir);
-
-	float lambertTerm = dot(N,L);
-	
-	if(lambertTerm > 0.0)
-	{
-		light_color += out_light_diffuse * lambertTerm * att;
-	}
-
-	vec4 final_color = out_color;// * (light_color * 0.5);
+	vec4 final_color = out_color;
 	final_color.a = out_color.a;
 
     outputColor = final_color;

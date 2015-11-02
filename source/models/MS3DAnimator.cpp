@@ -354,6 +354,19 @@ int MS3DAnimator::GetCurrentFrame()
 	return frame;
 }
 
+float MS3DAnimator::GetAnimationTimer()
+{
+	return (float)m_timer;
+}
+
+int MS3DAnimator::GetNumKeyframes()
+{
+	Joint *pJoint = &(mpModel->pJoints[0]);
+	int numFrames = pJoint->numTranslationKeyframes;
+
+	return numFrames;
+}
+
 void MS3DAnimator::StartBlendAnimation(int startIndex, int endIndex, float blendTime)
 {
 	m_bBlending = true;
@@ -585,6 +598,7 @@ Matrix4x4 MS3DAnimator::GetBoneMatrix(int index)
 	return final;
 }
 
+// Update
 void MS3DAnimator::Update(float dt)
 {
 	if(m_bBlending)
@@ -820,6 +834,7 @@ void MS3DAnimator::UpdateBlending(float dt)
 	}
 }
 
+// Rendering
 void MS3DAnimator::Render(bool lMesh, bool lNormals, bool lBones, bool lBoundingBox)
 {
 	if(lMesh)

@@ -55,6 +55,18 @@
     <Filter Include="source\gui">
       <UniqueIdentifier>{0ac31738-7bb3-4431-8ba9-49601f19fb0b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\blocks">
+      <UniqueIdentifier>{23745143-4758-4d21-a8e3-78d2f1e29d2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\lua">
+      <UniqueIdentifier>{8590b97c-118f-4e18-99fa-ba1ee114219a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\selene">
+      <UniqueIdentifier>{14173021-39c2-474c-b606-884533ad1cb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\selene\selene">
+      <UniqueIdentifier>{f7671b50-3bb9-4805-9efc-68130c575f97}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\glew\src\glew.c">
@@ -320,6 +332,111 @@
     </ClCompile>
     <ClCompile Include="..\..\source\gui\TreeView.cpp">
       <Filter>source\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\blocks\ChunkManager.cpp">
+      <Filter>source\blocks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\blocks\Chunk.cpp">
+      <Filter>source\blocks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lapi.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lauxlib.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lbaselib.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lbitlib.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lcode.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lcorolib.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lctype.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\ldblib.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\ldebug.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\ldo.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\ldump.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lfunc.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lgc.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\linit.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\liolib.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\llex.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lmathlib.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lmem.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\loadlib.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lobject.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lopcodes.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\loslib.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lparser.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lstate.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lstring.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lstrlib.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\ltable.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\ltablib.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\ltm.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lundump.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lutf8lib.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lvm.c">
+      <Filter>source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\lua\lzio.c">
+      <Filter>source\lua</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1003,6 +1120,159 @@
     </ClInclude>
     <ClInclude Include="..\..\source\gui\treeview.h">
       <Filter>source\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\blocks\ChunkManager.h">
+      <Filter>source\blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\blocks\Chunk.h">
+      <Filter>source\blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lapi.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lauxlib.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lcode.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lctype.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\ldebug.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\ldo.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lfunc.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lgc.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\llex.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\llimits.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lmem.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lobject.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lopcodes.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lparser.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lprefix.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lstate.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lstring.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\ltable.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\ltm.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lua.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lua.hpp">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\luaconf.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lualib.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lundump.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lvm.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\lua\lzio.h">
+      <Filter>source\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\ClassFun.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\Ctor.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\Dtor.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\exception.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\exotics.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\Fun.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\function.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\LuaName.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\LuaRef.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\MetatableRegistry.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\Obj.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\ObjFun.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\primitives.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\Registry.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\ResourceHandler.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\Selector.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\State.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\traits.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\Tuple.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\util.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\BaseFun.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene\Class.h">
+      <Filter>source\selene\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\selene\selene.h">
+      <Filter>source\selene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

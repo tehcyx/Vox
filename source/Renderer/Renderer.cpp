@@ -161,6 +161,7 @@ Renderer::~Renderer()
 	gluDeleteQuadric(m_Quadratic);
 }
 
+// Resize
 void Renderer::ResizeWindow(int newWidth, int newHeight)
 {
 	m_windowWidth = newWidth;
@@ -450,6 +451,15 @@ void Renderer::MultViewProjection()
 	SetWorldMatrix(m_view * (*m_projection));
 }
 
+void Renderer::SetupOrthographicProjection(float left, float right, float bottom, float top, float zNear, float zFar)
+{
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(left, right, bottom, top, zNear, zFar);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+
 // Scene
 bool Renderer::ClearScene(bool pixel, bool depth, bool stencil)
 {
@@ -489,6 +499,11 @@ bool Renderer::BeginScene(bool pixel, bool depth, bool stencil)
 void Renderer::EndScene()
 {
 	// Swap buffers
+}
+
+void Renderer::SetColourMask(bool red, bool green, bool blue, bool alpha)
+{
+	glColorMask(red, green, blue, alpha);
 }
 
 // Push / Pop matrix stack

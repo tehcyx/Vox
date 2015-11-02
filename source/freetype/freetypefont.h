@@ -16,9 +16,16 @@
 
 #pragma once
 
+#ifdef _WIN32 || WIN32 || WIN64 || _WIN64
 #include <windows.h>
+#endif
+
+#ifdef __APPLE__
+#include <GLUT/glut.h>		/* OpenGL Utility Toolkit header */
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
 
 #include <ft2build.h>
 #include FT_FREETYPE_H

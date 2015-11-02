@@ -18,7 +18,7 @@ void VoxGame::CreateGUI()
 	m_pShadowsCheckBox = new CheckBox(m_pRenderer, m_defaultFont, "Shadows");
 	m_pShadowsCheckBox->SetDimensions(10, 28, 14, 14);
 	m_pShadowsCheckBox->SetToggled(true);
-	m_pMSAACheckBox = new CheckBox(m_pRenderer, m_defaultFont, "MSAA");
+	m_pMSAACheckBox = new CheckBox(m_pRenderer, m_defaultFont, "Anti-Aliasing");
 	m_pMSAACheckBox->SetDimensions(10, 46, 14, 14);
 	m_pMSAACheckBox->SetToggled(true);
 	m_pDynamicLightingCheckBox = new CheckBox(m_pRenderer, m_defaultFont, "Lighting");
@@ -27,13 +27,18 @@ void VoxGame::CreateGUI()
 	m_pSSAOCheckBox = new CheckBox(m_pRenderer, m_defaultFont, "SSAO");
 	m_pSSAOCheckBox->SetDimensions(10, 82, 14, 14);
 	m_pSSAOCheckBox->SetToggled(true);
+	m_pBlurCheckBox = new CheckBox(m_pRenderer, m_defaultFont, "Blur");
+	m_pBlurCheckBox->SetDimensions(10, 100, 14, 14);
+	m_pBlurCheckBox->SetToggled(false);
 	m_pDeferredCheckBox = new CheckBox(m_pRenderer, m_defaultFont, "Deferred");
-	m_pDeferredCheckBox->SetDimensions(10, 100, 14, 14);
+	m_pDeferredCheckBox->SetDimensions(10, 118, 14, 14);
 	m_pDeferredCheckBox->SetToggled(true);
-
 	m_pUpdateCheckBox = new CheckBox(m_pRenderer, m_defaultFont, "Update");
 	m_pUpdateCheckBox->SetDimensions(130, 40, 14, 14);
 	m_pUpdateCheckBox->SetToggled(true);
+	m_pDebugRenderCheckBox = new CheckBox(m_pRenderer, m_defaultFont, "DebugRender");
+	m_pDebugRenderCheckBox->SetDimensions(210, 10, 14, 14);
+	m_pDebugRenderCheckBox->SetToggled(false);
 
 	m_pFullscreenButton = new Button(m_pRenderer, m_defaultFont, "FullScreen");
 	m_pFullscreenButton->SetDimensions(110, 10, 80, 20);
@@ -64,8 +69,12 @@ void VoxGame::CreateGUI()
 	m_pWeaponsPulldown->AddPulldownItem("Sword");
 	m_pWeaponsPulldown->AddPulldownItem("Sword & Shield");
 	m_pWeaponsPulldown->AddPulldownItem("2 Handed Sword");
+	m_pWeaponsPulldown->AddPulldownItem("Hammer");
 	m_pWeaponsPulldown->AddPulldownItem("Bow");
 	m_pWeaponsPulldown->AddPulldownItem("Staff");
+	m_pWeaponsPulldown->AddPulldownItem("DruidStaff");
+	m_pWeaponsPulldown->AddPulldownItem("PriestStaff");
+	m_pWeaponsPulldown->AddPulldownItem("NecroStaff");
 	m_pWeaponsPulldown->AddPulldownItem("Torch");
 	m_pWeaponsPulldown->AddPulldownItem("Magic");
 
@@ -82,15 +91,18 @@ void VoxGame::CreateGUI()
 	m_pCharacterPulldown->AddPulldownItem("Necromancer");
 	m_pCharacterPulldown->AddPulldownItem("Priest");
 	m_pCharacterPulldown->AddPulldownItem("Paladin");
+	m_pCharacterPulldown->AddPulldownItem("Druid");
 	m_pCharacterPulldown->AddPulldownItem("TreeElemental");
 
 	m_pMainWindow->AddComponent(m_pShadowsCheckBox);
 	m_pMainWindow->AddComponent(m_pSSAOCheckBox);
+	m_pMainWindow->AddComponent(m_pBlurCheckBox);
 	m_pMainWindow->AddComponent(m_pDynamicLightingCheckBox);
 	m_pMainWindow->AddComponent(m_pWireframeCheckBox);
 	m_pMainWindow->AddComponent(m_pMSAACheckBox);
 	m_pMainWindow->AddComponent(m_pDeferredCheckBox);
 	m_pMainWindow->AddComponent(m_pUpdateCheckBox);
+	m_pMainWindow->AddComponent(m_pDebugRenderCheckBox);
 	m_pMainWindow->AddComponent(m_pFullscreenButton);
 	m_pMainWindow->AddComponent(m_pPlayAnimationButton);
 	m_pMainWindow->AddComponent(m_pAnimationsPulldown);
@@ -102,16 +114,94 @@ void VoxGame::CreateGUI()
 	UpdateAnimationsPulldown();
 }
 
+void VoxGame::SkinGUI()
+{
+	m_pShadowsCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
+	m_pShadowsCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
+	m_pShadowsCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
+	m_pShadowsCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
+	m_pShadowsCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
+	m_pShadowsCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
+	m_pShadowsCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
+	m_pShadowsCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
+	m_pMSAACheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
+	m_pMSAACheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
+	m_pMSAACheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
+	m_pMSAACheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
+	m_pMSAACheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
+	m_pMSAACheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
+	m_pMSAACheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
+	m_pMSAACheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
+	m_pDynamicLightingCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
+	m_pDynamicLightingCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
+	m_pDynamicLightingCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
+	m_pDynamicLightingCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
+	m_pDynamicLightingCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
+	m_pDynamicLightingCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
+	m_pDynamicLightingCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
+	m_pDynamicLightingCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
+	m_pSSAOCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
+	m_pSSAOCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
+	m_pSSAOCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
+	m_pSSAOCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
+	m_pSSAOCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
+	m_pSSAOCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
+	m_pSSAOCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
+	m_pSSAOCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
+	m_pBlurCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
+	m_pBlurCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
+	m_pBlurCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
+	m_pBlurCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
+	m_pBlurCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
+	m_pBlurCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
+	m_pBlurCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
+	m_pBlurCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
+	m_pDeferredCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
+	m_pDeferredCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
+	m_pDeferredCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
+	m_pDeferredCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
+	m_pDeferredCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
+	m_pDeferredCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
+	m_pDeferredCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
+	m_pDeferredCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
+	m_pWireframeCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
+	m_pWireframeCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
+	m_pWireframeCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
+	m_pWireframeCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
+	m_pWireframeCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
+	m_pWireframeCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
+	m_pWireframeCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
+	m_pWireframeCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
+	m_pUpdateCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
+	m_pUpdateCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
+	m_pUpdateCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
+	m_pUpdateCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
+	m_pUpdateCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
+	m_pUpdateCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
+	m_pUpdateCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
+	m_pUpdateCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
+	m_pDebugRenderCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
+	m_pDebugRenderCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
+	m_pDebugRenderCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
+	m_pDebugRenderCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
+	m_pDebugRenderCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
+	m_pDebugRenderCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
+	m_pDebugRenderCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
+	m_pDebugRenderCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
+}
+
 void VoxGame::DestroyGUI()
 {
 	delete m_pMainWindow;
 	delete m_pShadowsCheckBox;
 	delete m_pSSAOCheckBox;
+	delete m_pBlurCheckBox;
 	delete m_pDynamicLightingCheckBox;
 	delete m_pWireframeCheckBox;
 	delete m_pMSAACheckBox;
 	delete m_pDeferredCheckBox;
 	delete m_pUpdateCheckBox;
+	delete m_pDebugRenderCheckBox;
 	delete m_pFullscreenButton;
 	delete m_pPlayAnimationButton;
 	delete m_pAnimationsPulldown;
@@ -123,23 +213,25 @@ void VoxGame::UpdateGUI(float dt)
 {
 	m_shadows = m_pShadowsCheckBox->GetToggled();
 	m_ssao = m_pSSAOCheckBox->GetToggled();
+	m_blur = m_pBlurCheckBox->GetToggled();
 	m_dynamicLighting = m_pDynamicLightingCheckBox->GetToggled();
 	m_modelWireframe = m_pWireframeCheckBox->GetToggled();
 	m_multiSampling = m_pMSAACheckBox->GetToggled();
 	m_deferredRendering = m_pDeferredCheckBox->GetToggled();
 	m_animationUpdate = m_pUpdateCheckBox->GetToggled();
+	m_debugRender = m_pDebugRenderCheckBox->GetToggled();
 
 	if (m_deferredRendering)
 	{
 		m_pSSAOCheckBox->SetDisabled(false);
 		m_pDynamicLightingCheckBox->SetDisabled(false);
-		m_pMSAACheckBox->SetDisabled(true);
+		m_pBlurCheckBox->SetDisabled(false);
 	}
 	else
 	{
 		m_pSSAOCheckBox->SetDisabled(true);
 		m_pDynamicLightingCheckBox->SetDisabled(true);
-		m_pMSAACheckBox->SetDisabled(false);
+		m_pBlurCheckBox->SetDisabled(true);
 	}
 
 	m_pPlayer->SetWireFrameRender(m_modelWireframe);
@@ -234,6 +326,10 @@ void VoxGame::WeaponPullDownChanged()
 		{
 			m_pPlayer->GetVoxelCharacter()->LoadRightWeapon("media/gamedata/weapons/2HandedSword/2HandedSword.weapon");
 		}
+		else if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "Hammer") == 0)
+		{
+			m_pPlayer->GetVoxelCharacter()->LoadRightWeapon("media/gamedata/weapons/Hammer/Hammer.weapon");
+		}
 		else if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "Bow") == 0)
 		{
 			m_pPlayer->GetVoxelCharacter()->LoadLeftWeapon("media/gamedata/weapons/Bow/Bow.weapon");
@@ -241,6 +337,18 @@ void VoxGame::WeaponPullDownChanged()
 		else if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "Staff") == 0)
 		{
 			m_pPlayer->GetVoxelCharacter()->LoadRightWeapon("media/gamedata/weapons/Staff/Staff.weapon");
+		}
+		else if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "DruidStaff") == 0)
+		{
+			m_pPlayer->GetVoxelCharacter()->LoadRightWeapon("media/gamedata/weapons/DruidStaff/DruidStaff.weapon");
+		}
+		else if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "PriestStaff") == 0)
+		{
+			m_pPlayer->GetVoxelCharacter()->LoadRightWeapon("media/gamedata/weapons/PriestStaff/PriestStaff.weapon");
+		}
+		else if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "NecroStaff") == 0)
+		{
+			m_pPlayer->GetVoxelCharacter()->LoadRightWeapon("media/gamedata/weapons/NecroStaff/NecroStaff.weapon");
 		}
 		else if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "Torch") == 0)
 		{
@@ -270,34 +378,7 @@ void VoxGame::CharacterPullDownChanged()
 		m_pPlayer->UnloadWeapon(false);
 		m_pPlayer->UnloadWeapon(true);
 
-		if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "Steve") == 0)
-		{
-			m_pPlayer->LoadCharacter("Steve");
-		}
-		else if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "Mage") == 0)
-		{
-			m_pPlayer->LoadCharacter("Mage");
-		}
-		else if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "Warrior") == 0)
-		{
-			m_pPlayer->LoadCharacter("Warrior");
-		}
-		else if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "Necromancer") == 0)
-		{
-			m_pPlayer->LoadCharacter("Necromancer");
-		}
-		else if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "Priest") == 0)
-		{
-			m_pPlayer->LoadCharacter("Priest");
-		}
-		else if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "Paladin") == 0)
-		{
-			m_pPlayer->LoadCharacter("Paladin");
-		}
-		else if (strcmp(pMenuItem->GetLabel().GetText().c_str(), "TreeElemental") == 0)
-		{
-			m_pPlayer->LoadCharacter("TreeElemental");
-		}
+		m_pPlayer->LoadCharacter(pMenuItem->GetLabel().GetText().c_str());
 
 		WeaponPullDownChanged();
 		AnimationPullDownChanged();

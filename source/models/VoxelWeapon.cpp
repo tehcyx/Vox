@@ -244,9 +244,7 @@ void VoxelWeapon::LoadWeapon(const char *weaponFilename, bool useManager)
 		}
 		for(int i = 0; i < m_numWeaponTrails; i++)
 		{
-			file >> tempString >> m_pWeaponTrails[i].m_numTrailPoints;
-
-			m_pWeaponTrails[i].m_pTrailPoints = new WeaponTrailPoint[m_pWeaponTrails[i].m_numTrailPoints];
+			file >> tempString >> m_pWeaponTrails[i].m_trailTime;
 
 			float startOffsetX = 0.0f;
 			float startOffsetY = 0.0f;
@@ -269,12 +267,13 @@ void VoxelWeapon::LoadWeapon(const char *weaponFilename, bool useManager)
 			file >> tempString >> m_pWeaponTrails[i].m_followOrigin;
 
 			m_pWeaponTrails[i].m_parentScale = 1.0f;
+			m_pWeaponTrails[i].m_numTrailPoints = 50;
+			m_pWeaponTrails[i].m_pTrailPoints = new WeaponTrailPoint[m_pWeaponTrails[i].m_numTrailPoints];
 			m_pWeaponTrails[i].m_trailNextAddIndex = 0;
-			m_pWeaponTrails[i].m_nextTrailTimer = 0.0f;
-			m_pWeaponTrails[i].m_nextTrailTime = 0.00001f;
 			for(int point = 0; point < m_pWeaponTrails[i].m_numTrailPoints; point++)
 			{
 				m_pWeaponTrails[i].m_pTrailPoints[point].m_pointActive = false;
+				m_pWeaponTrails[i].m_pTrailPoints[point].m_animaionTime = 0.0f;
 			}
 		}
 
@@ -345,12 +344,8 @@ void VoxelWeapon::UnloadWeapon()
 	{
 		for(int i = 0; i < m_numWeaponTrails; i++)
 		{
-			if(m_pWeaponTrails[i].m_numTrailPoints > 0)
-			{
-				delete[] m_pWeaponTrails[i].m_pTrailPoints;
-				m_pWeaponTrails[i].m_pTrailPoints = NULL;
-				m_pWeaponTrails[i].m_numTrailPoints = 0;
-			}
+			delete[] m_pWeaponTrails[i].m_pTrailPoints;
+			m_pWeaponTrails[i].m_pTrailPoints = NULL;
 		}
 
 		delete[] m_pWeaponTrails;
@@ -441,12 +436,10 @@ void VoxelWeapon::StartWeaponTrails()
 
 	for(int i = 0; i < m_numWeaponTrails; i++)
 	{
-		m_pWeaponTrails[i].m_trailNextAddIndex = 0;
-		m_pWeaponTrails[i].m_nextTrailTime = 0.00001f;
-		m_pWeaponTrails[i].m_nextTrailTimer = m_pWeaponTrails[i].m_nextTrailTime;
 		for(int point = 0; point < m_pWeaponTrails[i].m_numTrailPoints; point++)
 		{
 			m_pWeaponTrails[i].m_pTrailPoints[point].m_pointActive = false;
+			m_pWeaponTrails[i].m_pTrailPoints[point].m_animaionTime = 0.0f;
 		}
 	}
 }
@@ -579,7 +572,7 @@ void VoxelWeapon::SetForceTransparency(bool force)
 }
 
 // Updating
-void VoxelWeapon::UpdateWeaponTrails(float dt, Matrix4x4 originMatrix, float scale)
+void VoxelWeapon::SetWeaponTrailsParams(Matrix4x4 originMatrix, float scale)
 {
 	if(m_loaded == false)
 	{
@@ -590,162 +583,155 @@ void VoxelWeapon::UpdateWeaponTrails(float dt, Matrix4x4 originMatrix, float sca
 	{
 		m_pWeaponTrails[i].m_origin = originMatrix;
 		m_pWeaponTrails[i].m_parentScale = scale;
+	}
+}
 
-		if(m_weaponTrailsStarted == false)
+void VoxelWeapon::CreateWeaponTrailPoint()
+{
+	for (int i = 0; i < m_numWeaponTrails; i++)
+	{
+		int index = m_pWeaponTrails[i].m_trailNextAddIndex;
+
+		if (m_weaponTrailsStarted == false)
 		{
-			m_pWeaponTrails[i].m_pTrailPoints[m_pWeaponTrails[i].m_trailNextAddIndex].m_pointActive = false;
+			m_pWeaponTrails[i].m_pTrailPoints[index].m_pointActive = false;
 		}
 		else
 		{
-			if(m_pWeaponTrails[i].m_nextTrailTimer <= 0.0f)
+			vec3 startPosition = m_pWeaponTrails[i].m_startOffsetPoint;
+			vec3 endPosition = m_pWeaponTrails[i].m_endOffsetPoint;
+
+			// Scale to render size
+			// Translate for initial block offset
+			startPosition += (vec3(m_renderOffset.x, m_renderOffset.y, m_renderOffset.z) * m_renderScale);
+			endPosition += (vec3(m_renderOffset.x, m_renderOffset.y, m_renderOffset.z) * m_renderScale);
+
+			// Rotation due to the weapon facing forwards for hand directions
+			if (m_pParentCharacter != NULL)
 			{
-				vec3 startPosition = m_pWeaponTrails[i].m_startOffsetPoint;
-				vec3 endPosition = m_pWeaponTrails[i].m_endOffsetPoint;
-
-				// Scale to render size
-				// Translate for initial block offset
-				startPosition += (vec3(m_renderOffset.x, m_renderOffset.y, m_renderOffset.z) * m_renderScale);
-				endPosition += (vec3(m_renderOffset.x, m_renderOffset.y, m_renderOffset.z) * m_renderScale);
-
-				// Rotation due to the weapon facing forwards for hand directions
-				if(m_pParentCharacter != NULL)
-				{
-					Matrix4x4 rotationMatrix;
-					rotationMatrix.SetRotation(DegToRad(90.0f), 0.0f, 0.0f);
-					startPosition = rotationMatrix * startPosition;
-					endPosition = rotationMatrix * endPosition;
-				}
-
-				if(m_matrixIndex != -1)
-				{
-					vec3 handBoneOffset = m_pParentCharacter->GetBoneMatrixRenderOffset(m_matrixName.c_str());
-
-					// Translate for external matrix offset value
-					startPosition += vec3(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
-					endPosition += vec3(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
-				}
-
-				// Rotation due to 3dsmax export affecting the bone rotations
-				if(m_pParentCharacter != NULL)
-				{
-					Matrix4x4 rotationMatrix;
-					rotationMatrix.SetRotation(0.0f, 0.0f, DegToRad(-90.0f));
-					startPosition = rotationMatrix * startPosition;
-					endPosition = rotationMatrix * endPosition;
-				}
-
-				// First person mode modifications
-				if(m_firstPersonMode)
-				{
-					Matrix4x4 rotationMatrix;
-					float amountX = 0.75f;
-					float amountY = 0.75f;
-					float amountZ = 0.5f;
-					rotationMatrix.SetTranslation(vec3(amountX, amountY, -amountZ));
-					rotationMatrix.SetRotation(0.0f, DegToRad(m_cameraYRotation), 0.0f);
-					startPosition = rotationMatrix * startPosition;
-					endPosition = rotationMatrix * endPosition;
-				}
-
-				// Translate for initial block offset
-				//startPosition -= vec3(0.5f, 0.5f, 0.5f);
-				//endPosition -= vec3(0.5f, 0.5f, 0.5f);
-
-				if(m_pParentCharacter != NULL)
-				{
-					if(m_boneIndex != -1)
-					{
-						AnimationSections animationSection = AnimationSections_FullBody;
-						if(m_boneIndex == m_pParentCharacter->GetHeadBoneIndex() ||
-							m_boneIndex == m_pParentCharacter->GetBodyBoneIndex())
-						{
-							animationSection = AnimationSections_Head_Body;
-						}
-						else if(m_boneIndex == m_pParentCharacter->GetLeftShoulderBoneIndex() ||
-							m_boneIndex == m_pParentCharacter->GetLeftHandBoneIndex())
-						{
-							animationSection = AnimationSections_Left_Arm_Hand;
-						}
-						else if(m_boneIndex == m_pParentCharacter->GetRightShoulderBoneIndex() ||
-							m_boneIndex == m_pParentCharacter->GetRightHandBoneIndex())
-						{
-							animationSection = AnimationSections_Right_Arm_Hand;
-						}
-						else if(m_boneIndex == m_pParentCharacter->GetLegsBoneIndex() ||
-							m_boneIndex == m_pParentCharacter->GetRightFootBoneIndex() ||
-							m_boneIndex == m_pParentCharacter->GetLeftFootBoneIndex())
-						{
-							animationSection = AnimationSections_Legs_Feet;
-						}				
-
-						Matrix4x4 boneMatrix = m_pParentCharacter->GetBoneMatrix(animationSection, m_boneIndex);
-
-						// Translate by attached bone matrix
-						startPosition = boneMatrix * startPosition;
-						endPosition = boneMatrix * endPosition;
-
-						// Looking direction, since we are attached to a character who is holding us.
-						{
-							vec3 lForward = normalize(m_pParentCharacter->GetFaceLookingDirection());
-							lForward.y = 0.0f;
-							lForward = normalize(lForward);
-							vec3 forwardDiff = lForward - vec3(0.0f, 0.0f, 1.0f);
-							lForward = normalize(vec3(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f));
-
-							vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
-							vec3 lRight = normalize(cross(lUp, lForward));
-							lUp = normalize(cross(lForward, lRight));
-
-							float lMatrix[16] =
-							{
-								lRight.x, lRight.y, lRight.z, 0.0f,
-								lUp.x, lUp.y, lUp.z, 0.0f,
-								lForward.x, lForward.y, lForward.z, 0.0f,
-								0.0f, 0.0f, 0.0f, 1.0f
-							};
-							Matrix4x4 lookingMat;
-							lookingMat.SetValues(lMatrix);
-
-							startPosition = lookingMat * startPosition;
-							endPosition = lookingMat * endPosition;
-						}
-
-						// Breathing animation
-						float offsetAmount = m_pParentCharacter->GetBreathingAnimationOffsetForBone(m_boneIndex);
-						startPosition += vec3(0.0f, offsetAmount, 0.0f);
-						endPosition += vec3(0.0f, offsetAmount, 0.0f);
-					}
-				}
-
-				if(m_pWeaponTrails[i].m_followOrigin == false)
-				{
-					startPosition *= scale;
-					endPosition *= scale;
-
-					startPosition = originMatrix * startPosition;
-					endPosition = originMatrix * endPosition;
-				}
-
-				m_pWeaponTrails[i].m_pTrailPoints[m_pWeaponTrails[i].m_trailNextAddIndex].m_startPoint = startPosition;
-				m_pWeaponTrails[i].m_pTrailPoints[m_pWeaponTrails[i].m_trailNextAddIndex].m_endPoint = endPosition;
-
-				m_pWeaponTrails[i].m_pTrailPoints[m_pWeaponTrails[i].m_trailNextAddIndex].m_pointActive = true;
+				Matrix4x4 rotationMatrix;
+				rotationMatrix.SetRotation(DegToRad(90.0f), 0.0f, 0.0f);
+				startPosition = rotationMatrix * startPosition;
+				endPosition = rotationMatrix * endPosition;
 			}
-		}
 
-		if(m_pWeaponTrails[i].m_nextTrailTimer <= 0.0f)
-		{
-			m_pWeaponTrails[i].m_nextTrailTimer = m_pWeaponTrails[i].m_nextTrailTime;
+			if (m_matrixIndex != -1)
+			{
+				vec3 handBoneOffset = m_pParentCharacter->GetBoneMatrixRenderOffset(m_matrixName.c_str());
+
+				// Translate for external matrix offset value
+				startPosition += vec3(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
+				endPosition += vec3(handBoneOffset.x, handBoneOffset.y, handBoneOffset.z);
+			}
+
+			// Rotation due to 3dsmax export affecting the bone rotations
+			if (m_pParentCharacter != NULL)
+			{
+				Matrix4x4 rotationMatrix;
+				rotationMatrix.SetRotation(0.0f, 0.0f, DegToRad(-90.0f));
+				startPosition = rotationMatrix * startPosition;
+				endPosition = rotationMatrix * endPosition;
+			}
+
+			// First person mode modifications
+			if (m_firstPersonMode)
+			{
+				Matrix4x4 rotationMatrix;
+				float amountX = 0.75f;
+				float amountY = 0.75f;
+				float amountZ = 0.5f;
+				rotationMatrix.SetTranslation(vec3(amountX, amountY, -amountZ));
+				rotationMatrix.SetRotation(0.0f, DegToRad(m_cameraYRotation), 0.0f);
+				startPosition = rotationMatrix * startPosition;
+				endPosition = rotationMatrix * endPosition;
+			}
+
+			if (m_pParentCharacter != NULL)
+			{
+				if (m_boneIndex != -1)
+				{
+					AnimationSections animationSection = AnimationSections_FullBody;
+					if (m_boneIndex == m_pParentCharacter->GetHeadBoneIndex() ||
+						m_boneIndex == m_pParentCharacter->GetBodyBoneIndex())
+					{
+						animationSection = AnimationSections_Head_Body;
+					}
+					else if (m_boneIndex == m_pParentCharacter->GetLeftShoulderBoneIndex() ||
+						m_boneIndex == m_pParentCharacter->GetLeftHandBoneIndex())
+					{
+						animationSection = AnimationSections_Left_Arm_Hand;
+					}
+					else if (m_boneIndex == m_pParentCharacter->GetRightShoulderBoneIndex() ||
+						m_boneIndex == m_pParentCharacter->GetRightHandBoneIndex())
+					{
+						animationSection = AnimationSections_Right_Arm_Hand;
+					}
+					else if (m_boneIndex == m_pParentCharacter->GetLegsBoneIndex() ||
+						m_boneIndex == m_pParentCharacter->GetRightFootBoneIndex() ||
+						m_boneIndex == m_pParentCharacter->GetLeftFootBoneIndex())
+					{
+						animationSection = AnimationSections_Legs_Feet;
+					}
+
+					Matrix4x4 boneMatrix = m_pParentCharacter->GetBoneMatrix(animationSection, m_boneIndex);
+
+					// Translate by attached bone matrix
+					startPosition = boneMatrix * startPosition;
+					endPosition = boneMatrix * endPosition;
+
+					// Looking direction, since we are attached to a character who is holding us.
+					{
+						vec3 lForward = normalize(m_pParentCharacter->GetFaceLookingDirection());
+						lForward.y = 0.0f;
+						lForward = normalize(lForward);
+						vec3 forwardDiff = lForward - vec3(0.0f, 0.0f, 1.0f);
+						lForward = normalize(vec3(0.0f, 0.0f, 1.0f) + (forwardDiff*0.5f));
+
+						vec3 lUp = vec3(0.0f, 1.0f, 0.0f);
+						vec3 lRight = normalize(cross(lUp, lForward));
+						lUp = normalize(cross(lForward, lRight));
+
+						float lMatrix[16] =
+						{
+							lRight.x, lRight.y, lRight.z, 0.0f,
+							lUp.x, lUp.y, lUp.z, 0.0f,
+							lForward.x, lForward.y, lForward.z, 0.0f,
+							0.0f, 0.0f, 0.0f, 1.0f
+						};
+						Matrix4x4 lookingMat;
+						lookingMat.SetValues(lMatrix);
+
+						startPosition = lookingMat * startPosition;
+						endPosition = lookingMat * endPosition;
+					}
+
+					// Breathing animation
+					float offsetAmount = m_pParentCharacter->GetBreathingAnimationOffsetForBone(m_boneIndex);
+					startPosition += vec3(0.0f, offsetAmount, 0.0f);
+					endPosition += vec3(0.0f, offsetAmount, 0.0f);
+				}
+			}
+
+			if (m_pWeaponTrails[i].m_followOrigin == false)
+			{
+				startPosition *= m_pWeaponTrails[i].m_parentScale;
+				endPosition *= m_pWeaponTrails[i].m_parentScale;
+
+				startPosition = m_pWeaponTrails[i].m_origin * startPosition;
+				endPosition = m_pWeaponTrails[i].m_origin * endPosition;
+			}
+
+			m_pWeaponTrails[i].m_pTrailPoints[index].m_startPoint = startPosition;
+			m_pWeaponTrails[i].m_pTrailPoints[index].m_endPoint = endPosition;
+
+			m_pWeaponTrails[i].m_pTrailPoints[index].m_pointActive = true;
+			m_pWeaponTrails[i].m_pTrailPoints[index].m_animaionTime = m_pWeaponTrails[i].m_trailTime;
 
 			m_pWeaponTrails[i].m_trailNextAddIndex++;
-			if(m_pWeaponTrails[i].m_trailNextAddIndex == m_pWeaponTrails[i].m_numTrailPoints)
+			if (m_pWeaponTrails[i].m_trailNextAddIndex == 49)
 			{
 				m_pWeaponTrails[i].m_trailNextAddIndex = 0;
 			}
-		}
-		else
-		{
-			m_pWeaponTrails[i].m_nextTrailTimer -= dt;
 		}
 	}
 }
@@ -754,6 +740,13 @@ void VoxelWeapon::Update(float dt)
 {
 	if(m_loaded == false)
 	{
+		return;
+	}
+
+	if (dt > 0.1f)
+	{
+		// Temp fix for when dt is large due to a freeze or temp halt, would cause animated sections to get out-of-sync.
+		// due to allowing values to go over min/max and then 're-adjust', but since dt was large they would go WAY over min/max
 		return;
 	}
 
@@ -1318,6 +1311,20 @@ void VoxelWeapon::Update(float dt)
 
 		m_pParticleEffects[i].m_particleEffectPosition = particleEffectPosition;
 	}
+
+	// Update weapon trails timers;
+	for (int i = 0; i < m_numWeaponTrails; i++)
+	{
+		for (int point = 0; point < m_pWeaponTrails[i].m_numTrailPoints; point++)
+		{
+			m_pWeaponTrails[i].m_pTrailPoints[point].m_animaionTime -= dt;
+
+			if (m_pWeaponTrails[i].m_pTrailPoints[point].m_animaionTime <= 0.0f)
+			{
+				m_pWeaponTrails[i].m_pTrailPoints[point].m_pointActive = false;
+			}
+		}
+	}
 }
 
 // Rendering
@@ -1534,8 +1541,6 @@ void VoxelWeapon::RenderWeaponTrails()
 {
 	for(int i = 0; i < m_numWeaponTrails; i++)
 	{
-		int trailCounter = 0;
-		int indexToUse1 = m_pWeaponTrails[i].m_trailNextAddIndex;
 		m_pRenderer->PushMatrix();
 			if(m_pWeaponTrails[i].m_followOrigin)
 			{
@@ -1551,46 +1556,38 @@ void VoxelWeapon::RenderWeaponTrails()
 			m_pRenderer->SetLineWidth(3.0f);
 
 			m_pRenderer->EnableImmediateMode(IM_QUADS);
-				while(trailCounter < m_pWeaponTrails[i].m_numTrailPoints-1)
+				for (int j = 0; j < m_pWeaponTrails[i].m_numTrailPoints-1; j++)
 				{
-					int indexToUse2 = indexToUse1+1;
-					if(indexToUse2 >= m_pWeaponTrails[i].m_numTrailPoints)
+					int index1 = j;
+					int index2 = j + 1;
+					if (index2 >= m_pWeaponTrails[i].m_numTrailPoints-1)
 					{
-						indexToUse2 = 0;
+						index2 = 0;
 					}
 
-					if(m_pWeaponTrails[i].m_pTrailPoints[indexToUse1].m_pointActive == true &&
-					   m_pWeaponTrails[i].m_pTrailPoints[indexToUse2].m_pointActive == true)
+					if (m_pWeaponTrails[i].m_pTrailPoints[index1].m_pointActive == true &&
+						m_pWeaponTrails[i].m_pTrailPoints[index2].m_pointActive == true)
 					{
-						float alpha1 = (float)trailCounter / (float)m_pWeaponTrails[i].m_numTrailPoints;
-						float alpha2 = (float)(trailCounter-1) / (float)m_pWeaponTrails[i].m_numTrailPoints;
+						float alpha1 = m_pWeaponTrails[i].m_pTrailPoints[index1].m_animaionTime / m_pWeaponTrails[i].m_trailTime;
+						float alpha2 = m_pWeaponTrails[i].m_pTrailPoints[index2].m_animaionTime / m_pWeaponTrails[i].m_trailTime;
 
-						alpha1 += 0.35f;
-						alpha2 += 0.35f;
-						m_pRenderer->ImmediateColourAlpha(m_pWeaponTrails[i].m_trailColour.GetRed(), m_pWeaponTrails[i].m_trailColour.GetGreen(), m_pWeaponTrails[i].m_trailColour.GetBlue(), alpha2);						
-						m_pRenderer->ImmediateVertex(m_pWeaponTrails[i].m_pTrailPoints[indexToUse1].m_startPoint.x, m_pWeaponTrails[i].m_pTrailPoints[indexToUse1].m_startPoint.y, m_pWeaponTrails[i].m_pTrailPoints[indexToUse1].m_startPoint.z);
+						m_pRenderer->ImmediateColourAlpha(m_pWeaponTrails[i].m_trailColour.GetRed(), m_pWeaponTrails[i].m_trailColour.GetGreen(), m_pWeaponTrails[i].m_trailColour.GetBlue(), alpha1);
+						m_pRenderer->ImmediateVertex(m_pWeaponTrails[i].m_pTrailPoints[index1].m_startPoint.x, m_pWeaponTrails[i].m_pTrailPoints[index1].m_startPoint.y, m_pWeaponTrails[i].m_pTrailPoints[index1].m_startPoint.z);
+
+						m_pRenderer->ImmediateColourAlpha(m_pWeaponTrails[i].m_trailColour.GetRed(), m_pWeaponTrails[i].m_trailColour.GetGreen(), m_pWeaponTrails[i].m_trailColour.GetBlue(), alpha1);
+						m_pRenderer->ImmediateVertex(m_pWeaponTrails[i].m_pTrailPoints[index1].m_endPoint.x, m_pWeaponTrails[i].m_pTrailPoints[index1].m_endPoint.y, m_pWeaponTrails[i].m_pTrailPoints[index1].m_endPoint.z);
 
 						m_pRenderer->ImmediateColourAlpha(m_pWeaponTrails[i].m_trailColour.GetRed(), m_pWeaponTrails[i].m_trailColour.GetGreen(), m_pWeaponTrails[i].m_trailColour.GetBlue(), alpha2);
-						m_pRenderer->ImmediateVertex(m_pWeaponTrails[i].m_pTrailPoints[indexToUse1].m_endPoint.x, m_pWeaponTrails[i].m_pTrailPoints[indexToUse1].m_endPoint.y, m_pWeaponTrails[i].m_pTrailPoints[indexToUse1].m_endPoint.z);
+						m_pRenderer->ImmediateVertex(m_pWeaponTrails[i].m_pTrailPoints[index2].m_endPoint.x, m_pWeaponTrails[i].m_pTrailPoints[index2].m_endPoint.y, m_pWeaponTrails[i].m_pTrailPoints[index2].m_endPoint.z);
 
-						m_pRenderer->ImmediateColourAlpha(m_pWeaponTrails[i].m_trailColour.GetRed(), m_pWeaponTrails[i].m_trailColour.GetGreen(), m_pWeaponTrails[i].m_trailColour.GetBlue(), alpha1);
-						m_pRenderer->ImmediateVertex(m_pWeaponTrails[i].m_pTrailPoints[indexToUse2].m_endPoint.x, m_pWeaponTrails[i].m_pTrailPoints[indexToUse2].m_endPoint.y, m_pWeaponTrails[i].m_pTrailPoints[indexToUse2].m_endPoint.z);
-
-						m_pRenderer->ImmediateColourAlpha(m_pWeaponTrails[i].m_trailColour.GetRed(), m_pWeaponTrails[i].m_trailColour.GetGreen(), m_pWeaponTrails[i].m_trailColour.GetBlue(), alpha1);
-						m_pRenderer->ImmediateVertex(m_pWeaponTrails[i].m_pTrailPoints[indexToUse2].m_startPoint.x, m_pWeaponTrails[i].m_pTrailPoints[indexToUse2].m_startPoint.y, m_pWeaponTrails[i].m_pTrailPoints[indexToUse2].m_startPoint.z);
+						m_pRenderer->ImmediateColourAlpha(m_pWeaponTrails[i].m_trailColour.GetRed(), m_pWeaponTrails[i].m_trailColour.GetGreen(), m_pWeaponTrails[i].m_trailColour.GetBlue(), alpha2);
+						m_pRenderer->ImmediateVertex(m_pWeaponTrails[i].m_pTrailPoints[index2].m_startPoint.x, m_pWeaponTrails[i].m_pTrailPoints[index2].m_startPoint.y, m_pWeaponTrails[i].m_pTrailPoints[index2].m_startPoint.z);
 					}
-
-					indexToUse1++;
-					if(indexToUse1 >= m_pWeaponTrails[i].m_numTrailPoints)
-					{
-						indexToUse1 = 0;
-					}
-					trailCounter++;
 				}
 			m_pRenderer->DisableImmediateMode();
 			m_pRenderer->DisableTransparency();
 			m_pRenderer->SetCullMode(CM_BACK);
-			m_pRenderer->EnableDepthTest(DT_LESS);
+			//m_pRenderer->EnableDepthTest(DT_LESS);
 		m_pRenderer->PopMatrix();
 	}
 }

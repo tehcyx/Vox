@@ -35,6 +35,9 @@ void VoxGame::Update()
 		m_pPlayer->Update(m_deltaTime);
 	}
 
+	// Update the chunk manager
+	m_pChunkManager->Update(m_deltaTime);
+
 	// Update controls
 	UpdateControls(m_deltaTime);
 

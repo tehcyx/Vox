@@ -213,6 +213,7 @@ void LightingManager::DebugRender()
 		
 		m_pRenderer->PushMatrix();
 			m_pRenderer->SetRenderMode(RM_WIREFRAME);
+			m_pRenderer->SetCullMode(CM_NOCULL);
 			m_pRenderer->TranslateWorldMatrix(lpLight->m_position.x, lpLight->m_position.y, lpLight->m_position.z);
 			m_pRenderer->ImmediateColourAlpha(r, g, b, a);
 			m_pRenderer->DrawSphere(lightRadius, 30, 30);

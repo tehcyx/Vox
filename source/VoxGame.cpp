@@ -20,6 +20,7 @@ void VoxGame::Create()
 	m_pGameCamera = NULL;
 	m_pQubicleBinaryManager = NULL;
 	m_pPlayer = NULL;
+	m_pChunkManager = NULL;
 
 	m_pVoxApplication = new VoxApplication();
 	m_pVoxWindow = new VoxWindow();
@@ -57,10 +58,10 @@ void VoxGame::Create()
 	m_pRenderer->CreateFreeTypeFont("media/fonts/arial.ttf", 12, &m_defaultFont);
 
 	/* Create lights */
-	m_defaultLightPosition = vec3(2.0f, 2.0f, 1.0f);
+	m_defaultLightPosition = vec3(3.0f, 3.0f, 3.0f);
 	m_defaultLightView = vec3(0.0f, 0.0f, 0.0f);
 	m_pRenderer->CreateLight(Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(0.0f, 0.0f, 0.0f, 1.0f),
-							 m_defaultLightPosition, m_defaultLightView - m_defaultLightPosition, 0.0f, 0.0f, 0.5f, 0.35f, 0.05f, true, false, &m_defaultLight);
+							 m_defaultLightPosition, m_defaultLightView - m_defaultLightPosition, 0.0f, 0.0f, 0.15f, 0.25f, 0.025f, true, false, &m_defaultLight);
 
 	/* Create materials */
 	m_pRenderer->CreateMaterial(Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(0.0f, 0.0f, 0.0f, 1.0f), 64, &m_defaultMaterial);
@@ -71,6 +72,9 @@ void VoxGame::Create()
 	frameBufferCreated = m_pRenderer->CreateFrameBuffer(-1, true, true, true, true, m_windowWidth, m_windowHeight, 5.0f, "Shadow", &m_shadowFrameBuffer);
 	frameBufferCreated = m_pRenderer->CreateFrameBuffer(-1, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "Deferred Lighting", &m_lightingFrameBuffer);
 	frameBufferCreated = m_pRenderer->CreateFrameBuffer(-1, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "Transparency", &m_transparencyFrameBuffer);
+	frameBufferCreated = m_pRenderer->CreateFrameBuffer(-1, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "FXAA", &m_FXAAFrameBuffer);
+	frameBufferCreated = m_pRenderer->CreateFrameBuffer(-1, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "FullScreen 1st Pass", &m_firstPassFullscreenBuffer);
+	frameBufferCreated = m_pRenderer->CreateFrameBuffer(-1, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "FullScreen 2nd Pass", &m_secondPassFullscreenBuffer);
 
 	/* Create the shaders */
 	m_defaultShader = -1;
@@ -79,12 +83,21 @@ void VoxGame::Create()
 	m_shadowShader = -1;
 	m_lightingShader = -1;
 	m_textureShader = -1;
+	m_fxaaShader = -1;
+	m_blurVerticalShader = -1;
+	m_blurHorizontalShader = -1;
 	m_pRenderer->LoadGLSLShader("media/shaders/default.vertex", "media/shaders/default.pixel", &m_defaultShader);
 	m_pRenderer->LoadGLSLShader("media/shaders/phong.vertex", "media/shaders/phong.pixel", &m_phongShader);
-	m_pRenderer->LoadGLSLShader("media/shaders/fullscreen/SSAO.vertex", "media/shaders/fullscreen/SSAO.pixel", &m_SSAOShader);
 	m_pRenderer->LoadGLSLShader("media/shaders/shadow.vertex", "media/shaders/shadow.pixel", &m_shadowShader);
-	m_pRenderer->LoadGLSLShader("media/shaders/fullscreen/lighting.vertex", "media/shaders/fullscreen/lighting.pixel", &m_lightingShader);
 	m_pRenderer->LoadGLSLShader("media/shaders/texture.vertex", "media/shaders/texture.pixel", &m_textureShader);
+	m_pRenderer->LoadGLSLShader("media/shaders/fullscreen/SSAO.vertex", "media/shaders/fullscreen/SSAO.pixel", &m_SSAOShader);
+	m_pRenderer->LoadGLSLShader("media/shaders/fullscreen/fxaa.vertex", "media/shaders/fullscreen/fxaa.pixel", &m_fxaaShader);
+	m_pRenderer->LoadGLSLShader("media/shaders/fullscreen/lighting.vertex", "media/shaders/fullscreen/lighting.pixel", &m_lightingShader);
+	m_pRenderer->LoadGLSLShader("media/shaders/fullscreen/blur_vertical.vertex", "media/shaders/fullscreen/blur_vertical.pixel", &m_blurVerticalShader);
+	m_pRenderer->LoadGLSLShader("media/shaders/fullscreen/blur_horizontal.vertex", "media/shaders/fullscreen/blur_horizontal.pixel", &m_blurHorizontalShader);
+
+	/* Create the chunk manager*/
+	m_pChunkManager = new ChunkManager(m_pRenderer);
 
 	/* Create the qubicle binary file manager */
 	m_pQubicleBinaryManager = new QubicleBinaryManager(m_pRenderer);
@@ -98,8 +111,12 @@ void VoxGame::Create()
 	/* Create the player */
 	m_pPlayer = new Player(m_pRenderer, m_pQubicleBinaryManager, m_pLightingManager, m_pBlockParticleManager);
 
+	/* Create the frontend manager */
+	m_pFrontendManager = new FrontendManager(m_pRenderer);
+
 	/* Create the GUI components */
 	CreateGUI();
+	SkinGUI();
 
 	// Keyboard movement
 	m_bKeyboardForward = false;
@@ -126,10 +143,12 @@ void VoxGame::Create()
 	m_modelAnimationIndex = 0;
 	m_multiSampling = true;
 	m_ssao = true;
+	m_blur = false;
 	m_shadows = true;
 	m_dynamicLighting = true;
 	m_animationUpdate = true;
 	m_fullscreen = false;
+	m_debugRender = false;
 }
 
 // Destruction
@@ -140,6 +159,8 @@ void VoxGame::Destroy()
 		delete m_pLightingManager;
 		delete m_pPlayer;
 		delete m_pQubicleBinaryManager;
+		delete m_pChunkManager;
+		delete m_pFrontendManager;
 		delete m_pGameCamera;
 		DestroyGUI();
 		delete m_pGUI;
@@ -188,6 +209,9 @@ void VoxGame::ResizeWindow(int width, int height)
 		frameBufferResize = m_pRenderer->CreateFrameBuffer(m_shadowFrameBuffer, true, true, true, true, m_windowWidth, m_windowHeight, 5.0f, "Shadow", &m_shadowFrameBuffer);
 		frameBufferResize = m_pRenderer->CreateFrameBuffer(m_lightingFrameBuffer, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "Deferred Lighting", &m_lightingFrameBuffer);
 		frameBufferResize = m_pRenderer->CreateFrameBuffer(m_transparencyFrameBuffer, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "Transparency", &m_transparencyFrameBuffer);
+		frameBufferResize = m_pRenderer->CreateFrameBuffer(m_FXAAFrameBuffer, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "FXAA", &m_FXAAFrameBuffer);
+		frameBufferResize = m_pRenderer->CreateFrameBuffer(m_firstPassFullscreenBuffer, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "FullScreen 1st Pass", &m_firstPassFullscreenBuffer);
+		frameBufferResize = m_pRenderer->CreateFrameBuffer(m_secondPassFullscreenBuffer, true, true, true, true, m_windowWidth, m_windowHeight, 1.0f, "FullScreen 2nd Pass", &m_secondPassFullscreenBuffer);
 
 		// Give the new windows dimensions to the GUI components also
 		m_pMainWindow->SetApplicationDimensions(m_windowWidth, m_windowHeight);

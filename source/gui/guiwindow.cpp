@@ -297,14 +297,14 @@ void GUIWindow::SetLocation(int x, int y)
 		heightAdjustment = m_dimensions.m_height;
 	}
 
-    if(x < 0 + m_applicationBorderLeft)
-        x = 0 + m_applicationBorderLeft;
-    if(x + widthToUse > m_applicationWidth - m_applicationBorderRight)
-        x = m_applicationWidth - widthToUse - m_applicationBorderRight;
+    if(x < 1 + m_applicationBorderLeft)
+        x = 1 + m_applicationBorderLeft;
+    if(x + 1 + widthToUse > m_applicationWidth - m_applicationBorderRight)
+        x = m_applicationWidth - 1 - widthToUse - m_applicationBorderRight;
     if(y < 0 - heightAdjustment + m_applicationBorderBottom)
         y = 0 - heightAdjustment + m_applicationBorderBottom;
-    if(y + m_dimensions.m_height + m_titleBar->GetDimensions().m_height > m_applicationHeight - m_applicationBorderTop)
-        y = m_applicationHeight - m_dimensions.m_height - m_titleBar->GetDimensions().m_height - m_applicationBorderTop;
+    if(y + 1 + m_dimensions.m_height + m_titleBar->GetDimensions().m_height > m_applicationHeight - m_applicationBorderTop)
+        y = m_applicationHeight - 1 - m_dimensions.m_height - m_titleBar->GetDimensions().m_height - m_applicationBorderTop;
 
     m_dimensions.m_x = x;
     m_dimensions.m_y = y;
@@ -315,17 +315,7 @@ void GUIWindow::SetLocation(const Point& p)
     int x = p.m_x;
     int y = p.m_x;
 
-    if(x < 0)
-        x = 0;
-    if(x + m_dimensions.m_width > m_applicationWidth)
-        x = m_applicationWidth -m_dimensions.m_width;
-    if(y < 0)
-        y = 0;
-    if(y + m_dimensions.m_height + m_titleBar->GetDimensions().m_height > m_applicationHeight)
-        y = m_applicationHeight - m_dimensions.m_height - m_titleBar->GetDimensions().m_height;
-
-    m_dimensions.m_x = x;
-    m_dimensions.m_y = y;
+	SetLocation(x, y);
 }
 
 void GUIWindow::SetTitle(const std::string &title)

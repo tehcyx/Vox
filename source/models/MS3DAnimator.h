@@ -73,6 +73,9 @@ public:
 	int GetEndFrame(const char *lAnimationName);
 	int GetCurrentFrame();
 
+	float GetAnimationTimer();
+	int GetNumKeyframes();
+
 	// Blending
 	void StartBlendAnimation(int startIndex, int endIndex, float blendTime);
 	void StartBlendAnimation(const char *lStartAnimationName, const char *lEndAnimationName, float blendTime);
@@ -90,9 +93,11 @@ public:
 
 	Matrix4x4 GetBoneMatrix(int index);
 
+	// Update
 	void Update(float dt);
 	void UpdateBlending(float dt);
 
+	// Rendering
 	void Render(bool lMesh, bool lNormals, bool lBones, bool lBoundingBox);
 	void RenderMesh();
 	void RenderNormals();
@@ -102,6 +107,7 @@ public:
 private:
 	Renderer *mpRenderer;
 
+	// The ms3d model for this animator
 	MS3DModel* mpModel;
 
 	// Joint animations
@@ -127,6 +133,7 @@ private:
 	double m_timer;
 	bool mblooping;
 
+	// Status flags
 	bool m_bPaused;
 	bool m_bLooped;
 	bool m_bFinished;

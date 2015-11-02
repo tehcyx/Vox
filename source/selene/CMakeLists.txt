@@ -1,0 +1,8 @@
+file(GLOB SELENE_HEADERS *.h)
+set(SELENE_HEADERS ${SELENE_HEADERS} PARENT_SCOPE)
+
+file(GLOB SELENE_SRCS selene/*.h)
+set(SELENE_SRCS ${SELENE_SRCS} PARENT_SCOPE)
+
+source_group("selene" FILES ${SELENE_HEADERS})
+source_group("selene\\selene" FILES ${SELENE_SRCS})

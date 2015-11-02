@@ -20,8 +20,6 @@
 
 #include "CountdownTimer.h"
 
-#include <windows.h>  // Needed for LARGE_INTEGER
-
 #include <vector>
 #include <algorithm>
 

@@ -168,6 +168,7 @@ public:
 	Renderer(int width, int height, int depthBits, int stencilBits);
 	~Renderer();
 
+	// Resize
 	void ResizeWindow(int newWidth, int newHeight);
 
 	// Viewport
@@ -188,11 +189,13 @@ public:
 	bool SetProjectionMode(ProjectionMode mode, int viewPort);
 	void SetViewProjection();
 	void MultViewProjection();
+	void SetupOrthographicProjection(float left, float right, float bottom, float top, float zNear, float zFar);
 
 	// Scene
 	bool ClearScene(bool pixel = true, bool depth = true, bool stencil = true);
 	bool BeginScene(bool pixel = true, bool depth = true, bool stencil = true);
 	void EndScene();
+	void SetColourMask(bool red, bool green, bool blue, bool alpha);
 
 	// Push / Pop matrix stack
 	void PushMatrix();

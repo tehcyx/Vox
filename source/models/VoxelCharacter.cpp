@@ -59,6 +59,8 @@ void VoxelCharacter::Reset()
 	m_lookRotationAngle = 0.0f;
 	m_zLookTranslate = 0.0f;
 
+	m_currentFrame = 0;
+
 	m_pVoxelModel = NULL;
 	m_pCharacterModel = NULL;
 	for(int i = 0; i < AnimationSections_NUMSECTIONS; i++)
@@ -1568,6 +1570,15 @@ void VoxelCharacter::Update(float dt, float animationSpeed[AnimationSections_NUM
 		}
 	}
 
+	if (m_pLeftWeapon != NULL)
+	{
+		m_pLeftWeapon->CreateWeaponTrailPoint();
+	}
+	if (m_pRightWeapon != NULL)
+	{
+		m_pRightWeapon->CreateWeaponTrailPoint();
+	}
+
 	// Update the weapon trails, based on the animation frames
 	if (m_pCharacterAnimator[0] != NULL)
 	{
@@ -1592,13 +1603,13 @@ void VoxelCharacter::Update(float dt, float animationSpeed[AnimationSections_NUM
 	}
 }
 
-void VoxelCharacter::UpdateWeaponTrails(float dt, Matrix4x4 originMatrix)
+void VoxelCharacter::SetWeaponTrailsOriginMatrix(float dt, Matrix4x4 originMatrix)
 {
 	if(m_pLeftWeapon != NULL)
 	{
 		if(m_leftWeaponLoaded)
 		{
-			m_pLeftWeapon->UpdateWeaponTrails(dt, originMatrix, m_characterScale);
+			m_pLeftWeapon->SetWeaponTrailsParams(originMatrix, m_characterScale);
 		}
 	}
 
@@ -1606,7 +1617,7 @@ void VoxelCharacter::UpdateWeaponTrails(float dt, Matrix4x4 originMatrix)
 	{
 		if(m_rightWeaponLoaded)
 		{
-			m_pRightWeapon->UpdateWeaponTrails(dt, originMatrix, m_characterScale);
+			m_pRightWeapon->SetWeaponTrailsParams(originMatrix, m_characterScale);
 		}
 	}
 }

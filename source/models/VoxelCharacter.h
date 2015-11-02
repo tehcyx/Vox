@@ -214,7 +214,7 @@ public:
 
 	// Update
 	void Update(float dt, float animationSpeed[AnimationSections_NUMSECTIONS]);
-	void UpdateWeaponTrails(float dt, Matrix4x4 originMatrix);
+	void SetWeaponTrailsOriginMatrix(float dt, Matrix4x4 originMatrix);
 
 	// Rendering
 	void Render(bool renderOutline, bool refelction, bool silhouette, Colour OutlineColour, bool subSelectionNamePicking);
@@ -349,4 +349,6 @@ private:
 	MS3DModel* m_pCharacterModel;
 	MS3DAnimator* m_pCharacterAnimator[AnimationSections_NUMSECTIONS];
 	MS3DAnimator* m_pCharacterAnimatorPaperdoll;
+
+	int m_currentFrame;
 };

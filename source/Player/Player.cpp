@@ -192,7 +192,7 @@ void Player::Update(float dt)
 	// Update the voxel model
 	float animationSpeeds[AnimationSections_NUMSECTIONS] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 	m_pVoxelCharacter->Update(dt, animationSpeeds);
-	m_pVoxelCharacter->UpdateWeaponTrails(dt, m_worldMatrix);
+	m_pVoxelCharacter->SetWeaponTrailsOriginMatrix(dt, m_worldMatrix);
 
 	// Update / Create weapon lights and particle effects
 	UpdateWeaponLights(dt);

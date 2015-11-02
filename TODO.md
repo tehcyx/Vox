@@ -34,12 +34,17 @@
 * ~~Fix up cmake for the different visual studio versions and also for the different lib linking.~~
 * ~~Weapon trails controlled by the animation file.~~
 * ~~Create vs2012 libs and VS2012 project files~~
-* Switch over to using glm maths lib.
+* ~~Add blur shader.~~
+* ~~Implement MSAA (or other AA) in glsl shader.~~
+* ~~Convert shadow rendering calls to use renderer - remove GL from gamecode.~~
+* ~~Add LUA bindings.~~
+* ~~Make weapons trails time based, rather than "numpoints" based, better weapon trail alpha rendering.~~
+* ~~Switch over to using glm maths lib.~~
+* ~~Solution to allow for running the exe from Visual studio, because atm the working directory needs to be ../~~
+* ~~Textures on GUI.~~
+* ~~Frontend manager for textures and common GUI objects.~~
 * Enable cross platform compiling and support, linux, mac
-* Solution to allow for running the exe from Visual studio, because atm the working directory needs to be ../
 * Convert shaders over to be more unified.
-* Add blur shader.
-* Implement MSAA (or other AA) in glsl shader.
 * Add audio and music playback.
-* Convert shadow rendering calls to use renderer - remove GL from gamecode.
-* Add LUA bindings.
+* Add gamepad support.
+* Allow camera rotations around world coordinates, so 'upside down' doesnt happen.
