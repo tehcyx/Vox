@@ -1,7 +1,16 @@
-// Juice Engine by Steven Ball
-// Light - An OpenGL hardware light
-// Created : 01/03/06
-// Edited  : 01/05/06
+// ******************************************************************************
+// Filename:  Light.h
+// Project:   Vox
+// Author:    Steven Ball
+//
+// Purpose:
+//   An OpenGL hardware light.
+//
+// Revision History:
+//   Initial Revision - 01/03/06
+//
+// Copyright (c) 2005-2015, Steven Ball
+// ******************************************************************************
 
 #pragma once
 

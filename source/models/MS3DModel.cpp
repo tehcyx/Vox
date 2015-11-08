@@ -82,7 +82,7 @@ MS3DModel::~MS3DModel()
 bool MS3DModel::LoadModel(const char *modelFileName, bool lStatic)
 {
 	//Open the MSD file
-	ifstream inputFile( modelFileName, ios::in | ios::binary | ios::_Nocreate );
+	ifstream inputFile( modelFileName, ios::in | ios::binary );
 	if ( inputFile.fail() )
 	{
 		//cerr << "Couldn't open the model file." << endl;
@@ -284,7 +284,11 @@ bool MS3DModel::LoadModel(const char *modelFileName, bool lStatic)
 		{
 			for ( j = 0; j < numJoints; j++ )
 			{
-				if ( _stricmp( pNameList[j].pName, pJoint->parentName ) == 0 )
+#ifdef _WIN32
+				if (_strcmpi(pNameList[j].pName, pJoint->parentName) == 0)
+#else
+				if (strcasecmp(pNameList[j].pName, pJoint->parentName) == 0)
+#endif //_WIN32
 				{
 					parentIndex = pNameList[j].jointIndex;
 					break;

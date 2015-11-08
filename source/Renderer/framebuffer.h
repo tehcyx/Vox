@@ -1,6 +1,17 @@
-// Juice Engine by Steven Ball
-// FrameBuffer - A frame buffer object, used to store the different g-buffer states of a viewport
-// Created : 16/10/15
+// ******************************************************************************
+// Filename:  FrameBuffer.h
+// Project:   Vox
+// Author:    Steven Ball
+//
+// Purpose:
+//   A frame buffer object, used to store the different g-buffer states of a
+//   viewport.
+//
+// Revision History:
+//   Initial Revision - 16/10/15
+//
+// Copyright (c) 2005-2015, Steven Ball
+// ******************************************************************************
 
 #pragma once
 

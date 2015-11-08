@@ -1,3 +1,14 @@
+// ******************************************************************************
+// Filename:  Camera.cpp
+// Project:   Vox
+// Author:    Steven Ball
+//
+// Revision History:
+//   Initial Revision - 03/11/15
+//
+// Copyright (c) 2005-2015, Steven Ball
+// ******************************************************************************
+
 #include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -29,8 +40,8 @@ Camera::Camera(Renderer* pRenderer)
 	SetUp(vec3(0.0f, 1.0f, 0.0f));
 	SetRight(vec3(1.0f, 0.0f, 0.0f));
 
-	m_zoomAmount = 3.0f;
-	m_minZoomAmount = 0.1f;
+	m_zoomAmount = 5.0f;
+	m_minZoomAmount = 0.0f;
 	m_maxZoomAmount = 100.0f;
 }
 
@@ -66,9 +77,9 @@ void Camera::Strafe(const float speed)
 
 void Camera::Rotate(const float xAmount, const float yAmount, const float zAmount)
 {
-	quat xRotation(DegToRad(xAmount), m_right.x, m_right.y, m_right.z);
-	quat yRotation(DegToRad(yAmount), m_up.x, m_up.y, m_up.z);
-	quat zRotation(DegToRad(zAmount), m_facing.x, m_facing.y, m_facing.z);
+	quat xRotation = angleAxis(DegToRad(xAmount), m_right);
+	quat yRotation = angleAxis(DegToRad(yAmount), m_up);
+	quat zRotation = angleAxis(DegToRad(zAmount), m_facing);
 
 	quat rotation = xRotation * yRotation * zRotation;
 
@@ -77,13 +88,38 @@ void Camera::Rotate(const float xAmount, const float yAmount, const float zAmoun
 	m_facing = normalize(rotation * m_facing);
 }
 
+void Camera::RotateY(const float yAmount)
+{
+	quat rotation = angleAxis(DegToRad(yAmount), vec3(0.0f, 1.0f, 0.0f));
+
+	m_right = normalize(rotation * m_right);
+	m_up = normalize(rotation * m_up);
+	m_facing = normalize(rotation * m_facing);
+}
+
 void Camera::RotateAroundPoint(const float xAmount, const float yAmount, const float zAmount)
 {
-	quat xRotation(DegToRad(xAmount), m_right.x, m_right.y, m_right.z);
-	quat yRotation(DegToRad(yAmount), m_up.x, m_up.y, m_up.z);
-	quat zRotation(DegToRad(zAmount), m_facing.x, m_facing.y, m_facing.z);
+	quat xRotation = angleAxis(DegToRad(xAmount), m_right);
+	quat yRotation = angleAxis(DegToRad(yAmount), m_up);
+	quat zRotation = angleAxis(DegToRad(zAmount), m_facing);
 
 	quat rotation = xRotation * yRotation * zRotation;
+
+	// Get the view position, based on the facing and the zoom amount
+	vec3 view = m_position + (m_facing*m_zoomAmount);
+
+	m_position -= view;  // Translate the position to the origin, relative to the view position (that is the facing zoomed)
+	m_position = (rotation * m_position);
+	m_position += view;  // Translate back to relative view position
+
+	m_right = normalize(rotation * m_right);
+	m_facing = normalize(rotation * m_facing);
+	m_up = normalize(rotation * m_up);
+}
+
+void Camera::RotateAroundPointY(const float yAmount)
+{
+	quat rotation = angleAxis(DegToRad(yAmount), vec3(0.0f, 1.0f, 0.0f));
 
 	// Get the view position, based on the facing and the zoom amount
 	vec3 view = m_position + (m_facing*m_zoomAmount);

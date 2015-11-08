@@ -666,11 +666,11 @@ void Slider::UpdateTextString()
 	
 	switch(m_ValuePrecision)
 	{
-		case 0: sprintf_s(lValue, 16, "%.0f", m_currentValue); break;
-		case 1: sprintf_s(lValue, 16, "%.1f", m_currentValue); break;
-		case 2: sprintf_s(lValue, 16, "%.2f", m_currentValue); break;
-		case 3: sprintf_s(lValue, 16, "%.3f", m_currentValue); break;
-		default: sprintf_s(lValue, 16, "%.2f", m_currentValue); break;
+		case 0: snprintf(lValue, 16, "%.0f", m_currentValue); break;
+		case 1: snprintf(lValue, 16, "%.1f", m_currentValue); break;
+		case 2: snprintf(lValue, 16, "%.2f", m_currentValue); break;
+		case 3: snprintf(lValue, 16, "%.3f", m_currentValue); break;
+		default: snprintf(lValue, 16, "%.2f", m_currentValue); break;
 	};
 	
 	m_value.SetText(lValue);

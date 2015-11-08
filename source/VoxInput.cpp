@@ -4,7 +4,7 @@
 #include "VoxGame.h"
 
 
-// Event callbacks
+// Input callbacks
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	switch (action)
@@ -60,66 +60,49 @@ void MouseScrollCallback(GLFWwindow* window, double x, double y)
 	VoxGame::GetInstance()->MouseScroll(x, y);
 }
 
-
-// Controls
-void VoxGame::UpdateControls(float dt)
-{
-	int x = m_pVoxWindow->GetCursorX();
-	int y = m_pVoxWindow->GetCursorY();
-
-	// Keyboard movements
-	if (m_bKeyboardForward)
-	{
-		m_pGameCamera->Fly(20.0f * dt);
-	}
-	if (m_bKeyboardBackward)
-	{
-		m_pGameCamera->Fly(-20.0f * dt);
-	}
-	if (m_bKeyboardStrafeLeft)
-	{
-		m_pGameCamera->Strafe(-20.0f * dt);
-	}
-	if (m_bKeyboardStrafeRight)
-	{
-		m_pGameCamera->Strafe(20.0f * dt);
-	}
-
-	// Camera movements
-	if (m_bCameraRotate)
-	{
-		MouseCameraRotate(x, y);
-	}
-	if (m_bCameraZoom)
-	{
-		MouseCameraZoom(x, y);
-	}
-}
-
+// Input
 void VoxGame::KeyPressed(int key, int scancode, int mods)
 {
 	switch (key)
 	{
-	case GLFW_KEY_UP:
-	{
-		m_bKeyboardForward = true;
-		break;
-	}
-	case GLFW_KEY_DOWN:
-	{
-		m_bKeyboardBackward = true;
-		break;
-	}
-	case GLFW_KEY_LEFT:
-	{
-		m_bKeyboardStrafeLeft = true;
-		break;
-	}
-	case GLFW_KEY_RIGHT:
-	{
-		m_bKeyboardStrafeRight = true;
-		break;
-	}
+		// Player movement
+		case GLFW_KEY_W:
+		{
+			m_bKeyboardForward = true;
+			break;
+		}
+		case GLFW_KEY_S:
+		{
+			m_bKeyboardBackward = true;
+			break;
+		}
+		case GLFW_KEY_A:
+		{
+			m_bKeyboardLeft = true;
+			m_bKeyboardStrafeLeft = true;
+			break;
+		}
+		case GLFW_KEY_D:
+		{
+			m_bKeyboardRight = true;
+			m_bKeyboardStrafeRight = true;
+			break;
+		}
+		case GLFW_KEY_F:
+		{
+			m_bKeyboardUp = true;
+			break;
+		}
+		case GLFW_KEY_V:
+		{
+			m_bKeyboardDown = true;
+			break;
+		}
+		case GLFW_KEY_SPACE:
+		{
+			m_bKeyboardSpace = true;
+			break;
+		}
 	}
 }
 
@@ -127,24 +110,42 @@ void VoxGame::KeyReleased(int key, int scancode, int mods)
 {
 	switch (key)
 	{
-		case GLFW_KEY_UP:
+		// Player movement
+		case GLFW_KEY_W:
 		{
 			m_bKeyboardForward = false;
 			break;
 		}
-		case GLFW_KEY_DOWN:
+		case GLFW_KEY_S:
 		{
 			m_bKeyboardBackward = false;
 			break;
 		}
-		case GLFW_KEY_LEFT:
+		case GLFW_KEY_A:
 		{
+			m_bKeyboardLeft = false;
 			m_bKeyboardStrafeLeft = false;
 			break;
 		}
-		case GLFW_KEY_RIGHT:
+		case GLFW_KEY_D:
 		{
+			m_bKeyboardRight = false;
 			m_bKeyboardStrafeRight = false;
+			break;
+		}
+		case GLFW_KEY_F:
+		{
+			m_bKeyboardUp = false;
+			break;
+		}
+		case GLFW_KEY_V:
+		{
+			m_bKeyboardDown = false;
+			break;
+		}
+		case GLFW_KEY_SPACE:
+		{
+			m_bKeyboardSpace = false;
 			break;
 		}
 	}
@@ -176,19 +177,18 @@ void VoxGame::MouseRightPressed()
 {
 	m_pGUI->MousePressed(MOUSE_BUTTON2);
 
-	m_currentX = m_pVoxWindow->GetCursorX();
-	m_currentY = m_pVoxWindow->GetCursorY();
-	m_pressedX = m_currentX;
-	m_pressedY = m_currentY;
-
-	m_bCameraZoom = true;
+	if (!m_pGUI->IsMouseInteractingWithGUIComponent(false))
+	{
+		m_currentX = m_pVoxWindow->GetCursorX();
+		m_currentY = m_pVoxWindow->GetCursorY();
+		m_pressedX = m_currentX;
+		m_pressedY = m_currentY;
+	}
 }
 
 void VoxGame::MouseRightReleased()
 {
 	m_pGUI->MouseReleased(MOUSE_BUTTON2);
-
-	m_bCameraZoom = false;
 }
 
 void VoxGame::MouseMiddlePressed()
@@ -203,6 +203,29 @@ void VoxGame::MouseMiddleReleased()
 
 void VoxGame::MouseScroll(double x, double y)
 {
+	if (!m_pGUI->IsMouseInteractingWithGUIComponent(true))
+	{
+		m_maxCameraDistance += (float)(-y*0.5f);
+
+		float minAmount = 0.0f;
+		float maxAmount = 15.0f;
+
+		if (m_gameMode == GameMode_Game && m_cameraMode == CameraMode_AutoCamera)
+		{
+			minAmount = 3.0f;
+			maxAmount = 15.0f;
+		}
+
+		if (m_maxCameraDistance <= minAmount)
+		{
+			m_maxCameraDistance = minAmount;
+		}
+
+		if (m_maxCameraDistance >= maxAmount)
+		{
+			m_maxCameraDistance = maxAmount;
+		}
+	}
 }
 
 // Mouse controls
@@ -226,30 +249,32 @@ void VoxGame::MouseCameraRotate(int x, int y)
 	{
 		changeX = -changeX;
 	}
-
-	m_pGameCamera->RotateAroundPoint(changeY*0.5f, -changeX*0.5f, 0.0f);
-	//m_pGameCamera->Rotate(changeY*0.5f, -changeX*0.5f, 0.0f);
-
-	m_currentX = x;
-	m_currentY = y;
-}
-
-void VoxGame::MouseCameraZoom(int x, int y)
-{
-	float changeX;
-	float changeY;
-
-	// The mouse hasn't moved so just return
-	if ((m_currentX == x) && (m_currentY == y))
+	
+	if (m_cameraMode == CameraMode_FirstPerson)
 	{
-		return;
+		changeY = -changeY;
 	}
 
-	// Calculate and scale down the change in position
-	changeX = (x - m_currentX) / 5.0f;
-	changeY = (y - m_currentY) / 5.0f;
+	// Limit the rotation, so we can't go 'over' or 'under' the player with out rotations
+	vec3 cameraFacing = m_pGameCamera->GetFacing();
+	float dotResult = acos(dot(cameraFacing, vec3(0.0f, 1.0f, 0.0f)));
+	float rotationDegrees = RadToDeg(dotResult) - 90.0f;
+	float limitAngle = 75.0f;
+	if ((rotationDegrees > limitAngle && changeY < 0.0f) || (rotationDegrees < -limitAngle && changeY > 0.0f))
+	{
+		changeY = 0.0f;
+	}
 
-	m_pGameCamera->Zoom(changeY*0.05f);
+	if (m_cameraMode == CameraMode_FirstPerson)
+	{
+		m_pGameCamera->Rotate(changeY*0.75f, 0.0f, 0.0f);
+		m_pGameCamera->RotateY(-changeX*0.75f);
+	}
+	else
+	{
+		m_pGameCamera->RotateAroundPoint(changeY*0.75f, 0.0f, 0.0f);
+		m_pGameCamera->RotateAroundPointY(-changeX*0.75f);
+	}
 
 	m_currentX = x;
 	m_currentY = y;

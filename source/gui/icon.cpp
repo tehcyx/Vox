@@ -17,6 +17,17 @@
 #include "icon.h"
 
 
+Icon::Icon()
+  : RenderRectangle(NULL)
+{
+	m_pIcon = NULL;
+	m_textureID = -1;
+	m_dynamicTextureID = -1;
+	m_dynamicTexture = false;
+	m_flippedX = false;
+	m_flippedY = false;
+}
+
 Icon::Icon(Renderer* pRenderer)
   : RenderRectangle(pRenderer)
 {

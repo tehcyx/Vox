@@ -1,16 +1,16 @@
 // ******************************************************************************
-//
 // Filename:	Renderer.h
 // Project:		Game
 // Author:		Steven Ball
 //
 // Purpose:
+//   The OpenGL renderer that is an encapsulation of all the rendering
+//   functionality of the engine. A wrapper around most common OpenGL calls.
 //
 // Revision History:
 //   Initial Revision - 12/10/15
 //
 // Copyright (c) 2005-2015, Steven Ball
-//
 // ******************************************************************************
 
 #pragma once
@@ -22,16 +22,15 @@
 using namespace glm;
 #include "../freetype/freetypefont.h"
 
-#ifdef _WIN32 || WIN32 || WIN64 || _WIN64
-#include <windows.h>
-#endif
-
 #ifdef __APPLE__
 #include <GLUT/glut.h>		/* OpenGL Utility Toolkit header */
 #else
 #include <GL/gl.h>
 #include <GL/glu.h>
 #endif
+#ifdef _WIN32
+#include <windows.h>
+#endif //_WIN32
 
 #pragma comment (lib, "opengl32")
 #pragma comment (lib, "glu32")

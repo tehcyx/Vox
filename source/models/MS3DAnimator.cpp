@@ -253,7 +253,11 @@ void MS3DAnimator::PlayAnimation(const char *lAnimationName)
 	int lAnimationIndex = -1;
 	for(int i = 0; i < numAnimations; i++)
 	{
-		if(_strcmpi(lAnimationName, pAnimations[i].animationName) == 0)
+#ifdef _WIN32
+		if (_strcmpi(lAnimationName, pAnimations[i].animationName) == 0)
+#else
+		if (strcasecmp(lAnimationName, pAnimations[i].animationName) == 0)
+#endif //_WIN32
 		{
 			lAnimationIndex = i;
 
@@ -317,7 +321,11 @@ int MS3DAnimator::GetStartFrame(const char *lAnimationName)
 	int lAnimationIndex = -1;
 	for(int i = 0; i < numAnimations; i++)
 	{
-		if(_strcmpi(lAnimationName, pAnimations[i].animationName) == 0)
+#ifdef _WIN32
+		if (_strcmpi(lAnimationName, pAnimations[i].animationName) == 0)
+#else
+		if (strcasecmp(lAnimationName, pAnimations[i].animationName) == 0)
+#endif //_WIN32
 		{
 			return pAnimations[i].startFrame;
 		}
@@ -331,7 +339,11 @@ int MS3DAnimator::GetEndFrame(const char *lAnimationName)
 	int lAnimationIndex = -1;
 	for(int i = 0; i < numAnimations; i++)
 	{
-		if(_strcmpi(lAnimationName, pAnimations[i].animationName) == 0)
+#ifdef _WIN32
+		if (_strcmpi(lAnimationName, pAnimations[i].animationName) == 0)
+#else
+		if (strcasecmp(lAnimationName, pAnimations[i].animationName) == 0)
+#endif //_WIN32
 		{
 			return pAnimations[i].endFrame;
 		}
@@ -512,12 +524,20 @@ void MS3DAnimator::StartBlendAnimation(const char *lStartAnimationName, const ch
 	int lEndIndex = -1;
 	for(int i = 0; i < numAnimations; i++)
 	{
-		if(_strcmpi(lStartAnimationName, pAnimations[i].animationName) == 0)
+#ifdef _WIN32
+		if (_strcmpi(lStartAnimationName, pAnimations[i].animationName) == 0)
+#else
+		if (strcasecmp(lStartAnimationName, pAnimations[i].animationName) == 0)
+#endif //_WIN32
 		{
 			lStartIndex = i;
 		}
 
-		if(_strcmpi(lEndAnimationName, pAnimations[i].animationName) == 0)
+#ifdef _WIN32
+		if (_strcmpi(lEndAnimationName, pAnimations[i].animationName) == 0)
+#else
+		if (strcasecmp(lEndAnimationName, pAnimations[i].animationName) == 0)
+#endif //_WIN32
 		{
 			lEndIndex = i;
 		}
@@ -534,7 +554,11 @@ void MS3DAnimator::BlendIntoAnimation(const char *lAnimationName, float blendTim
 	int lIndex = -1;
 	for(int i = 0; i < numAnimations; i++)
 	{
-		if(_strcmpi(lAnimationName, pAnimations[i].animationName) == 0)
+#ifdef _WIN32
+		if (_strcmpi(lAnimationName, pAnimations[i].animationName) == 0)
+#else
+		if (strcasecmp(lAnimationName, pAnimations[i].animationName) == 0)
+#endif //_WIN32
 		{
 			lIndex = i;
 			break;

@@ -612,9 +612,9 @@ void FormattedLabel::ParseText()
 					int lGreeni;
 					int lBluei;
 
-					sscanf_s(lRed, "%x", &lRedi);
-					sscanf_s(lGreen, "%x", &lGreeni);
-					sscanf_s(lBlue, "%x", &lBluei);
+					sscanf(lRed, "%x", &lRedi);
+					sscanf(lGreen, "%x", &lGreeni);
+					sscanf(lBlue, "%x", &lBluei);
 
 					float lRedValue = lRedi / 255.0f;
 					float lGreenValue = lGreeni / 255.0f;

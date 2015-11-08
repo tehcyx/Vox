@@ -48,11 +48,6 @@ AbstractButton::AbstractButton(Renderer* pRenderer, unsigned int GUIFont, const 
 
 	m_labelOffsetX = 0;
 	m_labelOffsetY = 0;
-
-	m_enterSound = false;
-	m_exitSound = false;
-	m_pressedSound = false;
-	m_clickedSound = false;
 }
 
 AbstractButton::~AbstractButton()
@@ -75,6 +70,81 @@ void AbstractButton::SetLabel(const string &label)
 void AbstractButton::SetDisplayLabel(bool display)
 {
 	m_bDisplayLabel = display;
+}
+
+void AbstractButton::RemoveIcon(RenderRectangle *pRemoveIcon)
+{
+	if (pRemoveIcon)
+	{
+		Remove(pRemoveIcon);
+		delete pRemoveIcon;
+		pRemoveIcon = NULL;
+	}
+}
+
+void AbstractButton::SetDefaultIcons(Renderer* pRenderer)
+{
+	RemoveIcon(m_pDefaultIcon);
+	RemoveIcon(m_pHoverIcon);
+	RemoveIcon(m_pSelectedIcon);
+	RemoveIcon(m_pDisabledIcon);
+
+	m_pDefaultIcon = new DirectDrawRectangle(pRenderer);
+	m_pHoverIcon = new DirectDrawRectangle(pRenderer);
+	m_pSelectedIcon = new DirectDrawRectangle(pRenderer);
+	m_pDisabledIcon = new DirectDrawRectangle(pRenderer);
+
+	DirectDrawRectangle *lpDirectDrawRect = (DirectDrawRectangle *)m_pDefaultIcon;
+	lpDirectDrawRect->SetBackgroundColourTopLeft(Colour(0.52f, 0.53f, 0.91f, 1.0f));
+	lpDirectDrawRect->SetBackgroundColourTopRight(Colour(0.52f, 0.53f, 0.91f, 1.0f));
+	lpDirectDrawRect->SetBackgroundColourBottomLeft(Colour(0.52f, 0.53f, 0.91f, 1.0f));
+	lpDirectDrawRect->SetBackgroundColourBottomRight(Colour(0.52f, 0.53f, 0.91f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourTop(Colour(1.0f, 1.0f, 1.0f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourBottom(Colour(0.0f, 0.0f, 0.0f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourLeft(Colour(1.0f, 1.0f, 1.0f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourRight(Colour(0.0f, 0.0f, 0.0f, 1.0f));
+
+	lpDirectDrawRect = (DirectDrawRectangle *)m_pHoverIcon;
+	lpDirectDrawRect->SetBackgroundColourTopLeft(Colour(0.25f, 0.25f, 1.0f, 1.0f));
+	lpDirectDrawRect->SetBackgroundColourTopRight(Colour(0.25f, 0.25f, 1.0f, 1.0f));
+	lpDirectDrawRect->SetBackgroundColourBottomLeft(Colour(0.25f, 0.25f, 1.0f, 1.0f));
+	lpDirectDrawRect->SetBackgroundColourBottomRight(Colour(0.25f, 0.25f, 1.0f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourTop(Colour(1.0f, 1.0f, 1.0f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourBottom(Colour(0.0f, 0.0f, 0.0f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourLeft(Colour(1.0f, 1.0f, 1.0f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourRight(Colour(0.0f, 0.0f, 0.0f, 1.0f));
+
+	lpDirectDrawRect = (DirectDrawRectangle *)m_pSelectedIcon;
+	lpDirectDrawRect->SetBackgroundColourTopLeft(Colour(0.25f, 0.25f, 1.0f, 1.0f));
+	lpDirectDrawRect->SetBackgroundColourTopRight(Colour(0.25f, 0.25f, 1.0f, 1.0f));
+	lpDirectDrawRect->SetBackgroundColourBottomLeft(Colour(0.25f, 0.25f, 1.0f, 1.0f));
+	lpDirectDrawRect->SetBackgroundColourBottomRight(Colour(0.25f, 0.25f, 1.0f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourTop(Colour(0.0f, 0.0f, 0.0f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourBottom(Colour(1.0f, 1.0f, 1.0f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourLeft(Colour(0.0f, 0.0f, 0.0f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourRight(Colour(1.0f, 1.0f, 1.0f, 1.0f));
+
+	lpDirectDrawRect = (DirectDrawRectangle *)m_pDisabledIcon;
+	lpDirectDrawRect->SetBackgroundColourTopLeft(Colour(0.75f, 0.75f, 0.75f, 1.0f));
+	lpDirectDrawRect->SetBackgroundColourTopRight(Colour(0.75f, 0.75f, 0.75f, 1.0f));
+	lpDirectDrawRect->SetBackgroundColourBottomLeft(Colour(0.75f, 0.75f, 0.75f, 1.0f));
+	lpDirectDrawRect->SetBackgroundColourBottomRight(Colour(0.75f, 0.75f, 0.75f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourTop(Colour(0.25f, 0.25f, 0.25f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourBottom(Colour(0.25f, 0.25f, 0.25f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourLeft(Colour(0.25f, 0.25f, 0.25f, 1.0f));
+	lpDirectDrawRect->SetOutlineColourRight(Colour(0.25f, 0.25f, 0.25f, 1.0f));
+
+	Add(m_pDefaultIcon);
+	Add(m_pSelectedIcon);
+	Add(m_pHoverIcon);
+	Add(m_pDisabledIcon);
+
+	// Set the dimensions of the icons
+	Dimensions d = GetDimensions();
+	m_pDefaultIcon->SetDimensions(0, 0, d.m_width, d.m_height);
+	m_pSelectedIcon->SetDimensions(0, 0, d.m_width, d.m_height);
+	m_pHoverIcon->SetDimensions(0, 0, d.m_width, d.m_height);
+	m_pDisabledIcon->SetDimensions(0, 0, d.m_width, d.m_height);
 }
 
 void AbstractButton::SetDefaultIcon(RenderRectangle *icon)
@@ -219,30 +289,6 @@ void AbstractButton::SetDisabledIcon(RenderRectangle *icon)
 
 	// Re-add this icon to the component list
 	Add(m_pDisabledIcon);
-}
-
-void AbstractButton::SetEnterAudio(const char* filename)
-{
-	m_enterSound = true;
-	sprintf_s(m_enterSoundFilename, 64, "%s", filename);
-}
-
-void AbstractButton::SetExitAudio(const char* filename)
-{
-	m_exitSound = true;
-	sprintf_s(m_exitSoundFilename, 64, "%s", filename);
-}
-
-void AbstractButton::SetPressedAudio(const char* filename)
-{
-	m_pressedSound = true;
-	sprintf_s(m_pressedSoundFilename, 64, "%s", filename);
-}
-
-void AbstractButton::SetClickedAudio(const char* filename)
-{
-	m_clickedSound = true;
-	sprintf_s(m_clickedSoundFilename, 64, "%s", filename);
 }
 
 Label AbstractButton::GetLabel() const

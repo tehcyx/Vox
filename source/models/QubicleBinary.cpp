@@ -15,7 +15,7 @@
 
 #include "QubicleBinary.h"
 #include "VoxelCharacter.h"
-
+#include "../utils/FileUtils.h"
 
 const float QubicleBinary::BLOCK_RENDER_SIZE = 0.5f;
 
@@ -137,7 +137,7 @@ bool QubicleBinary::Import(const char* fileName)
 	m_fileName = fileName;
 
 	char qbFilename[256];
-	sprintf_s(qbFilename, fileName);;
+	snprintf(qbFilename, 256, fileName);;
 
 	FILE* pQBfile = NULL;
 	fopen_s(&pQBfile, qbFilename, "rb");
@@ -264,7 +264,7 @@ bool QubicleBinary::Import(const char* fileName)
 bool QubicleBinary::Export(const char* fileName)
 {
 	char qbFilename[256];
-	sprintf_s(qbFilename, fileName);;
+	snprintf(qbFilename, 256, fileName);;
 
 	FILE* pQBfile = NULL;
 	fopen_s(&pQBfile, qbFilename, "wb");

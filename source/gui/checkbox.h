@@ -33,6 +33,8 @@ public:
 	void AddEventListeners();
 	void RemoveEventListeners();
 
+	void RemoveIcon(RenderRectangle *pRemoveIcon);
+	void SetDefaultIcons(Renderer* pRenderer);
 	void SetToggledIcon(RenderRectangle *icon);
 	void SetToggledSelectedIcon(RenderRectangle *icon);
 	void SetToggledHoverIcon(RenderRectangle *icon);

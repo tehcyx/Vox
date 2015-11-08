@@ -249,7 +249,7 @@ EComponentType TextBox::GetComponentType() const
 
 void TextBox::KeyPressed(const KeyEvent& lEvent)
 {
-	if(lEvent.GetKeyCode() == VK_BACK)
+	if(lEvent.GetKeyCode() == 0x08)
 	{
 		int l_NumHighlightChars = m_HighlightEndIndex - m_HighlightStartIndex;
 
@@ -276,7 +276,7 @@ void TextBox::KeyPressed(const KeyEvent& lEvent)
 		m_pPipeDisplayCountDown->ResetCountdown();
 	}
 
-	if(lEvent.GetKeyCode() == VK_DELETE)
+	if(lEvent.GetKeyCode() == 0x2E)
 	{
 		int l_NumHighlightChars = m_HighlightEndIndex - m_HighlightStartIndex;
 
@@ -303,7 +303,7 @@ void TextBox::KeyPressed(const KeyEvent& lEvent)
 		m_pPipeDisplayCountDown->ResetCountdown();
 	}
 
-	if(lEvent.GetKeyCode() == VK_HOME)
+	if(lEvent.GetKeyCode() == 0x24)
 	{
 		// Set pipe to start
 		m_PipeCharacterIndex = 0;
@@ -323,7 +323,7 @@ void TextBox::KeyPressed(const KeyEvent& lEvent)
 		m_pPipeDisplayCountDown->ResetCountdown();
 	}
 
-	if(lEvent.GetKeyCode() == VK_END)
+	if(lEvent.GetKeyCode() == 0x23)
 	{
 		// Set pipe to end
 		int l_stringSize = (int)m_text.GetText().size();
@@ -344,7 +344,7 @@ void TextBox::KeyPressed(const KeyEvent& lEvent)
 		m_pPipeDisplayCountDown->ResetCountdown();
 	}
 
-	if(lEvent.GetKeyCode() == VK_RETURN)
+	if(lEvent.GetKeyCode() == 0x0D)
 	{
 		if(m_bDontLoseFocus == false)
 		{
@@ -361,7 +361,7 @@ void TextBox::KeyPressed(const KeyEvent& lEvent)
 		OnReturnPressed();
 	}
 
-	if(lEvent.GetKeyCode() == VK_LEFT)
+	if(lEvent.GetKeyCode() == 0x25)
 	{
 		if(m_PipeCharacterIndex > 0)
 		{
@@ -397,7 +397,7 @@ void TextBox::KeyPressed(const KeyEvent& lEvent)
 		m_pPipeDisplayCountDown->ResetCountdown();
 	}
 
-	if(lEvent.GetKeyCode() == VK_RIGHT)
+	if(lEvent.GetKeyCode() == 0x27)
 	{
 		int l_stringSize = (int)m_text.GetText().size();
 		if(m_PipeCharacterIndex < l_stringSize)
@@ -434,7 +434,7 @@ void TextBox::KeyPressed(const KeyEvent& lEvent)
 		m_pPipeDisplayCountDown->ResetCountdown();
 	}
 
-	if(lEvent.GetKeyCode() == VK_SHIFT)
+	if(lEvent.GetKeyCode() == 0x10 || lEvent.GetKeyCode() == 0xA0 || lEvent.GetKeyCode() == 0xA1)
 	{
 		m_bShiftHeld = true;
 	}
@@ -442,7 +442,7 @@ void TextBox::KeyPressed(const KeyEvent& lEvent)
 
 void TextBox::KeyReleased(const KeyEvent& lEvent)
 {
-	if(lEvent.GetKeyCode() == VK_SHIFT)
+	if(lEvent.GetKeyCode() == 0x10 || lEvent.GetKeyCode() == 0xA0 || lEvent.GetKeyCode() == 0xA1)
 	{
 		m_bShiftHeld = false;
 	}

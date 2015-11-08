@@ -1,7 +1,16 @@
-// Juice Engine by Steven Ball
-// Material - An OpenGL material type
-// Created : 01/05/06
-// Edited  : 01/05/06
+// ******************************************************************************
+// Filename:  Material.h
+// Project:   Vox
+// Author:    Steven Ball
+//
+// Purpose:
+//   An OpenGL material type.
+//
+// Revision History:
+//   Initial Revision - 01/05/06
+//
+// Copyright (c) 2005-2015, Steven Ball
+// ******************************************************************************
 
 #pragma once
 

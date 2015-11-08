@@ -1,4 +1,6 @@
 #include "VoxGame.h"
+#include "utils/FileUtils.h"
+
 
 void VoxGame::CreateGUI()
 {
@@ -34,19 +36,21 @@ void VoxGame::CreateGUI()
 	m_pDeferredCheckBox->SetDimensions(10, 118, 14, 14);
 	m_pDeferredCheckBox->SetToggled(true);
 	m_pUpdateCheckBox = new CheckBox(m_pRenderer, m_defaultFont, "Update");
-	m_pUpdateCheckBox->SetDimensions(130, 40, 14, 14);
+	m_pUpdateCheckBox->SetDimensions(110, 30, 14, 14);
 	m_pUpdateCheckBox->SetToggled(true);
 	m_pDebugRenderCheckBox = new CheckBox(m_pRenderer, m_defaultFont, "DebugRender");
-	m_pDebugRenderCheckBox->SetDimensions(210, 10, 14, 14);
+	m_pDebugRenderCheckBox->SetDimensions(110, 10, 14, 14);
 	m_pDebugRenderCheckBox->SetToggled(false);
 
 	m_pFullscreenButton = new Button(m_pRenderer, m_defaultFont, "FullScreen");
-	m_pFullscreenButton->SetDimensions(110, 10, 80, 20);
+	m_pFullscreenButton->SetDimensions(230, 10, 85, 25);
+	m_pFullscreenButton->SetLabelColour(Colour(0.0f, 0.0f, 0.0f, 1.0f));
 	m_pFullscreenButton->SetCallBackFunction(_ToggleFullScreenPressed);
 	m_pFullscreenButton->SetCallBackData(this);
 
-	m_pPlayAnimationButton = new Button(m_pRenderer, m_defaultFont, "Play Animation");
-	m_pPlayAnimationButton->SetDimensions(230, 45, 85, 20);
+	m_pPlayAnimationButton = new Button(m_pRenderer, m_defaultFont, "Play Anim");
+	m_pPlayAnimationButton->SetDimensions(230, 40, 85, 25);
+	m_pPlayAnimationButton->SetLabelColour(Colour(0.0f, 0.0f, 0.0f, 1.0f));
 	m_pPlayAnimationButton->SetCallBackFunction(_PlayAnimationPressed);
 	m_pPlayAnimationButton->SetCallBackData(this);
 
@@ -59,7 +63,7 @@ void VoxGame::CreateGUI()
 	m_pAnimationsPulldown->SetMenuItemChangedCallBackData(this);
 
 	m_pWeaponsPulldown = new PulldownMenu(m_pRenderer, m_defaultFont, "Weapons");
-	m_pWeaponsPulldown->SetDimensions(150, 90, 140, 14);
+	m_pWeaponsPulldown->SetDimensions(150, 93, 140, 14);
 	m_pWeaponsPulldown->SetMaxNumItemsDisplayed(5);
 	m_pWeaponsPulldown->SetDepth(3.0f);
 	m_pWeaponsPulldown->SetRenderHeader(true);
@@ -79,7 +83,7 @@ void VoxGame::CreateGUI()
 	m_pWeaponsPulldown->AddPulldownItem("Magic");
 
 	m_pCharacterPulldown = new PulldownMenu(m_pRenderer, m_defaultFont, "Character");
-	m_pCharacterPulldown->SetDimensions(150, 110, 140, 14);
+	m_pCharacterPulldown->SetDimensions(150, 115, 140, 14);
 	m_pCharacterPulldown->SetMaxNumItemsDisplayed(5);
 	m_pCharacterPulldown->SetDepth(4.0f);
 	m_pCharacterPulldown->SetRenderHeader(true);
@@ -109,85 +113,139 @@ void VoxGame::CreateGUI()
 	m_pMainWindow->AddComponent(m_pWeaponsPulldown);
 	m_pMainWindow->AddComponent(m_pCharacterPulldown);
 
+	m_pGameWindow = new GUIWindow(m_pRenderer, m_defaultFont, "Game");
+	m_pGameWindow->AllowMoving(true);
+	m_pGameWindow->AllowClosing(false);
+	m_pGameWindow->AllowMinimizing(true);
+	m_pGameWindow->AllowScrolling(true);
+	m_pGameWindow->SetRenderTitleBar(true);
+	m_pGameWindow->SetRenderWindowBackground(true);
+	m_pGameWindow->SetOutlineRender(true);
+	m_pGameWindow->SetDimensions(350, 35, 270, 140);
+	m_pGameWindow->SetApplicationDimensions(m_windowWidth, m_windowHeight);
+
+	m_pGameOptionBox = new OptionBox(m_pRenderer, m_defaultFont, "Game");
+	m_pGameOptionBox->SetDimensions(10, 50, 14, 14);
+	m_pGameOptionBox->SetCallBackFunction(_GameModeChanged);
+	m_pGameOptionBox->SetCallBackData(this);
+	m_pFrontEndOptionBox = new OptionBox(m_pRenderer, m_defaultFont, "Frontend");
+	m_pFrontEndOptionBox->SetDimensions(10, 30, 14, 14);
+	m_pFrontEndOptionBox->SetCallBackFunction(_GameModeChanged);
+	m_pFrontEndOptionBox->SetCallBackData(this);
+	m_pDebugOptionBox = new OptionBox(m_pRenderer, m_defaultFont, "Debug");
+	m_pDebugOptionBox->SetDimensions(10, 10, 14, 14);
+	m_pDebugOptionBox->SetCallBackFunction(_GameModeChanged);
+	m_pDebugOptionBox->SetCallBackData(this);
+	m_pGameModeOptionController = new OptionController(m_pRenderer, m_defaultFont, "Mode");
+	m_pGameModeOptionController->SetDisplayLabel(true);
+	m_pGameModeOptionController->SetDisplayBorder(true);
+	m_pGameModeOptionController->SetDimensions(10, 55, 85, 70);
+	m_pGameModeOptionController->Add(m_pGameOptionBox);
+	m_pGameModeOptionController->Add(m_pDebugOptionBox);
+	m_pGameModeOptionController->Add(m_pFrontEndOptionBox);
+	m_pDebugOptionBox->SetToggled(true);
+
+	m_pGUIThemePulldown = new PulldownMenu(m_pRenderer, m_defaultFont, "Theme");
+	m_pGUIThemePulldown->SetDimensions(50, 30, 80, 14);
+	m_pGUIThemePulldown->SetMaxNumItemsDisplayed(5);
+	m_pGUIThemePulldown->SetDepth(2.0f);
+	m_pGUIThemePulldown->SetRenderHeader(true);
+	m_pGUIThemePulldown->SetMenuItemChangedCallBackFunction(_GUIThemePullDownChanged);
+	m_pGUIThemePulldown->SetMenuItemChangedCallBackData(this);
+
+	m_pDebugCameraOptionBox = new OptionBox(m_pRenderer, m_defaultFont, "Debug");
+	m_pDebugCameraOptionBox->SetDimensions(10, 70, 14, 14);
+	m_pDebugCameraOptionBox->SetCallBackFunction(_CameraModeChanged);
+	m_pDebugCameraOptionBox->SetCallBackData(this);
+	m_pMouseRotateCameraOptionBox = new OptionBox(m_pRenderer, m_defaultFont, "Mouse");
+	m_pMouseRotateCameraOptionBox->SetDimensions(10, 50, 14, 14);
+	m_pMouseRotateCameraOptionBox->SetCallBackFunction(_CameraModeChanged);
+	m_pMouseRotateCameraOptionBox->SetCallBackData(this);
+	m_pAutoCameraOptionBox = new OptionBox(m_pRenderer, m_defaultFont, "Auto");
+	m_pAutoCameraOptionBox->SetDimensions(10, 30, 14, 14);
+	m_pAutoCameraOptionBox->SetCallBackFunction(_CameraModeChanged);
+	m_pAutoCameraOptionBox->SetCallBackData(this);
+	m_pFirstPersonCameraOptionBox = new OptionBox(m_pRenderer, m_defaultFont, "First Person");
+	m_pFirstPersonCameraOptionBox->SetDimensions(10, 10, 14, 14);
+	m_pFirstPersonCameraOptionBox->SetCallBackFunction(_CameraModeChanged);
+	m_pFirstPersonCameraOptionBox->SetCallBackData(this);
+	m_pCameraModeOptionController = new OptionController(m_pRenderer, m_defaultFont, "Camera");
+	m_pCameraModeOptionController->SetDisplayLabel(true);
+	m_pCameraModeOptionController->SetDisplayBorder(true);
+	m_pCameraModeOptionController->SetDimensions(160, 35, 105, 90);
+	m_pCameraModeOptionController->Add(m_pDebugCameraOptionBox);
+	m_pCameraModeOptionController->Add(m_pMouseRotateCameraOptionBox);
+	m_pCameraModeOptionController->Add(m_pAutoCameraOptionBox);
+	m_pCameraModeOptionController->Add(m_pFirstPersonCameraOptionBox);
+	m_pDebugCameraOptionBox->SetToggled(true);
+	m_pMouseRotateCameraOptionBox->SetDisabled(true);
+	m_pAutoCameraOptionBox->SetDisabled(true);
+	m_pFirstPersonCameraOptionBox->SetDisabled(true);
+
+	m_pGameWindow->AddComponent(m_pGameModeOptionController);
+	m_pGameWindow->AddComponent(m_pGUIThemePulldown);
+	m_pGameWindow->AddComponent(m_pCameraModeOptionController);
+
 	m_pGUI->AddWindow(m_pMainWindow);
+	m_pGUI->AddWindow(m_pGameWindow);
 
 	UpdateAnimationsPulldown();
+	UpdateGUIThemePulldown();
+
+	m_pCharacterPulldown->SetSelectedItem("Steve");
+	m_pWeaponsPulldown->SetSelectedItem("None");
+	m_pAnimationsPulldown->SetSelectedItem("BindPose");
+	m_pGUIThemePulldown->SetSelectedItem("Default");
 }
 
 void VoxGame::SkinGUI()
 {
-	m_pShadowsCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
-	m_pShadowsCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
-	m_pShadowsCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
-	m_pShadowsCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
-	m_pShadowsCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
-	m_pShadowsCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
-	m_pShadowsCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
-	m_pShadowsCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
-	m_pMSAACheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
-	m_pMSAACheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
-	m_pMSAACheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
-	m_pMSAACheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
-	m_pMSAACheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
-	m_pMSAACheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
-	m_pMSAACheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
-	m_pMSAACheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
-	m_pDynamicLightingCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
-	m_pDynamicLightingCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
-	m_pDynamicLightingCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
-	m_pDynamicLightingCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
-	m_pDynamicLightingCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
-	m_pDynamicLightingCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
-	m_pDynamicLightingCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
-	m_pDynamicLightingCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
-	m_pSSAOCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
-	m_pSSAOCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
-	m_pSSAOCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
-	m_pSSAOCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
-	m_pSSAOCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
-	m_pSSAOCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
-	m_pSSAOCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
-	m_pSSAOCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
-	m_pBlurCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
-	m_pBlurCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
-	m_pBlurCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
-	m_pBlurCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
-	m_pBlurCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
-	m_pBlurCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
-	m_pBlurCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
-	m_pBlurCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
-	m_pDeferredCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
-	m_pDeferredCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
-	m_pDeferredCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
-	m_pDeferredCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
-	m_pDeferredCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
-	m_pDeferredCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
-	m_pDeferredCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
-	m_pDeferredCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
-	m_pWireframeCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
-	m_pWireframeCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
-	m_pWireframeCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
-	m_pWireframeCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
-	m_pWireframeCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
-	m_pWireframeCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
-	m_pWireframeCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
-	m_pWireframeCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
-	m_pUpdateCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
-	m_pUpdateCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
-	m_pUpdateCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
-	m_pUpdateCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
-	m_pUpdateCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
-	m_pUpdateCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
-	m_pUpdateCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
-	m_pUpdateCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
-	m_pDebugRenderCheckBox->SetDefaultIcon(m_pFrontendManager->GetCheckboxIcon());
-	m_pDebugRenderCheckBox->SetHoverIcon(m_pFrontendManager->GetCheckboxIconHover());
-	m_pDebugRenderCheckBox->SetSelectedIcon(m_pFrontendManager->GetCheckboxIconPressed());
-	m_pDebugRenderCheckBox->SetDisabledIcon(m_pFrontendManager->GetCheckboxIconDisabled());
-	m_pDebugRenderCheckBox->SetToggledIcon(m_pFrontendManager->GetCheckboxIconToggled());
-	m_pDebugRenderCheckBox->SetToggledHoverIcon(m_pFrontendManager->GetCheckboxIconToggledHover());
-	m_pDebugRenderCheckBox->SetToggledSelectedIcon(m_pFrontendManager->GetCheckboxIconToggledPressed());
-	m_pDebugRenderCheckBox->SetToggledDisabledIcon(m_pFrontendManager->GetCheckboxIconToggledDisabled());
+	m_pFrontendManager->SetCheckboxIcons(m_pShadowsCheckBox);
+	m_pFrontendManager->SetCheckboxIcons(m_pMSAACheckBox);
+	m_pFrontendManager->SetCheckboxIcons(m_pDynamicLightingCheckBox);
+	m_pFrontendManager->SetCheckboxIcons(m_pSSAOCheckBox);
+	m_pFrontendManager->SetCheckboxIcons(m_pBlurCheckBox);
+	m_pFrontendManager->SetCheckboxIcons(m_pDeferredCheckBox);
+	m_pFrontendManager->SetCheckboxIcons(m_pWireframeCheckBox);
+	m_pFrontendManager->SetCheckboxIcons(m_pUpdateCheckBox);
+	m_pFrontendManager->SetCheckboxIcons(m_pDebugRenderCheckBox);
+
+	m_pFrontendManager->SetOptionboxIcons(m_pGameOptionBox);
+	m_pFrontendManager->SetOptionboxIcons(m_pDebugOptionBox);
+	m_pFrontendManager->SetOptionboxIcons(m_pFrontEndOptionBox);
+
+	m_pFrontendManager->SetOptionboxIcons(m_pDebugCameraOptionBox);
+	m_pFrontendManager->SetOptionboxIcons(m_pMouseRotateCameraOptionBox);
+	m_pFrontendManager->SetOptionboxIcons(m_pAutoCameraOptionBox);
+	m_pFrontendManager->SetOptionboxIcons(m_pFirstPersonCameraOptionBox);
+
+	m_pFrontendManager->SetButtonIcons(m_pFullscreenButton, ButtonSize_85x25);
+	m_pFrontendManager->SetButtonIcons(m_pPlayAnimationButton, ButtonSize_85x25);
+}
+
+void VoxGame::UnSkinGUI()
+{
+	m_pShadowsCheckBox->SetDefaultIcons(m_pRenderer);
+	m_pMSAACheckBox->SetDefaultIcons(m_pRenderer);
+	m_pDynamicLightingCheckBox->SetDefaultIcons(m_pRenderer);
+	m_pSSAOCheckBox->SetDefaultIcons(m_pRenderer);
+	m_pBlurCheckBox->SetDefaultIcons(m_pRenderer);
+	m_pDeferredCheckBox->SetDefaultIcons(m_pRenderer);
+	m_pWireframeCheckBox->SetDefaultIcons(m_pRenderer);
+	m_pUpdateCheckBox->SetDefaultIcons(m_pRenderer);
+	m_pDebugRenderCheckBox->SetDefaultIcons(m_pRenderer);
+
+	m_pGameOptionBox->SetDefaultIcons(m_pRenderer);
+	m_pDebugOptionBox->SetDefaultIcons(m_pRenderer);
+	m_pFrontEndOptionBox->SetDefaultIcons(m_pRenderer);
+
+	m_pDebugCameraOptionBox->SetDefaultIcons(m_pRenderer);
+	m_pMouseRotateCameraOptionBox->SetDefaultIcons(m_pRenderer);
+	m_pAutoCameraOptionBox->SetDefaultIcons(m_pRenderer);
+	m_pFirstPersonCameraOptionBox->SetDefaultIcons(m_pRenderer);
+
+	m_pFullscreenButton->SetDefaultIcons(m_pRenderer);
+	m_pPlayAnimationButton->SetDefaultIcons(m_pRenderer);
 }
 
 void VoxGame::DestroyGUI()
@@ -207,6 +265,17 @@ void VoxGame::DestroyGUI()
 	delete m_pAnimationsPulldown;
 	delete m_pWeaponsPulldown;
 	delete m_pCharacterPulldown;
+	delete m_pGameWindow;
+	delete m_pGameOptionBox;
+	delete m_pDebugOptionBox;
+	delete m_pFrontEndOptionBox;
+	delete m_pGameModeOptionController;
+	delete m_pGUIThemePulldown;
+	delete m_pDebugCameraOptionBox;
+	delete m_pMouseRotateCameraOptionBox;
+	delete m_pAutoCameraOptionBox;
+	delete m_pFirstPersonCameraOptionBox;
+	delete m_pCameraModeOptionController;
 }
 
 void VoxGame::UpdateGUI(float dt)
@@ -251,6 +320,34 @@ void VoxGame::UpdateAnimationsPulldown()
 
 	m_pMainWindow->AddComponent(m_pAnimationsPulldown);
 	m_pAnimationsPulldown->AddEventListeners();
+}
+
+void VoxGame::UpdateGUIThemePulldown()
+{
+	m_pGUIThemePulldown->RemoveAllPullDownMenuItems();
+	m_pGUIThemePulldown->ResetPullDownMenu();
+	m_pGameWindow->RemoveComponent(m_pGUIThemePulldown);
+
+	// Add 'None' theme to use standard GUI rendering
+	m_pGUIThemePulldown->AddPulldownItem("None");
+
+	char importDirectory[128];
+	snprintf(importDirectory, 128, "media/textures/gui/*.*");
+
+	vector<string> listFiles;
+	listFiles = listFilesInDirectory(importDirectory);
+	for (unsigned int i = 0; i < listFiles.size(); i++)
+	{
+		if (strcmp(listFiles[i].c_str(), ".") == 0 || strcmp(listFiles[i].c_str(), "..") == 0)
+		{
+			continue;
+		}
+
+		m_pGUIThemePulldown->AddPulldownItem(listFiles[i].c_str());
+	}
+
+	m_pGameWindow->AddComponent(m_pGUIThemePulldown);
+	m_pGUIThemePulldown->AddEventListeners();
 }
 
 // GUI callbacks
@@ -382,5 +479,99 @@ void VoxGame::CharacterPullDownChanged()
 
 		WeaponPullDownChanged();
 		AnimationPullDownChanged();
+	}
+}
+
+void VoxGame::_GameModeChanged(void *apData)
+{
+	VoxGame* lpVoxGame = (VoxGame*)apData;
+	lpVoxGame->GameModeChanged();
+}
+
+void VoxGame::GameModeChanged()
+{
+	GameMode gameMode = GetGameMode();
+
+	if (m_pGameOptionBox->GetToggled() && gameMode != GameMode_Game)
+	{
+		SetGameMode(GameMode_Game);
+
+		m_pMouseRotateCameraOptionBox->SetDisabled(false);
+		m_pAutoCameraOptionBox->SetDisabled(false);
+		m_pFirstPersonCameraOptionBox->SetDisabled(false);
+
+		m_maxCameraDistance = 12.5f;
+	}
+	else if (m_pFrontEndOptionBox->GetToggled() && gameMode != GameMode_FrontEnd)
+	{
+		SetGameMode(GameMode_FrontEnd);
+
+		m_pMouseRotateCameraOptionBox->SetDisabled(true);
+		m_pAutoCameraOptionBox->SetDisabled(true);
+		m_pFirstPersonCameraOptionBox->SetDisabled(true);
+	}
+	else if (m_pDebugOptionBox->GetToggled() && gameMode != GameMode_Debug)
+	{
+		SetGameMode(GameMode_Debug);
+
+		m_cameraMode = CameraMode_Debug;
+		m_pDebugCameraOptionBox->SetToggled(true);
+
+		m_pMouseRotateCameraOptionBox->SetDisabled(true);
+		m_pAutoCameraOptionBox->SetDisabled(true);
+		m_pFirstPersonCameraOptionBox->SetDisabled(true);
+	}
+}
+
+void VoxGame::_CameraModeChanged(void *apData)
+{
+	VoxGame* lpVoxGame = (VoxGame*)apData;
+	lpVoxGame->CameraModeChanged();
+}
+
+void VoxGame::CameraModeChanged()
+{
+	if (m_pDebugCameraOptionBox->GetToggled())
+	{
+		m_cameraMode = CameraMode_Debug;
+	}
+	else if (m_pMouseRotateCameraOptionBox->GetToggled())
+	{
+		m_cameraMode = CameraMode_MouseRotate;
+	}
+	else if (m_pAutoCameraOptionBox->GetToggled())
+	{
+		if (m_cameraMode != CameraMode_AutoCamera)
+		{
+			SetupCameraAutoCamera();
+		}
+		m_cameraMode = CameraMode_AutoCamera;
+	}
+	else if (m_pFirstPersonCameraOptionBox->GetToggled())
+	{
+		m_cameraMode = CameraMode_FirstPerson;
+	}
+}
+
+void VoxGame::_GUIThemePullDownChanged(void *apData)
+{
+	VoxGame* lpVoxGame = (VoxGame*)apData;
+	lpVoxGame->GUIThemePullDownChanged();
+}
+
+void VoxGame::GUIThemePullDownChanged()
+{
+	MenuItem* pMenuItem = m_pGUIThemePulldown->GetSelectedMenuItem();
+	if (pMenuItem != NULL)
+	{
+		if (pMenuItem->GetLabel().GetText() == "None")
+		{
+			UnSkinGUI();
+		}
+		else
+		{
+			m_pFrontendManager->LoadCommonGraphics(pMenuItem->GetLabel().GetText().c_str());
+			SkinGUI();
+		}
 	}
 }

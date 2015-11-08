@@ -1,8 +1,21 @@
+// ******************************************************************************
+// Filename:	VoxWindow.cpp
+// Project:		Vox
+// Author:		Steven Ball
+// 
+// Revision History:
+//   Initial Revision - 27/10/15
+//
+// Copyright (c) 2005-2015, Steven Ball
+// ******************************************************************************
+
 #include "glew/include/GL/glew.h"
 
+#ifdef _WIN32
 #include <windows.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
+#endif //_WIN32
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 #pragma comment (lib, "opengl32")
 #pragma comment (lib, "glu32")

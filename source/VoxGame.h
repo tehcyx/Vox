@@ -1,3 +1,17 @@
+// ******************************************************************************
+// Filename:	VoxGame.h
+// Project:		Vox
+// Author:		Steven Ball
+//
+// Purpose:
+//   Vox game class.
+// 
+// Revision History:
+//   Initial Revision - 27/10/15
+//
+// Copyright (c) 2005-2015, Steven Ball
+// ******************************************************************************
+
 #pragma once
 
 #include "Renderer/Renderer.h"
@@ -13,6 +27,21 @@
 #include "VoxApplication.h"
 #include "VoxWindow.h"
 
+enum GameMode
+{
+	GameMode_Debug = 0,
+	GameMode_Loading,
+	GameMode_FrontEnd,
+	GameMode_Game,
+};
+
+enum CameraMode
+{
+	CameraMode_Debug = 0,
+	CameraMode_MouseRotate,
+	CameraMode_AutoCamera,
+	CameraMode_FirstPerson,
+};
 
 class VoxGame
 {
@@ -24,6 +53,7 @@ public:
 	void Create();
 	void CreateGUI();
 	void SkinGUI();
+	void UnSkinGUI();
 
 	// Destruction
 	void Destroy();
@@ -38,6 +68,20 @@ public:
 
 	// Controls
 	void UpdateControls(float dt);
+	void UpdateKeyboardControls(float dt);
+	void UpdateMouseControls(float dt);
+	void UpdateGamePadControls(float dt);
+
+	// Camera controls
+	void UpdateCamera(float dt);
+	void UpdateCameraMouseRotate(float dt);
+	void SetupCameraAutoCamera();
+	void UpdateCameraAutoCamera(float dt);
+	void UpdateCameraFirstPerson(float dt);
+	void UpdateCameraClipping(float dt);
+	void UpdateCameraZoom(float dt);
+
+	// Input
 	void KeyPressed(int key, int scancode, int mods);
 	void KeyReleased(int key, int scancode, int mods);
 	void MouseLeftPressed();
@@ -50,7 +94,15 @@ public:
 
 	// Mouse controls
 	void MouseCameraRotate(int x, int y);
-	void MouseCameraZoom(int x, int y);
+
+	// Game functions
+	void SetupDataForGame();
+	void SetupDataForFrontEnd();
+	void StartGameFromFrontEnd();
+	void SetGameMode(GameMode mode);
+	GameMode GetGameMode();
+	void SetCameraMode(CameraMode mode);
+	CameraMode GetCameraMode();
 
 	// Updating
 	void Update();
@@ -73,6 +125,7 @@ public:
 
 	// GUI
 	void UpdateAnimationsPulldown();
+	void UpdateGUIThemePulldown();
 
 protected:
 	/* Protected methods */
@@ -95,6 +148,15 @@ protected:
 
 	static void _CharacterPullDownChanged(void *apData);
 	void CharacterPullDownChanged();
+
+	static void _GameModeChanged(void *apData);
+	void GameModeChanged();
+
+	static void _CameraModeChanged(void *apData);
+	void CameraModeChanged();
+
+	static void _GUIThemePullDownChanged(void *apData);
+	void GUIThemePullDownChanged();
 
 private:
 	/* Private methods */
@@ -137,6 +199,13 @@ private:
 	// Frontend manager
 	FrontendManager* m_pFrontendManager;
 
+	// Game mode
+	GameMode m_gameMode;
+
+	// Camera mode
+	CameraMode m_cameraMode;
+	CameraMode m_cameraModeBeforePause;
+
 	// Window width and height
 	int m_windowWidth;
 	int m_windowHeight;
@@ -176,9 +245,15 @@ private:
 	unsigned int m_blurHorizontalShader;
 
 	// FPS and deltatime
+#ifdef _WIN32
 	LARGE_INTEGER m_fpsPreviousTicks;
-	LARGE_INTEGER m_fpsTicksPerSecond;
 	LARGE_INTEGER m_fpsCurrentTicks;
+	LARGE_INTEGER m_fpsTicksPerSecond;
+#else
+	struct timeval m_fpsPreviousTicks;
+	struct timeval m_fpsCurrentTicks;
+	struct timespec m_fpsTicksPerSecond;
+#endif //_WIN32
 	float m_deltaTime;
 	float m_fps;
 
@@ -195,11 +270,34 @@ private:
 
 	// Camera movement
 	bool m_bCameraRotate;
-	bool m_bCameraZoom;
 	int m_pressedX;
 	int m_pressedY;
 	int m_currentX;
 	int m_currentY;
+	float m_cameraDistance;
+	float m_maxCameraDistance;
+
+	// Auto camera mode
+	vec3 m_targetCameraPosition_AutoModeCached;
+	vec3 m_targetCameraUp_AutoModeCached;
+	vec3 m_targetCameraFacing_AutoModeCached;
+	vec3 m_targetCameraPosition_AutoMode;
+	vec3 m_targetCameraUp_AutoMode;
+	vec3 m_targetCameraFacing_AutoMode;
+	vec3 m_targetCameraBehindPlayerPosition;
+	float m_targetCameraBehindPlayerRightAmount;
+	float m_targetCameraBehindPlayerForwardAmount;
+	float m_targetCameraBehindPlayerUpAmount;
+
+	// Player movement
+	bool m_keyboardMovement;
+	bool m_gamepadMovement;
+	vec3 m_movementDirection;
+	float m_movementSpeed;
+	float m_movementDragTime;
+	float m_movementIncreaseTime;
+	float m_maxMovementSpeed;
+	float m_movementStopThreshold;
 
 	// GUI Components
 	GUIWindow* m_pMainWindow;
@@ -217,6 +315,17 @@ private:
 	PulldownMenu* m_pAnimationsPulldown;
 	PulldownMenu* m_pWeaponsPulldown;
 	PulldownMenu* m_pCharacterPulldown;
+	GUIWindow* m_pGameWindow;
+	OptionBox* m_pGameOptionBox;
+	OptionBox* m_pDebugOptionBox;
+	OptionBox* m_pFrontEndOptionBox;
+	OptionController* m_pGameModeOptionController;
+	PulldownMenu* m_pGUIThemePulldown;
+	OptionBox* m_pDebugCameraOptionBox;
+	OptionBox* m_pMouseRotateCameraOptionBox;
+	OptionBox* m_pAutoCameraOptionBox;
+	OptionBox* m_pFirstPersonCameraOptionBox;
+	OptionController* m_pCameraModeOptionController;
 
 	// Toggle flags
 	bool m_deferredRendering;

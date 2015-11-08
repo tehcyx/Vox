@@ -1,7 +1,16 @@
-// Juice Engine by Steven Ball
-// Colour - A simple 4 float colour class
-// Created : 26/03/06
-// Edited  : 26/03/06
+// ******************************************************************************
+// Filename:  Colour.h
+// Project:   Vox
+// Author:    Steven Ball
+//
+// Purpose:
+//   A simple 4 float colour class.
+//
+// Revision History:
+//   Initial Revision - 26/03/06
+//
+// Copyright (c) 2005-2015, Steven Ball
+// ******************************************************************************
 
 #pragma once
 
@@ -37,8 +46,8 @@ public:
 	const float GetAlpha() const { return m_rgba[3]; }
 	const float* GetRGBA() const { return m_rgba; }
 
-    static void RGBToHSV(float r, float g, float b, float *h, float *s, float *v);
-    static void HSVToRGB(float h, float s, float v, float *r, float *g, float *b);
+	static void RGBToHSV(float r, float g, float b, float *h, float *s, float *v);
+	static void HSVToRGB(float h, float s, float v, float *r, float *g, float *b);
 
 private:
 	float m_rgba[4];

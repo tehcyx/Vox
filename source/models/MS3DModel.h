@@ -105,7 +105,9 @@ struct MS3DKeyframe
 	float parameter[3];
 } PACK_STRUCT;
 
+#if defined( _MSC_VER ) || defined( __BORLANDC__ )
 #include <poppack.h> // End byte-align structures
+#endif
 
 // ---------------------------------------- //
 

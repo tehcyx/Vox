@@ -22,7 +22,7 @@
 
 #include "selectionmanager.h"
 #include "focusmanager.h"
-#include "GUIWindow.h"
+#include "guiwindow.h"
 #include "scrollbar.h"
 
 // Initialize the singleton instance

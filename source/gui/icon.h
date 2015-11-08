@@ -27,6 +27,7 @@ class Icon : public RenderRectangle
 {
 public:
 	/* Public methods */
+	Icon();
 	Icon(Renderer* pRenderer);
 
 	Icon(Renderer* pRenderer, const std::string &fileName, int width = 32, int height = 32);

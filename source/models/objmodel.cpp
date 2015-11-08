@@ -1,4 +1,5 @@
 #include "OBJModel.h"
+#include "../utils/FileUtils.h"
 
 #pragma warning(disable: 4473)  // 'fscanf_s' : not enough arguments passed for format string
 
@@ -108,24 +109,24 @@ bool OBJModel::Load(const char *modelFileName, const char *textureFileName)
 
 	while( !feof(pFile) ) {
 		// Read in the charater of the line
-		fscanf_s(pFile, "%c", &tempChar);
+		fscanf(pFile, "%c", &tempChar);
 
 		// If it is a v then we are reading either a vertex point, texture coordinate or a vertex normal
 		if(tempChar == 'v') {
-			fscanf_s(pFile, "%c", &tempChar);
+			fscanf(pFile, "%c", &tempChar);
 
 			if(tempChar == ' ') {
 				// Vertex point
 				// Read in the x, y, z values of this vertex point
-				fscanf_s(pFile, "%f", &m_pVertices[vertexIndex].position.x);
-				fscanf_s(pFile, "%f", &m_pVertices[vertexIndex].position.y);
-				fscanf_s(pFile, "%f", &m_pVertices[vertexIndex].position.z);
+				fscanf(pFile, "%f", &m_pVertices[vertexIndex].position.x);
+				fscanf(pFile, "%f", &m_pVertices[vertexIndex].position.y);
+				fscanf(pFile, "%f", &m_pVertices[vertexIndex].position.z);
 
 				// Set all the vertices to initially not be assigned to a mass
 				m_pVertices[vertexIndex].massID = -1;
 
 				// Read in the newline
-				fscanf_s(pFile, "%c", &tempChar);
+				fscanf(pFile, "%c", &tempChar);
 
 				// Increment the index
 				vertexIndex++;
@@ -133,11 +134,11 @@ bool OBJModel::Load(const char *modelFileName, const char *textureFileName)
 			else if(tempChar == 't') {
 				// Texture coordinate
 				// Read in the u, v, values of this texture coordinate
-				fscanf_s(pFile, "%f", &m_pTextureCoordinates[textureCoordinateIndex].u);
-				fscanf_s(pFile, "%f", &m_pTextureCoordinates[textureCoordinateIndex].v);
+				fscanf(pFile, "%f", &m_pTextureCoordinates[textureCoordinateIndex].u);
+				fscanf(pFile, "%f", &m_pTextureCoordinates[textureCoordinateIndex].v);
 
 				// Read in the newline
-				fscanf_s(pFile, "%c", &tempChar);
+				fscanf(pFile, "%c", &tempChar);
 
 				// Increment the index
 				textureCoordinateIndex++;
@@ -145,12 +146,12 @@ bool OBJModel::Load(const char *modelFileName, const char *textureFileName)
 			else if(tempChar == 'n') {
 				// Vertex normal
 				// Read in the x, y, z values of this vertex normal
-				fscanf_s(pFile, "%f", &m_pNormals[normalIndex].x);
-				fscanf_s(pFile, "%f", &m_pNormals[normalIndex].y);
-				fscanf_s(pFile, "%f", &m_pNormals[normalIndex].z);
+				fscanf(pFile, "%f", &m_pNormals[normalIndex].x);
+				fscanf(pFile, "%f", &m_pNormals[normalIndex].y);
+				fscanf(pFile, "%f", &m_pNormals[normalIndex].z);
 
 				// Read in the newline
-				fscanf_s(pFile, "%c", &tempChar);
+				fscanf(pFile, "%c", &tempChar);
 
 				// Increment the index
 				normalIndex++;
@@ -158,7 +159,7 @@ bool OBJModel::Load(const char *modelFileName, const char *textureFileName)
 		}
 		else if(tempChar == 'f') {
 			// If we read in a f check that the next char is a space
-			fscanf_s(pFile, "%c", &tempChar);
+			fscanf(pFile, "%c", &tempChar);
 
 			if(tempChar == ' ') {
 				// Read in the rest of the line
@@ -166,7 +167,7 @@ bool OBJModel::Load(const char *modelFileName, const char *textureFileName)
 
 				// Copy to a temp buffer so we can mess with it.
 				buffer[strlen(buffer)] = '\0';
-				strcpy_s(tempBuffer, buffer);
+				strcpy(tempBuffer, buffer);
 
 				// Set the search token. Used to distinguish between each polygon
 				token = strtok(tempBuffer, " ");
@@ -186,56 +187,56 @@ bool OBJModel::Load(const char *modelFileName, const char *textureFileName)
 				{
 					if(count == 1)
 					{
-						sscanf_s(buffer, "%i", &m_pFaces[faceIndex].pIndices[0]);
+						sscanf(buffer, "%i", &m_pFaces[faceIndex].pIndices[0]);
 					}
 					else if(count == 2)
 					{
-						sscanf_s(buffer, "%i %i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[3]);
+						sscanf(buffer, "%i %i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[3]);
 					}
 					else if(count == 3)
 					{
-						sscanf_s(buffer, "%i %i %i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[6]);
+						sscanf(buffer, "%i %i %i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[6]);
 					}
 					else if(count == 4)
 					{
-						sscanf_s(buffer, "%i %i %i %i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[9]);
+						sscanf(buffer, "%i %i %i %i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[9]);
 					}
 					else if(count == 5)
 					{
-						sscanf_s(buffer, "%i %i %i %i %i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[9], &m_pFaces[faceIndex].pIndices[12]);
+						sscanf(buffer, "%i %i %i %i %i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[9], &m_pFaces[faceIndex].pIndices[12]);
 					}
 					else if(count == 6)
 					{
-						sscanf_s(buffer, "%i %i %i %i %i %i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[9], &m_pFaces[faceIndex].pIndices[12], &m_pFaces[faceIndex].pIndices[15]);
+						sscanf(buffer, "%i %i %i %i %i %i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[9], &m_pFaces[faceIndex].pIndices[12], &m_pFaces[faceIndex].pIndices[15]);
 					}
 				}
 				else if (m_numNormals == 0)
 				{
 					if(count == 1)
 					{
-						sscanf_s(buffer, "%i/%i/", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1]);
+						sscanf(buffer, "%i/%i/", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1]);
 					}
 					else if(count == 2)
 					{
-						sscanf_s(buffer, "%i/%i %i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1],
+						sscanf(buffer, "%i/%i %i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[4]);
 					}
 					else if(count == 3)
 					{
-						sscanf_s(buffer, "%i/%i %i/%i %i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1],
+						sscanf(buffer, "%i/%i %i/%i %i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[4],
 						&m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[7]);
 					}
 					else if(count == 4)
 					{
-						sscanf_s(buffer, "%i/%i %i/%i %i/%i %i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1],
+						sscanf(buffer, "%i/%i %i/%i %i/%i %i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[4],
 						&m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[7],
 						&m_pFaces[faceIndex].pIndices[9], &m_pFaces[faceIndex].pIndices[10]);
 					}
 					else if(count == 5)
 					{
-						sscanf_s(buffer, "%i/%i %i/%i %i/%i %i/%i %i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1],
+						sscanf(buffer, "%i/%i %i/%i %i/%i %i/%i %i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[4],
 						&m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[7],
 						&m_pFaces[faceIndex].pIndices[9], &m_pFaces[faceIndex].pIndices[10],
@@ -243,7 +244,7 @@ bool OBJModel::Load(const char *modelFileName, const char *textureFileName)
 					}
 					else if(count == 6)
 					{
-						sscanf_s(buffer, "%i/%i %i/%i %i/%i %i/%i %i/%i %i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1],
+						sscanf(buffer, "%i/%i %i/%i %i/%i %i/%i %i/%i %i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[4],
 						&m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[7],
 						&m_pFaces[faceIndex].pIndices[9], &m_pFaces[faceIndex].pIndices[10],
@@ -255,29 +256,29 @@ bool OBJModel::Load(const char *modelFileName, const char *textureFileName)
 				{
 					if(count == 1)
 					{
-						sscanf_s(buffer, "%i//%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[2]);
+						sscanf(buffer, "%i//%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[2]);
 					}
 					else if(count == 2)
 					{
-						sscanf_s(buffer, "%i//%i %i//%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[2],
+						sscanf(buffer, "%i//%i %i//%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[2],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[5]);
 					}
 					else if(count == 3)
 					{
-						sscanf_s(buffer, "%i//%i %i//%i %i//%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[2],
+						sscanf(buffer, "%i//%i %i//%i %i//%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[2],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[5],
 						&m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[8]);
 					}
 					else if(count == 4)
 					{
-						sscanf_s(buffer, "%i//%i %i//%i %i//%i %i//%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[2],
+						sscanf(buffer, "%i//%i %i//%i %i//%i %i//%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[2],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[5],
 						&m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[8],
 						&m_pFaces[faceIndex].pIndices[9], &m_pFaces[faceIndex].pIndices[11]);
 					}
 					else if(count == 5)
 					{
-						sscanf_s(buffer, "%i//%i %i//%i %i//%i %i//%i %i//%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[2],
+						sscanf(buffer, "%i//%i %i//%i %i//%i %i//%i %i//%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[2],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[5],
 						&m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[8],
 						&m_pFaces[faceIndex].pIndices[9], &m_pFaces[faceIndex].pIndices[11],
@@ -285,7 +286,7 @@ bool OBJModel::Load(const char *modelFileName, const char *textureFileName)
 					}
 					else if(count == 6)
 					{
-						sscanf_s(buffer, "%i//%i %i//%i %i//%i %i//%i %i//%i %i//%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[2],
+						sscanf(buffer, "%i//%i %i//%i %i//%i %i//%i %i//%i %i//%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[2],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[5],
 						&m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[8],
 						&m_pFaces[faceIndex].pIndices[9], &m_pFaces[faceIndex].pIndices[11],
@@ -297,29 +298,29 @@ bool OBJModel::Load(const char *modelFileName, const char *textureFileName)
 				{
 					if(count == 1)
 					{
-						sscanf_s(buffer, "%i/%i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1], &m_pFaces[faceIndex].pIndices[2]);
+						sscanf(buffer, "%i/%i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1], &m_pFaces[faceIndex].pIndices[2]);
 					}
 					else if(count == 2)
 					{
-						sscanf_s(buffer, "%i/%i/%i %i/%i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1], &m_pFaces[faceIndex].pIndices[2],
+						sscanf(buffer, "%i/%i/%i %i/%i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1], &m_pFaces[faceIndex].pIndices[2],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[4], &m_pFaces[faceIndex].pIndices[5]);
 					}
 					else if(count == 3)
 					{
-						sscanf_s(buffer, "%i/%i/%i %i/%i/%i %i/%i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1], &m_pFaces[faceIndex].pIndices[2],
+						sscanf(buffer, "%i/%i/%i %i/%i/%i %i/%i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1], &m_pFaces[faceIndex].pIndices[2],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[4], &m_pFaces[faceIndex].pIndices[5],
 						&m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[7], &m_pFaces[faceIndex].pIndices[8]);
 					}
 					else if(count == 4)
 					{
-						sscanf_s(buffer, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1], &m_pFaces[faceIndex].pIndices[2],
+						sscanf(buffer, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1], &m_pFaces[faceIndex].pIndices[2],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[4], &m_pFaces[faceIndex].pIndices[5],
 						&m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[7], &m_pFaces[faceIndex].pIndices[8],
 						&m_pFaces[faceIndex].pIndices[9], &m_pFaces[faceIndex].pIndices[10], &m_pFaces[faceIndex].pIndices[11]);
 					}
 					else if(count == 5)
 					{
-						sscanf_s(buffer, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1], &m_pFaces[faceIndex].pIndices[2],
+						sscanf(buffer, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1], &m_pFaces[faceIndex].pIndices[2],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[4], &m_pFaces[faceIndex].pIndices[5],
 						&m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[7], &m_pFaces[faceIndex].pIndices[8],
 						&m_pFaces[faceIndex].pIndices[9], &m_pFaces[faceIndex].pIndices[10], &m_pFaces[faceIndex].pIndices[11],
@@ -327,7 +328,7 @@ bool OBJModel::Load(const char *modelFileName, const char *textureFileName)
 					}
 					else if(count == 6)
 					{
-						sscanf_s(buffer, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1], &m_pFaces[faceIndex].pIndices[2],
+						sscanf(buffer, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &m_pFaces[faceIndex].pIndices[0], &m_pFaces[faceIndex].pIndices[1], &m_pFaces[faceIndex].pIndices[2],
 						&m_pFaces[faceIndex].pIndices[3], &m_pFaces[faceIndex].pIndices[4], &m_pFaces[faceIndex].pIndices[5],
 						&m_pFaces[faceIndex].pIndices[6], &m_pFaces[faceIndex].pIndices[7], &m_pFaces[faceIndex].pIndices[8],
 						&m_pFaces[faceIndex].pIndices[9], &m_pFaces[faceIndex].pIndices[10], &m_pFaces[faceIndex].pIndices[11],

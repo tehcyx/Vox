@@ -14,6 +14,7 @@ Last update: 2006/11/12 (Geometry Shader Support)
 #include <fstream>
 #include <algorithm>
 #include <math.h>
+#include <string.h>
 
 using namespace std;
 //using namespace cwc;
@@ -1582,11 +1583,11 @@ glShader* glShaderManager::loadfromFile(char* vertexFile, char* fragmentFile)
 	// Shader logs
 	ofstream vertexLogFile;
 	char lfilename[128];
-	sprintf_s(lfilename, "logs/%s.log", vertexFile);
+	snprintf(lfilename, 128, "logs/%s.log", vertexFile);
 	vertexLogFile.open(lfilename); 
 
 	ofstream fragmentLogFile;
-	sprintf_s(lfilename, "logs/%s.log", fragmentFile);
+	snprintf(lfilename, 128, "logs/%s.log", fragmentFile);
 	fragmentLogFile.open(lfilename); 
 
 

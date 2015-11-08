@@ -114,12 +114,6 @@
     <ClCompile Include="..\..\source\Renderer\tga.cpp">
       <Filter>source\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\Renderer\bmp_class.cpp">
-      <Filter>source\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\Renderer\bmp.cpp">
-      <Filter>source\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\models\BoundingBox.cpp">
       <Filter>source\models</Filter>
     </ClCompile>
@@ -444,6 +438,15 @@
     <ClCompile Include="..\..\source\frontend\FrontendManager.cpp">
       <Filter>source\frontend</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\utils\FileUtils.cpp">
+      <Filter>source\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\VoxControls.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\VoxCamera.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\glew\include\GL\glew.h">
@@ -492,9 +495,6 @@
       <Filter>source\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\Renderer\tga.h">
-      <Filter>source\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Renderer\bmp_class.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\models\BoundingBox.h">
@@ -1282,6 +1282,9 @@
     </ClInclude>
     <ClInclude Include="..\..\source\frontend\FrontendManager.h">
       <Filter>source\frontend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\utils\FileUtils.h">
+      <Filter>source\utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

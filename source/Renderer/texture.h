@@ -1,10 +1,20 @@
-// Juice Engine by Steven Ball
-// Texture - An OpenGL texture object
-// Created : 08/06/06
-// Edited  : 08/06/06
+// ******************************************************************************
+// Filename:  Texture.h
+// Project:   Vox
+// Author:    Steven Ball
+//
+// Purpose:
+//   An OpenGL texture object.
+//
+// Revision History:
+//   Initial Revision - 08/06/06
+//
+// Copyright (c) 2005-2015, Steven Ball
+// ******************************************************************************
 
 #pragma once
 
+<<<<<<< HEAD
 #ifdef _WIN32 || WIN32 || WIN64 || _WIN64
 #include <windows.h>
 #endif
@@ -15,6 +25,13 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #endif
+=======
+#ifdef _WIN32
+#include <windows.h>
+#endif //_WIN32
+#include <GL/gl.h>
+#include <GL/glu.h>
+>>>>>>> origin/ag/master
 
 #pragma comment (lib, "opengl32")
 #pragma comment (lib, "glu32")

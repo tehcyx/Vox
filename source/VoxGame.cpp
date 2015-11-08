@@ -1,6 +1,22 @@
+// ******************************************************************************
+// Filename:	VoxGame.cpp
+// Project:		Vox
+// Author:		Steven Ball
+// 
+// Revision History:
+//   Initial Revision - 27/10/15
+//
+// Copyright (c) 2005-2015, Steven Ball
+// ******************************************************************************
+
 #include "glew/include/GL/glew.h"
 
 #include "VoxGame.h"
+
+#ifdef __linux__ 
+#include <sys/time.h>
+#endif //__linux__ 
+
 
 // Initialize the singleton instance
 VoxGame *VoxGame::c_instance = 0;
@@ -30,9 +46,15 @@ void VoxGame::Create()
 	m_pVoxWindow->Create();
 
 	/* Setup the FPS and deltatime counters */
+#ifdef _WIN32
 	QueryPerformanceCounter(&m_fpsPreviousTicks);
 	QueryPerformanceCounter(&m_fpsCurrentTicks);
 	QueryPerformanceFrequency(&m_fpsTicksPerSecond);
+#else
+	gettimeofday(&m_fpsPreviousTicks, NULL);
+	gettimeofday(&m_fpsCurrentTicks, NULL);
+	clock_getres(CLOCK_MONOTONIC, &m_fpsTicksPerSecond);
+#endif //_WIN32
 	m_deltaTime = 0.0f;
 	m_fps = 0.0f;
 
@@ -46,7 +68,7 @@ void VoxGame::Create()
 
 	/* Create cameras */
 	m_pGameCamera = new Camera(m_pRenderer);
-	m_pGameCamera->SetPosition(vec3(0.0f, 1.25f, 3.0f));
+	m_pGameCamera->SetPosition(vec3(0.0f, 1.25f, 5.0f));
 	m_pGameCamera->SetFacing(vec3(0.0f, 0.0f, -1.0f));
 	m_pGameCamera->SetUp(vec3(0.0f, 1.0f, 0.0f));
 	m_pGameCamera->SetRight(vec3(1.0f, 0.0f, 0.0f));
@@ -58,10 +80,11 @@ void VoxGame::Create()
 	m_pRenderer->CreateFreeTypeFont("media/fonts/arial.ttf", 12, &m_defaultFont);
 
 	/* Create lights */
-	m_defaultLightPosition = vec3(3.0f, 3.0f, 3.0f);
+	m_defaultLightPosition = vec3(3.0f, 5.0f, 3.0f);
 	m_defaultLightView = vec3(0.0f, 0.0f, 0.0f);
+	vec3 lightDirection = m_defaultLightView - m_defaultLightPosition;
 	m_pRenderer->CreateLight(Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(0.0f, 0.0f, 0.0f, 1.0f),
-							 m_defaultLightPosition, m_defaultLightView - m_defaultLightPosition, 0.0f, 0.0f, 0.15f, 0.25f, 0.025f, true, false, &m_defaultLight);
+							 m_defaultLightPosition, lightDirection, 0.0f, 0.0f, 2.0f, 0.0f, 0.0f, true, false, &m_defaultLight);
 
 	/* Create materials */
 	m_pRenderer->CreateMaterial(Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(0.0f, 0.0f, 0.0f, 1.0f), 64, &m_defaultMaterial);
@@ -114,7 +137,7 @@ void VoxGame::Create()
 	/* Create the frontend manager */
 	m_pFrontendManager = new FrontendManager(m_pRenderer);
 
-	/* Create the GUI components */
+	/* Create and skin the GUI components */
 	CreateGUI();
 	SkinGUI();
 
@@ -131,11 +154,21 @@ void VoxGame::Create()
 
 	// Camera movement
 	m_bCameraRotate = false;
-	m_bCameraZoom = false;
 	m_pressedX = 0;
 	m_pressedY = 0;	
 	m_currentX = 0;
 	m_currentY = 0;
+	m_cameraDistance = 5.0f;
+	m_maxCameraDistance = m_cameraDistance;
+
+	// Player movement
+	m_keyboardMovement = false;
+	m_gamepadMovement = false;
+	m_movementSpeed = 0.0f;
+	m_movementDragTime = 0.45f;
+	m_movementIncreaseTime = 0.25f;
+	m_maxMovementSpeed = 10.0f;
+	m_movementStopThreshold = 0.05f;
 
 	// Toggle flags
 	m_deferredRendering = true;
@@ -149,6 +182,14 @@ void VoxGame::Create()
 	m_animationUpdate = true;
 	m_fullscreen = false;
 	m_debugRender = false;
+
+	// Camera mode
+	m_cameraMode = CameraMode_Debug;
+	m_cameraModeBeforePause = CameraMode_Debug;
+
+	// Game mode
+	m_gameMode = GameMode_Debug;
+	SetGameMode(m_gameMode);
 }
 
 // Destruction
@@ -162,7 +203,7 @@ void VoxGame::Destroy()
 		delete m_pChunkManager;
 		delete m_pFrontendManager;
 		delete m_pGameCamera;
-		DestroyGUI();
+		DestroyGUI();  // Destroy the GUI components before we delete the GUI manager object.
 		delete m_pGUI;
 		delete m_pRenderer;
 
@@ -215,5 +256,55 @@ void VoxGame::ResizeWindow(int width, int height)
 
 		// Give the new windows dimensions to the GUI components also
 		m_pMainWindow->SetApplicationDimensions(m_windowWidth, m_windowHeight);
+		m_pGameWindow->SetApplicationDimensions(m_windowWidth, m_windowHeight);
 	}
+}
+
+// Game functions
+void VoxGame::SetupDataForGame()
+{
+
+}
+
+void VoxGame::SetupDataForFrontEnd()
+{
+
+}
+
+void VoxGame::StartGameFromFrontEnd()
+{
+
+}
+
+void VoxGame::SetGameMode(GameMode mode)
+{
+	GameMode previousgameMode = m_gameMode;
+	m_gameMode = mode;
+
+	if (m_gameMode == GameMode_Debug)
+	{
+	}
+
+	if (m_gameMode == GameMode_FrontEnd)
+	{
+		if (previousgameMode == GameMode_Game || previousgameMode == GameMode_Loading)
+		{
+			// Setup the gamedata since we have just loaded fresh into the frontend.
+			SetupDataForFrontEnd();
+		}
+	}
+
+	if (m_gameMode == GameMode_Game)
+	{
+		if (previousgameMode == GameMode_FrontEnd || previousgameMode == GameMode_Loading)
+		{
+			// Setup the gamedata since we have just loaded fresh into a game.
+			SetupDataForGame();
+		}
+	}
+}
+
+GameMode VoxGame::GetGameMode()
+{
+	return m_gameMode;
 }

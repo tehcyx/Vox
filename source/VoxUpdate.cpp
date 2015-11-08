@@ -3,13 +3,22 @@
 #include "utils/Interpolator.h"
 #include "utils/TimeManager.h"
 
+#ifdef __linux__ 
+#include <sys/time.h>
+#endif //__linux__ 
+
 
 // Updating
 void VoxGame::Update()
 {
 	// FPS
+#ifdef _WIN32
 	QueryPerformanceCounter(&m_fpsCurrentTicks);
 	m_deltaTime = ((float)(m_fpsCurrentTicks.QuadPart - m_fpsPreviousTicks.QuadPart) / (float)m_fpsTicksPerSecond.QuadPart);
+#else
+	gettimeofday(&m_fpsCurrentTicks, NULL);
+	m_deltaTime = (m_fpsCurrentTicks.tv_usec - m_fpsPreviousTicks.tv_usec) / 1000.0;
+#endif //_WIN32
 	m_fps = 1.0f / m_deltaTime;
 	m_fpsPreviousTicks = m_fpsCurrentTicks;
 
@@ -40,6 +49,14 @@ void VoxGame::Update()
 
 	// Update controls
 	UpdateControls(m_deltaTime);
+
+	// Update the camera
+	if (m_gameMode == GameMode_Game)
+	{
+		UpdateCamera(m_deltaTime);
+	}
+	UpdateCameraZoom(m_deltaTime);
+	UpdateCameraClipping(m_deltaTime);
 
 	// Update the GUI
 	int x = m_pVoxWindow->GetCursorX();

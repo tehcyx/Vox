@@ -1,20 +1,17 @@
 // ******************************************************************************
-//
 // Filename:	Player.cpp
 // Project:		Vox
 // Author:		Steven Ball
-//
-// Purpose:
 //
 // Revision History:
 //   Initial Revision - 27/10/15
 //
 // Copyright (c) 2005-2015, Steven Ball
-//
 // ******************************************************************************
 
 #include "Player.h"
 
+const vec3 Player::PLAYER_CENTER_OFFSET = vec3(0.0f, 1.525f, 0.0f);
 
 Player::Player(Renderer* pRenderer, QubicleBinaryManager* pQubicleBinaryManager, LightingManager* pLightingManager, BlockParticleManager* pBlockParticleManager)
 {
@@ -27,10 +24,20 @@ Player::Player(Renderer* pRenderer, QubicleBinaryManager* pQubicleBinaryManager,
 	m_right = vec3(1.0f, 0.0f, 0.0f);
 	m_up = vec3(0.0f, 1.0f, 0.0f);
 
-	/* Create voxel character */
-	m_pVoxelCharacter = new VoxelCharacter(m_pRenderer, m_pQubicleBinaryManager);
+	m_targetForward = m_forward;
 
-	/* Load default character mode */
+	m_position = vec3(0.0f, 0.0f, 0.0f);
+	m_gravityDirection = vec3(0.0f, -1.0f, 0.0f);
+
+	m_bCanJump = true;
+	m_jumpTimer = 0.0f;
+
+	m_bIsIdle = true;
+
+	// Create voxel character
+	m_pVoxelCharacter = new VoxelCharacter(m_pRenderer, m_pQubicleBinaryManager);
+	 
+	// Load default character model
 	LoadCharacter("Steve");
 }
 
@@ -42,6 +49,39 @@ Player::~Player()
 VoxelCharacter* Player::GetVoxelCharacter()
 {
 	return m_pVoxelCharacter;
+}
+
+// Accessors / Setters
+vec3 Player::GetCenter()
+{
+	vec3 center = m_position + m_up * m_radius;
+
+	return center;
+}
+
+vec3 Player::GetForwardVector()
+{
+	return m_forward;
+}
+
+vec3 Player::GetRightVector()
+{
+	return m_right;
+}
+
+vec3 Player::GetUpVector()
+{
+	return m_up;
+}
+
+float Player::GetRadius()
+{
+	return m_radius;
+}
+
+void Player::UpdateRadius()
+{
+	m_radius = m_pVoxelCharacter->GetCharacterScale() / 0.14f;
 }
 
 // Loading
@@ -58,12 +98,12 @@ void Player::LoadCharacter(string characterName)
 	char characterFilename[128];
 	string modelName = characterName;
 	string typeName = "Human";
-	sprintf_s(characterBaseFolder, 128, "media/gamedata/models");
-	sprintf_s(qbFilename, 128, "media/gamedata/models/%s/%s.qb", typeName.c_str(), modelName.c_str());
-	sprintf_s(ms3dFilename, 128, "media/gamedata/models/%s/%s.ms3d", typeName.c_str(), typeName.c_str());
-	sprintf_s(animListFilename, 128, "media/gamedata/models/%s/%s.animlist", typeName.c_str(), typeName.c_str());
-	sprintf_s(facesFilename, 128, "media/gamedata/models/%s/%s.faces", typeName.c_str(), modelName.c_str());
-	sprintf_s(characterFilename, 128, "media/gamedata/models/%s/%s.character", typeName.c_str(), modelName.c_str());
+	snprintf(characterBaseFolder, 128, "media/gamedata/models");
+	snprintf(qbFilename, 128, "media/gamedata/models/%s/%s.qb", typeName.c_str(), modelName.c_str());
+	snprintf(ms3dFilename, 128, "media/gamedata/models/%s/%s.ms3d", typeName.c_str(), typeName.c_str());
+	snprintf(animListFilename, 128, "media/gamedata/models/%s/%s.animlist", typeName.c_str(), typeName.c_str());
+	snprintf(facesFilename, 128, "media/gamedata/models/%s/%s.faces", typeName.c_str(), modelName.c_str());
+	snprintf(characterFilename, 128, "media/gamedata/models/%s/%s.character", typeName.c_str(), modelName.c_str());
 	m_pVoxelCharacter->LoadVoxelCharacter(typeName.c_str(), qbFilename, ms3dFilename, animListFilename, facesFilename, characterFilename, characterBaseFolder);
 
 	m_pVoxelCharacter->SetBreathingAnimationEnabled(true);
@@ -73,6 +113,8 @@ void Player::LoadCharacter(string characterName)
 	m_pVoxelCharacter->SetRandomLookDirection(true);
 	m_pVoxelCharacter->SetWireFrameRender(false);
 	m_pVoxelCharacter->SetCharacterScale(0.08f);
+
+	UpdateRadius();
 }
 
 // Unloading
@@ -163,6 +205,136 @@ void Player::UnloadWeapon(bool left)
 	}
 }
 
+// Collision
+bool Player::CheckCollisions(vec3 positionCheck, vec3 previousPosition, vec3 *pNormal, vec3 *pMovement)
+{
+	vec3 movementCache = *pMovement;
+
+	bool worldCollision = false;
+
+	if (m_bCanJump == true || m_jumpTimer <= 0.0f)
+	{
+		if (m_position.y <= 0.0f)
+		{
+			*pNormal = vec3(0.0f, 1.0f, 0.0f);
+
+			float dotResult = dot(*pNormal, *pMovement);
+			*pNormal *= dotResult;
+
+			*pMovement -= *pNormal;
+
+			m_movementVelocity = vec3(0.0f, 0.0f, 0.0f);
+
+			worldCollision = true;
+		}
+	}
+
+	if (worldCollision)
+		return true;
+
+	*pMovement = movementCache;
+
+	return false;
+}
+
+// Movement
+void Player::MoveAbsolute(vec3 direction, const float speed, bool shouldChangeForward)
+{
+	if (dot(direction, m_movementVelocity) > -0.9f)
+	{
+		direction = normalize(direction + (m_movementVelocity*0.4f));
+	}
+
+	if (shouldChangeForward)
+	{
+		m_forward = (length(m_movementVelocity) > 0.01f) ? m_movementVelocity : direction;
+		m_forward = normalize(m_forward);
+	}
+
+	m_targetForward = m_forward;
+	m_targetForward.y = 0.0f;
+	m_targetForward = normalize(m_targetForward);
+
+	vec3 movement = direction;
+	vec3 movementAmount = direction*speed;
+	vec3 pNormal;
+	int numberDivision = 1;
+	while (length(movementAmount) >= 1.0f)
+	{
+		numberDivision++;
+		movementAmount = direction*(speed / numberDivision);
+	}
+	for (int i = 0; i < numberDivision; i++)
+	{
+		float speedToUse = (speed / numberDivision) + ((speed / numberDivision) * i);
+		vec3 posToCheck = GetCenter() + movement*speedToUse;
+		if (CheckCollisions(posToCheck, m_previousPosition, &pNormal, &movement))
+		{
+		}
+
+		m_position += (movement * speedToUse)*0.95f;
+	}
+
+	m_movementVelocity += (direction * speed) * 0.85f;
+
+	// Change to run animation
+	if (m_pVoxelCharacter->HasAnimationFinished(AnimationSections_FullBody))
+	{
+		m_pVoxelCharacter->BlendIntoAnimation(AnimationSections_FullBody, false, AnimationSections_FullBody, "Run", 0.01f);
+	}
+
+	m_bIsIdle = false;
+}
+
+void Player::Move(const float speed)
+{
+}
+
+void Player::Strafe(const float speed)
+{
+}
+
+void Player::Levitate(const float speed)
+{
+	m_force += vec3(0.0f, 60.0f, 0.0f);
+}
+
+void Player::StopMoving()
+{
+	if (m_bIsIdle == false)
+	{
+		m_bIsIdle = true;
+
+		m_pVoxelCharacter->BlendIntoAnimation(AnimationSections_FullBody, false, AnimationSections_FullBody, "BindPose", 0.15f);
+	}
+}
+
+void Player::Jump()
+{
+	if (m_bCanJump == false)
+	{
+		return;
+	}
+
+	if (m_jumpTimer >= 0.0f)
+	{
+		return;
+	}
+
+	m_bCanJump = false;
+	m_jumpTimer = 0.3f;
+
+	m_velocity += m_up * 14.0f;
+
+	// Change to jump animation
+	m_pVoxelCharacter->BlendIntoAnimation(AnimationSections_FullBody, false, AnimationSections_FullBody, "Jump", 0.05f);
+}
+
+bool Player::CanJump()
+{
+	return m_bCanJump;
+}
+
 // Rendering modes
 void Player::SetWireFrameRender(bool wireframe)
 {
@@ -197,6 +369,65 @@ void Player::Update(float dt)
 	// Update / Create weapon lights and particle effects
 	UpdateWeaponLights(dt);
 	UpdateWeaponParticleEffects(dt);
+
+	// Update timers
+	UpdateTimers(dt);
+
+	// Physics update
+	UpdatePhysics(dt);
+}
+
+void Player::UpdatePhysics(float dt)
+{
+	// Integrate velocity
+	vec3 acceleration = m_force + (m_gravityDirection * 9.81f)*4.0f;
+	m_velocity += acceleration * dt;
+
+	// Check collision
+	{
+		vec3 velocityToUse = m_velocity + m_movementVelocity;
+		vec3 velAmount = velocityToUse*dt;
+		vec3 pNormal;
+		int numberDivision = 1;
+		while (length(velAmount) >= 1.0f)
+		{
+			numberDivision++;
+			velAmount = velocityToUse*(dt / numberDivision);
+		}
+		for (int i = 0; i < numberDivision; i++)
+		{
+			float dtToUse = (dt / numberDivision) + ((dt / numberDivision) * i);
+			vec3 posToCheck = GetCenter() + velocityToUse*dtToUse;
+			if (CheckCollisions(posToCheck, m_previousPosition, &pNormal, &velAmount))
+			{
+				// Reset velocity, we don't have any bounce
+				m_velocity = vec3(0.0f, 0.0f, 0.0f);
+				velocityToUse = vec3(0.0f, 0.0f, 0.0f);
+
+				if (m_bCanJump == false)
+				{
+					m_bCanJump = true;
+				}
+			}
+		}
+
+		// Integrate position
+		m_position += velocityToUse * dt;
+
+		m_movementVelocity -= (m_movementVelocity * (7.5f * dt));
+	}
+
+	// Store previous position
+	m_previousPosition = m_position;
+}
+
+void Player::UpdateTimers(float dt)
+{
+	// Jump timer
+	if (m_jumpTimer >= 0.0f)
+	{
+		m_jumpTimer -= dt;
+	}
 }
 
 void Player::UpdateWeaponLights(float dt)
@@ -334,6 +565,11 @@ void Player::Render()
 	m_pRenderer->PopMatrix();
 }
 
+void Player::RenderFirstPerson()
+{
+
+}
+
 void Player::RenderWeaponTrails()
 {
 	m_pRenderer->PushMatrix();
@@ -347,5 +583,51 @@ void Player::RenderFace()
 		m_pRenderer->MultiplyWorldMatrix(m_worldMatrix);
 		m_pRenderer->EmptyTextureIndex(0);
 		m_pVoxelCharacter->RenderFace();
+	m_pRenderer->PopMatrix();
+}
+
+void Player::RenderDebug()
+{
+	m_pRenderer->PushMatrix();
+		m_pRenderer->TranslateWorldMatrix(GetCenter().x, GetCenter().y, GetCenter().z);
+
+		// Radius
+		m_pRenderer->PushMatrix();
+			m_pRenderer->SetLineWidth(1.0f);
+			m_pRenderer->SetRenderMode(RM_WIREFRAME);
+			m_pRenderer->ImmediateColourAlpha(1.0f, 1.0f, 1.0f, 1.0f);
+
+			m_pRenderer->RotateWorldMatrix(90.0f, 0.0f, 0.0f);
+			m_pRenderer->DrawSphere(m_radius, 20, 20);
+		m_pRenderer->PopMatrix();
+
+		// Forwards
+		m_pRenderer->PushMatrix();
+			m_pRenderer->ScaleWorldMatrix(m_pVoxelCharacter->GetCharacterScale(), m_pVoxelCharacter->GetCharacterScale(), m_pVoxelCharacter->GetCharacterScale());
+
+			m_pRenderer->SetRenderMode(RM_SOLID);
+			m_pRenderer->SetLineWidth(3.0f);
+			m_pRenderer->EnableImmediateMode(IM_LINES);
+				// Target forwards
+				m_pRenderer->ImmediateColourAlpha(0.0f, 1.0f, 1.0f, 1.0f);
+				m_pRenderer->ImmediateVertex(0.0f, 0.0f, 0.0f);
+				m_pRenderer->ImmediateVertex(m_targetForward.x*15.0f, m_targetForward.y*15.0f, m_targetForward.z*15.0f);
+
+				// Right
+				m_pRenderer->ImmediateColourAlpha(1.0f, 0.0f, 0.0f, 1.0f);
+				m_pRenderer->ImmediateVertex(0.0f, 0.0f, 0.0f);
+				m_pRenderer->ImmediateVertex(m_right.x*15.0f, m_right.y*15.0f, m_right.z*15.0f);
+
+				// Up
+				m_pRenderer->ImmediateColourAlpha(0.0f, 1.0f, 0.0f, 1.0f);
+				m_pRenderer->ImmediateVertex(0.0f, 0.0f, 0.0f);
+				m_pRenderer->ImmediateVertex(m_up.x*15.0f, m_up.y*15.0f, m_up.z*15.0f);	
+
+				// Forwards
+				m_pRenderer->ImmediateColourAlpha(0.0f, 0.0f, 1.0f, 1.0f);
+				m_pRenderer->ImmediateVertex(0.0f, 0.0f, 0.0f);
+				m_pRenderer->ImmediateVertex(m_forward.x*15.0f, m_forward.y*15.0f, m_forward.z*15.0f);	
+			m_pRenderer->DisableImmediateMode();
+		m_pRenderer->PopMatrix();
 	m_pRenderer->PopMatrix();
 }

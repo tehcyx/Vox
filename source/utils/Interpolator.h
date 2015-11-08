@@ -18,6 +18,8 @@
 #pragma once
 
 #include <vector>
+#include <stddef.h>
+
 
 typedef void(*FunctionCallback)(void *lpData);
 

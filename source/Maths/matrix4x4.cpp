@@ -1,5 +1,4 @@
 // ******************************************************************************
-//
 // Filename:	Matrix4x4.cpp
 // Project:		3DMaths
 // Author:		Steven Ball
@@ -11,11 +10,11 @@
 //   Initial Revision - 11/03/06
 //
 // Copyright (c) 2005-2015, Steven Ball
-//
 // ******************************************************************************
 
 #include <float.h>  // Required for _isnan(...)
 #include <cmath>
+#include <cstring>
 
 #include "3dmaths.h"
 #include <glm/glm.hpp>

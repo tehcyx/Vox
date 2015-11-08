@@ -282,7 +282,7 @@ EComponentType MultiLineTextBox::GetComponentType() const
 
 void MultiLineTextBox::KeyPressed(const KeyEvent& lEvent)
 {
-	if(lEvent.GetKeyCode() == VK_BACK)
+	if(lEvent.GetKeyCode() == 0x08)
 	{
 		int l_NumHighlightChars = m_HighlightEndIndex - m_HighlightStartIndex;
 
@@ -378,7 +378,7 @@ void MultiLineTextBox::KeyPressed(const KeyEvent& lEvent)
 	}
 	*/
 
-	if(lEvent.GetKeyCode() == VK_RETURN)
+	if(lEvent.GetKeyCode() == 0x0D)
 	{
 		char lChar[2];
 
@@ -479,7 +479,7 @@ void MultiLineTextBox::KeyPressed(const KeyEvent& lEvent)
 
 void MultiLineTextBox::KeyReleased(const KeyEvent& lEvent)
 {
-	if(lEvent.GetKeyCode() == VK_SHIFT)
+	if(lEvent.GetKeyCode() == 0x10 || lEvent.GetKeyCode() == 0xA0 || lEvent.GetKeyCode() == 0xA1)
 	{
 		m_bShiftHeld = false;
 	}

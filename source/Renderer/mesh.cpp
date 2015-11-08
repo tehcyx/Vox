@@ -1,6 +1,13 @@
-// Juice Engine by Steven Ball
-// Mesh - A generic mesh object, used to render complex geometrix shapes
-// Created : 16/04/12
+// ******************************************************************************
+// Filename:  Mesh.cpp
+// Project:   Vox
+// Author:    Steven Ball
+//
+// Revision History:
+//   Initial Revision - 16/04/12
+//
+// Copyright (c) 2005-2015, Steven Ball
+// ******************************************************************************
 
 #include "mesh.h"
 

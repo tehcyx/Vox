@@ -67,6 +67,9 @@
     <Filter Include="source\selene\selene">
       <UniqueIdentifier>{f7671b50-3bb9-4805-9efc-68130c575f97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\frontend">
+      <UniqueIdentifier>{33b007cf-4bbb-446b-975f-4fc6f4fe765b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\glew\src\glew.c">
@@ -109,12 +112,6 @@
       <Filter>source\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\Renderer\tga.cpp">
-      <Filter>source\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\Renderer\bmp_class.cpp">
-      <Filter>source\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\Renderer\bmp.cpp">
       <Filter>source\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\models\BoundingBox.cpp">
@@ -438,6 +435,21 @@
     <ClCompile Include="..\..\source\lua\lzio.c">
       <Filter>source\lua</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\frontend\FrontendManager.cpp">
+      <Filter>source\frontend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\blocks\Chunk.h">
+      <Filter>source\blocks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\utils\FileUtils.cpp">
+      <Filter>source\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\VoxCamera.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\VoxControls.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\glew\include\GL\glew.h">
@@ -486,9 +498,6 @@
       <Filter>source\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\Renderer\tga.h">
-      <Filter>source\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\Renderer\bmp_class.h">
       <Filter>source\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\models\BoundingBox.h">
@@ -1124,9 +1133,6 @@
     <ClInclude Include="..\..\source\blocks\ChunkManager.h">
       <Filter>source\blocks</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\blocks\Chunk.h">
-      <Filter>source\blocks</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\source\lua\lapi.h">
       <Filter>source\lua</Filter>
     </ClInclude>
@@ -1273,6 +1279,12 @@
     </ClInclude>
     <ClInclude Include="..\..\source\selene\selene.h">
       <Filter>source\selene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\frontend\FrontendManager.h">
+      <Filter>source\frontend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\utils\FileUtils.h">
+      <Filter>source\utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

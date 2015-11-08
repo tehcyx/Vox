@@ -43,8 +43,22 @@
 * ~~Solution to allow for running the exe from Visual studio, because atm the working directory needs to be ../~~
 * ~~Textures on GUI.~~
 * ~~Frontend manager for textures and common GUI objects.~~
+* ~~Allow camera rotations around world coordinates, so 'upside down' doesnt happen.~~
+* ~~Add full GUI skin textures and control to change 'theme' on GUI.~~
+* ~~Add limits to rotation so we dont go over and under the max/min up-axis.~~
+* ~~Add different camera modes, option toggle on GUI.~~
+* ~~Add player camera controls.~~
 * Enable cross platform compiling and support, linux, mac
 * Convert shaders over to be more unified.
+* Add VLD support to debug version, allow for memory leak detection.
 * Add audio and music playback.
 * Add gamepad support.
-* Allow camera rotations around world coordinates, so 'upside down' doesnt happen.
+* Add scenery manager.
+* Create basic front-end
+* Add character creator and customization from front-end.
+* Add voxel editor.
+* Add texture support for voxel blocks.
+* Proper first person mode camera.
+* When in auto-camera mode, slowly orient to behind the player, after a time.
+* Implement mouse rotation camera mode for when in game mode.
+* Turn cursor on/off and fix cursor in position when doing mouse rotations in game mode.

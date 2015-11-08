@@ -1,7 +1,16 @@
-// Juice Engine by Steven Ball
-// VertexArray - A vertex array, used for static renderering
-// Created : 02/04/06
-// Edited  : 19/05/06
+// ******************************************************************************
+// Filename:  VertexArray.h
+// Project:   Vox
+// Author:    Steven Ball
+//
+// Purpose:
+//   A vertex array, used for static renderering.
+//
+// Revision History:
+//   Initial Revision - 02/04/06
+//
+// Copyright (c) 2005-2015, Steven Ball
+// ******************************************************************************
 
 #pragma once
 

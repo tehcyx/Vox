@@ -1,3 +1,17 @@
+// ******************************************************************************
+// Filename:	VoxApplication.h
+// Project:		Vox
+// Author:		Steven Ball
+//
+// Purpose:
+//   Vox application class.
+// 
+// Revision History:
+//   Initial Revision - 27/10/15
+//
+// Copyright (c) 2005-2015, Steven Ball
+// ******************************************************************************
+
 #pragma once
 
 

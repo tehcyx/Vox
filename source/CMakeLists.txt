@@ -7,6 +7,8 @@ set(SRCS
     "VoxWindow.h"
     "VoxWindow.cpp"
     "VoxInput.cpp"
+    "VoxControls.cpp"
+    "VoxCamera.cpp"
     "VoxRender.cpp"
     "VoxUpdate.cpp"
     "VoxGUI.cpp")
@@ -14,17 +16,18 @@ set(SRCS
 add_subdirectory(utils)
 add_subdirectory(freetype)
 add_subdirectory(glew)
-add_subdirectory(lighting)
-add_subdirectory(maths)
+add_subdirectory(Lighting)
+add_subdirectory(Maths)
 add_subdirectory(models)
-add_subdirectory(particles)
-add_subdirectory(renderer)
+add_subdirectory(Particles)
+add_subdirectory(Renderer)
 add_subdirectory(gui)
 add_subdirectory(glm)
-add_subdirectory(player)
+add_subdirectory(Player)
 add_subdirectory(blocks)
 add_subdirectory(lua)
 add_subdirectory(selene)
+add_subdirectory(frontend)
 
 source_group("source" FILES ${SRCS})
 source_group("source\\utils" FILES ${UTIL_SRCS})
@@ -46,6 +49,7 @@ source_group("source\\blocks" FILES ${BLOCKS_SRCS})
 source_group("source\\lua" FILES ${LUA_SRCS})
 source_group("source\\selene" FILES ${SELENE_HEADERS})
 source_group("source\\selene\\selene" FILES ${SELENE_SRCS})
+source_group("source\\frontend" FILES ${FRONTEND_SRCS})
 
 add_executable(Vox
                ${SRCS}
@@ -64,10 +68,11 @@ add_executable(Vox
                ${GLM_GTC_SRCS}
                ${GLM_GTX_SRCS}
                ${PLAYER_SRCS}
-			   ${BLOCKS_SRCS}
-			   ${LUA_SRCS}
-			   ${SELENE_HEADERS}
-			   ${SELENE_SRCS})
+               ${BLOCKS_SRCS}
+               ${LUA_SRCS}
+               ${SELENE_HEADERS}
+               ${SELENE_SRCS}
+               ${FRONTEND_SRCS})
 
 include_directories(".")			   
 include_directories("glfw\\include")
@@ -76,8 +81,32 @@ include_directories("freetype\\include")
 include_directories("lua")
 include_directories("selene")
 
+if(MSVC)
 target_link_libraries(Vox "opengl32.lib")
 target_link_libraries(Vox "winmm.lib")
+elseif(UNIX)
+target_link_libraries(Vox "GL")
+target_link_libraries(Vox "GLU")
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+		target_link_libraries(Vox debug "${CMAKE_CURRENT_SOURCE_DIR}/glfw/libs/linux/d/libglfw3_64.a")
+		target_link_libraries(Vox debug "${CMAKE_CURRENT_SOURCE_DIR}source/freetype/libs/linux/libfreetype261d_64.a")
+		target_link_libraries(Vox optimized "${CMAKE_CURRENT_SOURCE_DIR}/freetype/libs/linux/libfreetype261_64.a")
+		target_link_libraries(Vox optimized "${CMAKE_CURRENT_SOURCE_DIR}/glfw/libs/linux/r/libglfw3_64.a")
+	else()
+		target_link_libraries(Vox debug "source/glfw/libs/linux/d/libglfw3.a")
+		target_link_libraries(Vox debug "source/freetype/libs/linux/libfreetype261d.a")
+		target_link_libraries(Vox optimized "source/glfw/libs/linux/r/libglfw3.a")
+		target_link_libraries(Vox optimized "source/freetype/libs/linux/libfreetype261.a")
+	endif()
+target_link_libraries(Vox "X11")
+target_link_libraries(Vox "Xrandr")
+target_link_libraries(Vox "Xi")
+target_link_libraries(Vox "Xxf86vm")
+target_link_libraries(Vox "Xcursor")
+target_link_libraries(Vox "Xinerama")
+target_link_libraries(Vox "pthread")
+target_link_libraries(Vox "dl")
+endif()
 
 if(MSVC11)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)

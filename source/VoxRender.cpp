@@ -89,7 +89,14 @@ void VoxGame::Render()
 			m_pChunkManager->Render();
 
 			// Render the player
-			m_pPlayer->Render();
+			if (m_cameraMode == CameraMode_FirstPerson)
+			{
+				m_pPlayer->RenderFirstPerson();
+			}
+			else
+			{
+				m_pPlayer->Render();
+			}
 
 			// Render the block particles
 			m_pBlockParticleManager->Render();
@@ -100,6 +107,8 @@ void VoxGame::Render()
 			if(m_debugRender)
 			{
 				m_pLightingManager->DebugRender();
+
+				m_pPlayer->RenderDebug();
 			}
 		m_pRenderer->PopMatrix();
 
@@ -156,14 +165,14 @@ void VoxGame::Render()
 	m_pRenderer->EndScene();
 
 
-	// Render the window
+	// Pass render call to the window class, allow to swap buffers
 	m_pVoxWindow->Render();
 }
 
 void VoxGame::RenderWorld()
 {
 	float floorY = 0.0f;
-	float floorLength = 5.0f;
+	float floorLength = 15.0f;
 
 	m_pRenderer->SetRenderMode(RM_SHADED);
 	m_pRenderer->EnableMaterial(m_defaultMaterial);
@@ -195,7 +204,7 @@ void VoxGame::RenderShadows()
 		m_pRenderer->SetColourMask(false, false, false, false);
 
 		m_pRenderer->SetupOrthographicProjection(-5.0f, 5.0f, -5.0f, 5.0f, 0.01f, 1000.0f);
-		m_pRenderer->SetLookAtCamera(vec3(m_defaultLightPosition.x, m_defaultLightPosition.y, m_defaultLightPosition.z), vec3(m_defaultLightView.x, m_defaultLightView.y, m_defaultLightView.z), vec3(0.0f, 1.0f, 0.0f));
+		m_pRenderer->SetLookAtCamera(vec3(m_defaultLightPosition.x, m_defaultLightPosition.y, m_defaultLightPosition.z), m_pPlayer->GetCenter(), vec3(0.0f, 1.0f, 0.0f));
 
 		m_pRenderer->PushMatrix();
 			m_pRenderer->SetCullMode(CM_FRONT);
@@ -321,7 +330,10 @@ void VoxGame::RenderTransparency()
 		}
 
 		// Render the player's face
-		m_pPlayer->RenderFace();
+		if (m_cameraMode != CameraMode_FirstPerson)
+		{
+			m_pPlayer->RenderFace();
+		}
 
 		// Render the player's weapon trails
 		m_pPlayer->RenderWeaponTrails();
@@ -550,14 +562,15 @@ void VoxGame::RenderGUI()
 void VoxGame::RenderDebugInformation()
 {
 	char lCameraBuff[256];
-	sprintf_s(lCameraBuff, 256, "Pos(%.2f, %.2f, %.2f), Facing(%.2f, %.2f, %.2f) = %.2f, Up(%.2f, %.2f, %.2f) = %.2f, Right(%.2f, %.2f, %.2f) = %.2f, Zoom=%.2f",
+	snprintf(lCameraBuff, 256, "Pos(%.2f, %.2f, %.2f), Facing(%.2f, %.2f, %.2f) = %.2f, Up(%.2f, %.2f, %.2f) = %.2f, Right(%.2f, %.2f, %.2f) = %.2f, View(%.2f, %.2f, %.2f), Zoom=%.2f",
 		m_pGameCamera->GetPosition().x, m_pGameCamera->GetPosition().y, m_pGameCamera->GetPosition().z,
 		m_pGameCamera->GetFacing().x, m_pGameCamera->GetFacing().y, m_pGameCamera->GetFacing().z, length(m_pGameCamera->GetFacing()),
 		m_pGameCamera->GetUp().x, m_pGameCamera->GetUp().y, m_pGameCamera->GetUp().z, length(m_pGameCamera->GetUp()),
 		m_pGameCamera->GetRight().x, m_pGameCamera->GetRight().y, m_pGameCamera->GetRight().z, length(m_pGameCamera->GetRight()),
+		m_pGameCamera->GetView().x, m_pGameCamera->GetView().y, m_pGameCamera->GetView().z,
 		m_pGameCamera->GetZoomAmount());
 	char lFPSBuff[128];
-	sprintf_s(lFPSBuff, "FPS: %.0f  Delta: %.4f", m_fps, m_deltaTime);
+	snprintf(lFPSBuff, 128, "FPS: %.0f  Delta: %.4f", m_fps, m_deltaTime);
 
 	int l_nTextHeight = m_pRenderer->GetFreeTypeTextHeight(m_defaultFont, "a");
 

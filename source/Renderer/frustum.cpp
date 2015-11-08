@@ -1,6 +1,13 @@
-// Juice Engine by Steven Ball
-// Frustum - A geometric implementation of the viewing frustum for a viewport
-// Created : 28/11/08
+// ******************************************************************************
+// Filename:  Frustum.cpp
+// Project:   Vox
+// Author:    Steven Ball
+//
+// Revision History:
+//   Initial Revision - 28/11/08
+//
+// Copyright (c) 2005-2015, Steven Ball
+// ******************************************************************************
 
 #include "frustum.h"
 
