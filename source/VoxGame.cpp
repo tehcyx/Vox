@@ -13,9 +13,9 @@
 
 #include "VoxGame.h"
 
-#ifdef __linux__ 
+#if defined(__linux__) || defined(__MACH__)
 #include <sys/time.h>
-#endif //__linux__ 
+#endif //__linux__ || __MACH__
 
 
 // Initialize the singleton instance
@@ -53,7 +53,7 @@ void VoxGame::Create()
 #else
 	gettimeofday(&m_fpsPreviousTicks, NULL);
 	gettimeofday(&m_fpsCurrentTicks, NULL);
-	clock_getres(CLOCK_MONOTONIC, &m_fpsTicksPerSecond);
+	//clock_getres(CLOCK_MONOTONIC, &m_fpsTicksPerSecond); // not used at all
 #endif //_WIN32
 	m_deltaTime = 0.0f;
 	m_fps = 0.0f;

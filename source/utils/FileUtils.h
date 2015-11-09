@@ -19,7 +19,7 @@
 #include <iostream>
 using namespace std;
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__MACH__)
 #define fopen_s(pFile,filename,mode) ((*(pFile))=fopen((filename),(mode)))==NULL
 #endif
 

@@ -74,7 +74,7 @@ add_executable(Vox
                ${SELENE_SRCS}
                ${FRONTEND_SRCS})
 
-include_directories(".")			   
+include_directories(".")			 
 include_directories("glfw\\include")
 include_directories("glew\\include")
 include_directories("freetype\\include")
@@ -84,7 +84,26 @@ include_directories("selene")
 if(MSVC)
 target_link_libraries(Vox "opengl32.lib")
 target_link_libraries(Vox "winmm.lib")
-elseif(UNIX)
+elseif(APPLE)
+INCLUDE_DIRECTORIES ( /System/Library/Frameworks )
+FIND_LIBRARY(COCOA_LIBRARY COCOA)
+FIND_LIBRARY(GLUT_LIBRARY GLUT )
+FIND_LIBRARY(OpenGL_LIBRARY OpenGL )
+FIND_LIBRARY(GLFW3_LIBRARY glfw3 )
+FIND_LIBRARY(FREETYPE_LIBRARY freetype.6 )
+MARK_AS_ADVANCED (COCOA_LIBRARY
+					GLUT_LIBRARY
+					OpenGL_LIBRARY
+					GLFW3_LIBRARY
+					FREETYPE_LIBRARY)
+target_link_libraries(Vox ${COCOA_LIBRARY})
+target_link_libraries(Vox ${OpenGL_LIBRARY})
+target_link_libraries(Vox ${GLUT_LIBRARY})
+target_link_libraries(Vox ${GLFW3_LIBRARY})
+target_link_libraries(Vox ${FREETYPE_LIBRARY})
+target_link_libraries(Vox "pthread")
+target_link_libraries(Vox "dl")
+else()
 target_link_libraries(Vox "GL")
 target_link_libraries(Vox "GLU")
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)

@@ -14,8 +14,13 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif //_WIN32
+#ifdef __MACH__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
 
 #pragma comment (lib, "opengl32")
 #pragma comment (lib, "glu32")

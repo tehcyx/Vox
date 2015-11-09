@@ -14,24 +14,15 @@
 
 #pragma once
 
-<<<<<<< HEAD
-#ifdef _WIN32 || WIN32 || WIN64 || _WIN64
-#include <windows.h>
-#endif
-
 #ifdef __APPLE__
 #include <GLUT/glut.h>		/* OpenGL Utility Toolkit header */
 #else
 #include <GL/gl.h>
 #include <GL/glu.h>
 #endif
-=======
 #ifdef _WIN32
 #include <windows.h>
 #endif //_WIN32
-#include <GL/gl.h>
-#include <GL/glu.h>
->>>>>>> origin/ag/master
 
 #pragma comment (lib, "opengl32")
 #pragma comment (lib, "glu32")

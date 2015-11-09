@@ -3,7 +3,7 @@
 #include "utils/Interpolator.h"
 #include "utils/TimeManager.h"
 
-#ifdef __linux__ 
+#if defined(__linux__) || defined(__MACH__)
 #include <sys/time.h>
 #endif //__linux__ 
 
