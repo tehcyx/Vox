@@ -28,15 +28,15 @@ Vox engine is an open source voxel engine that is written in C++ and OpenGL and 
 This software is provided under the **GNU General Public License**, more information is provided in the [license file](https://github.com/AlwaysGeeky/Vox/blob/master/LICENSE.md).
 
 ## Setup
-Setting up and compiling the project is a fairly simple process. Cmake can be used to build the project files for each environment and for different platforms, depending on what you are developing on.
+Setting up and compiling the project is a fairly simple process. Cmake can be used to build the project files for each environment and for different platforms, depending on what you are developing on. Just run Cmake on the root level of the project.
 
 **Windows**
 
-Visual Studio projects are included inside the ```\project``` sub-folder.
+Visual Studio projects are included inside the ```\project``` sub-folder (VS2012, VS2013, VS2015).
 
 **Linux**
 
-// Todo //
+Various project files are included inside the ```\project\linux``` sub folder.
 
 **Mac**
 
@@ -45,7 +45,7 @@ Visual Studio projects are included inside the ```\project``` sub-folder.
 ## Running
 The Vox executable needs to be run from the root directory so that it has access at the top level to the ```\media``` folder that contains all the game content files. If you want to run the game's executable from within the Visual Studio projects then you will need to set the working directy in the Debugging options to ```'..\..\'``` since the visual studio projects files reside in sub-directories above the root.
 
-Alternatively you can run the pre-built executable ```VoxGame.exe``` that is containted within this github repo. *Please note however that there is no guarantee that this exe will contain the latest code from the repo.*
+Alternatively you can run the pre-built executable ```VoxGame.exe``` that is containted within this github repo. For running the prebuilt executable on Linux you can simply run ```./VoxGame``` from within the root ```/Vox``` directory. *Please note however that there is no guarantee that this exe will contain the latest code from the repo.*
 
 ## How To Contribute
 Contributions are always welcome, either reporting issues/bugs or forking the repository and then issuing pull requests when you have completed some additional coding that you feel will be beneficial to the main project. If you are interested in contributing in a more dedicated capacity, then please contact me.

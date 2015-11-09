@@ -5,7 +5,7 @@
 //
 // Purpose:
 //   Vox game class.
-// 
+//
 // Revision History:
 //   Initial Revision - 27/10/15
 //
@@ -135,14 +135,14 @@ protected:
 
 	// GUI callbacks
 	static void _ToggleFullScreenPressed(void *apData);
-	void ToggleFullScreenPressed();	
+	void ToggleFullScreenPressed();
 
 	static void _PlayAnimationPressed(void *apData);
 	void PlayAnimationPressed();
 
 	static void _AnimationPullDownChanged(void *apData);
 	void AnimationPullDownChanged();
-	
+
 	static void _WeaponPullDownChanged(void *apData);
 	void WeaponPullDownChanged();
 
@@ -174,7 +174,7 @@ private:
 
 	// Renderer
 	Renderer* m_pRenderer;
-	
+
 	// GUI
 	OpenGLGUI* m_pGUI;
 
@@ -183,7 +183,7 @@ private:
 
 	// Qubicle binary manager
 	QubicleBinaryManager* m_pQubicleBinaryManager;
-	
+
 	// Player
 	Player* m_pPlayer;
 
@@ -250,9 +250,8 @@ private:
 	LARGE_INTEGER m_fpsCurrentTicks;
 	LARGE_INTEGER m_fpsTicksPerSecond;
 #else
-	struct timeval m_fpsPreviousTicks;
-	struct timeval m_fpsCurrentTicks;
-	struct timespec m_fpsTicksPerSecond;
+	double m_fpsPreviousTicks;
+	double m_fpsCurrentTicks;
 #endif //_WIN32
 	float m_deltaTime;
 	float m_fps;

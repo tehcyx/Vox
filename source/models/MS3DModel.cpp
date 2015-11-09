@@ -81,9 +81,11 @@ MS3DModel::~MS3DModel()
 
 bool MS3DModel::LoadModel(const char *modelFileName, bool lStatic)
 {
-	//Open the MSD file
-	ifstream inputFile( modelFileName, ios::in | ios::binary );
-	if ( inputFile.fail() )
+	ifstream inputFile;
+
+	// Open the file
+	inputFile.open(modelFileName, ios::in | ios::binary);
+	if (inputFile.fail())
 	{
 		//cerr << "Couldn't open the model file." << endl;
 		return false;
@@ -91,7 +93,7 @@ bool MS3DModel::LoadModel(const char *modelFileName, bool lStatic)
 
 	char pathTemp[PATH_MAX + 1];
 	int pathLength;
-	for ( pathLength = (int)strlen( modelFileName ); --pathLength; )
+	for (pathLength = (int)strlen( modelFileName ); --pathLength;)
 	{
 		if ( modelFileName[pathLength] == '/' || modelFileName[pathLength] == '\\' )
 		{
@@ -99,7 +101,7 @@ bool MS3DModel::LoadModel(const char *modelFileName, bool lStatic)
 		}
 	}
 
-	strncpy( pathTemp, modelFileName, pathLength );
+	strncpy(pathTemp, modelFileName, pathLength);
 
 	int i;
 

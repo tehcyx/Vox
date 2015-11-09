@@ -2,7 +2,7 @@
 // Filename:	VoxGame.cpp
 // Project:		Vox
 // Author:		Steven Ball
-// 
+//
 // Revision History:
 //   Initial Revision - 27/10/15
 //
@@ -51,9 +51,10 @@ void VoxGame::Create()
 	QueryPerformanceCounter(&m_fpsCurrentTicks);
 	QueryPerformanceFrequency(&m_fpsTicksPerSecond);
 #else
-	gettimeofday(&m_fpsPreviousTicks, NULL);
-	gettimeofday(&m_fpsCurrentTicks, NULL);
-	//clock_getres(CLOCK_MONOTONIC, &m_fpsTicksPerSecond); // not used at all
+    struct timeval tm;
+    gettimeofday(&tm, NULL);
+    m_fpsCurrentTicks = (double)tm.tv_sec + (double)tm.tv_usec / 1000000.0;
+    m_fpsPreviousTicks = (double)tm.tv_sec + (double)tm.tv_usec / 1000000.0;
 #endif //_WIN32
 	m_deltaTime = 0.0f;
 	m_fps = 0.0f;
@@ -155,7 +156,7 @@ void VoxGame::Create()
 	// Camera movement
 	m_bCameraRotate = false;
 	m_pressedX = 0;
-	m_pressedY = 0;	
+	m_pressedY = 0;
 	m_currentX = 0;
 	m_currentY = 0;
 	m_cameraDistance = 5.0f;
