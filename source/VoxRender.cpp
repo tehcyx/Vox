@@ -73,14 +73,21 @@ void VoxGame::Render()
 				m_pRenderer->RenderLight(m_defaultLight);
 			m_pRenderer->PopMatrix();
 
-			m_pRenderer->BeginGLSLShader(m_shadowShader);
+			if (m_shadows)
+			{
+				m_pRenderer->BeginGLSLShader(m_shadowShader);
 
-			pShader = m_pRenderer->GetShader(m_shadowShader);
-			GLuint shadowMapUniform = glGetUniformLocationARB(pShader->GetProgramObject(), "ShadowMap");
-			m_pRenderer->PrepareShaderTexture(7, shadowMapUniform);
-			m_pRenderer->BindRawTextureId(m_pRenderer->GetDepthTextureFromFrameBuffer(m_shadowFrameBuffer));
-			glUniform1iARB(glGetUniformLocationARB(pShader->GetProgramObject(), "renderShadow"), m_shadows);
-			glUniform1iARB(glGetUniformLocationARB(pShader->GetProgramObject(), "alwaysShadow"), false);
+				pShader = m_pRenderer->GetShader(m_shadowShader);
+				GLuint shadowMapUniform = glGetUniformLocationARB(pShader->GetProgramObject(), "ShadowMap");
+				m_pRenderer->PrepareShaderTexture(7, shadowMapUniform);
+				m_pRenderer->BindRawTextureId(m_pRenderer->GetDepthTextureFromFrameBuffer(m_shadowFrameBuffer));
+				glUniform1iARB(glGetUniformLocationARB(pShader->GetProgramObject(), "renderShadow"), m_shadows);
+				glUniform1iARB(glGetUniformLocationARB(pShader->GetProgramObject(), "alwaysShadow"), false);
+			}
+			else
+			{
+				m_pRenderer->BeginGLSLShader(m_defaultShader);
+			}
 
 			// Render world
 			RenderWorld();
@@ -101,12 +108,21 @@ void VoxGame::Render()
 			// Render the block particles
 			m_pBlockParticleManager->Render();
 
-			m_pRenderer->EndGLSLShader(m_shadowShader);
+			if (m_shadows)
+			{
+				m_pRenderer->EndGLSLShader(m_shadowShader);
+			}
+			else
+			{
+				m_pRenderer->EndGLSLShader(m_defaultShader);
+			}
 
 			// Debug rendering
 			if(m_debugRender)
 			{
 				m_pLightingManager->DebugRender();
+
+				m_pBlockParticleManager->RenderDebug();
 
 				m_pPlayer->RenderDebug();
 			}
@@ -140,7 +156,7 @@ void VoxGame::Render()
 		{
 			RenderSSAOTexture();
 
-			if (m_multiSampling)
+			if (m_multiSampling && m_fxaaShader != -1)
 			{
 				RenderFXAATexture();
 			}

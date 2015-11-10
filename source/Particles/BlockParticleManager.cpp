@@ -80,6 +80,7 @@ BlockParticleManager::BlockParticleManager(Renderer* pRenderer)
 	m_particleEffectCounter = 0;
 
 	m_renderWireFrame = false;
+	m_instanceRendering = true;
 
 	m_vertexArray = -1;
 	m_positionBuffer = -1;
@@ -87,8 +88,12 @@ BlockParticleManager::BlockParticleManager(Renderer* pRenderer)
 	m_colourBuffer = -1;
 	m_matrixBuffer = -1;
 
+	bool shaderLoaded = false;
 	m_instanceShader = -1;
-	m_pRenderer->LoadGLSLShader("media/shaders/instance.vertex", "media/shaders/instance.pixel", &m_instanceShader);
+	shaderLoaded = m_pRenderer->LoadGLSLShader("media/shaders/instance.vertex", "media/shaders/instance.pixel", &m_instanceShader);
+
+	// Materials
+	m_pRenderer->CreateMaterial(Colour(0.7f, 0.7f, 0.7f, 1.0f), Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(1.0f, 1.0f, 1.0f, 1.0f), Colour(0.0f, 0.0f, 0.0f, 0.0f), 64, &m_blockMaterialID);
 
 	SetupGLBuffers();
 }
@@ -141,52 +146,150 @@ void BlockParticleManager::RemoveEmitterLinkage(BlockParticleEmitter* pEmitter)
 	}
 }
 
+unsigned int BlockParticleManager::GetInstanceShaderIndex()
+{
+	return m_instanceShader;
+}
+
 void BlockParticleManager::SetupGLBuffers()
 {
-	glShader* pShader = m_pRenderer->GetShader(m_instanceShader);
-
-	GLint in_position = glGetAttribLocation(pShader->GetProgramObject(), "in_position");
-	GLint in_normal = glGetAttribLocation(pShader->GetProgramObject(), "in_normal");
-	GLint in_color = glGetAttribLocation(pShader->GetProgramObject(), "in_color");
-	GLint in_model_matrix = glGetAttribLocation(pShader->GetProgramObject(), "in_model_matrix");
-
-	glBindFragDataLocation(pShader->GetProgramObject(), 0, "outputColor");
-	glBindFragDataLocation(pShader->GetProgramObject(), 1, "outputPosition");
-	glBindFragDataLocation(pShader->GetProgramObject(), 2, "outputNormal");
-
-	if (m_vertexArray != -1)
+	if (m_instanceShader != -1)
 	{
-		glDeleteVertexArrays(1, &m_vertexArray);
+		glShader* pShader = m_pRenderer->GetShader(m_instanceShader);
+
+		GLint in_position = glGetAttribLocation(pShader->GetProgramObject(), "in_position");
+		GLint in_normal = glGetAttribLocation(pShader->GetProgramObject(), "in_normal");
+		GLint in_color = glGetAttribLocation(pShader->GetProgramObject(), "in_color");
+		GLint in_model_matrix = glGetAttribLocation(pShader->GetProgramObject(), "in_model_matrix");
+
+		glBindFragDataLocation(pShader->GetProgramObject(), 0, "outputColor");
+		glBindFragDataLocation(pShader->GetProgramObject(), 1, "outputPosition");
+		glBindFragDataLocation(pShader->GetProgramObject(), 2, "outputNormal");
+
+		if (m_vertexArray != -1)
+		{
+			glDeleteVertexArrays(1, &m_vertexArray);
+		}
+
+		glGenVertexArrays(1, &m_vertexArray);
+		glBindVertexArray(m_vertexArray);
+
+		if (m_positionBuffer != -1)
+		{
+			glDeleteBuffers(1, &m_positionBuffer);
+		}
+		glGenBuffers(1, &m_positionBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, m_positionBuffer);
+		int sizeOfVertices = sizeof(vertices);
+		glBufferData(GL_ARRAY_BUFFER, sizeOfVertices, vertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(in_position);
+		glVertexAttribPointer(in_position, 4, GL_FLOAT, 0, 0, 0);
+
+		if (m_normalBuffer != -1)
+		{
+			glDeleteBuffers(1, &m_normalBuffer);
+		}
+		glGenBuffers(1, &m_normalBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, m_normalBuffer);
+		int sizeOfNormals = sizeof(normals);
+		glBufferData(GL_ARRAY_BUFFER, sizeOfNormals, normals, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(in_normal);
+		glVertexAttribPointer(in_normal, 4, GL_FLOAT, 0, 0, 0);
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-	glGenVertexArrays(1, &m_vertexArray);
-	glBindVertexArray(m_vertexArray);
+	float l_length = 0.5f;
+	float l_height = 0.5f;
+	float l_width = 0.5f;
 
-	if(m_positionBuffer != -1)
+	// Create the cube static buffer
+	m_vertexBuffer[0].x = l_length;	m_vertexBuffer[0].y = -l_height;	m_vertexBuffer[0].z = -l_width;
+	m_vertexBuffer[0].nx = 0.0f;		m_vertexBuffer[0].ny = 0.0f;		m_vertexBuffer[0].nz = -1.0f;
+
+	m_vertexBuffer[1].x = -l_length; m_vertexBuffer[1].y = -l_height; m_vertexBuffer[1].z = -l_width;
+	m_vertexBuffer[1].nx = 0.0f;		m_vertexBuffer[1].ny = 0.0f;		m_vertexBuffer[1].nz = -1.0f;
+
+	m_vertexBuffer[2].x = -l_length; m_vertexBuffer[2].y = l_height;	m_vertexBuffer[2].z = -l_width;
+	m_vertexBuffer[2].nx = 0.0f;		m_vertexBuffer[2].ny = 0.0f;		m_vertexBuffer[2].nz = -1.0f;
+
+	m_vertexBuffer[3].x = l_length;	m_vertexBuffer[3].y = l_height;	m_vertexBuffer[3].z = -l_width;
+	m_vertexBuffer[3].nx = 0.0f;		m_vertexBuffer[3].ny = 0.0f;		m_vertexBuffer[3].nz = -1.0f;
+
+	//
+	m_vertexBuffer[4].x = -l_length;	m_vertexBuffer[4].y = -l_height;	m_vertexBuffer[4].z = l_width;
+	m_vertexBuffer[4].nx = 0.0f;		m_vertexBuffer[4].ny = 0.0f;		m_vertexBuffer[4].nz = 1.0f;
+
+	m_vertexBuffer[5].x = l_length;	m_vertexBuffer[5].y = -l_height; m_vertexBuffer[5].z = l_width;
+	m_vertexBuffer[5].nx = 0.0f;		m_vertexBuffer[5].ny = 0.0f;		m_vertexBuffer[5].nz = 1.0f;
+
+	m_vertexBuffer[6].x = l_length;	m_vertexBuffer[6].y = l_height;	m_vertexBuffer[6].z = l_width;
+	m_vertexBuffer[6].nx = 0.0f;		m_vertexBuffer[6].ny = 0.0f;		m_vertexBuffer[6].nz = 1.0f;
+
+	m_vertexBuffer[7].x = -l_length;	m_vertexBuffer[7].y = l_height;	m_vertexBuffer[7].z = l_width;
+	m_vertexBuffer[7].nx = 0.0f;		m_vertexBuffer[7].ny = 0.0f;		m_vertexBuffer[7].nz = 1.0f;
+
+	//
+	m_vertexBuffer[8].x = l_length;	m_vertexBuffer[8].y = -l_height;	m_vertexBuffer[8].z = l_width;
+	m_vertexBuffer[8].nx = 1.0f;		m_vertexBuffer[8].ny = 0.0f;		m_vertexBuffer[8].nz = 0.0f;
+
+	m_vertexBuffer[9].x = l_length;	m_vertexBuffer[9].y = -l_height; m_vertexBuffer[9].z = -l_width;
+	m_vertexBuffer[9].nx = 1.0f;		m_vertexBuffer[9].ny = 0.0f;		m_vertexBuffer[9].nz = 0.0f;
+
+	m_vertexBuffer[10].x = l_length;	m_vertexBuffer[10].y = l_height;	m_vertexBuffer[10].z = -l_width;
+	m_vertexBuffer[10].nx = 1.0f;	m_vertexBuffer[10].ny = 0.0f;	m_vertexBuffer[10].nz = 0.0f;
+
+	m_vertexBuffer[11].x = l_length;	m_vertexBuffer[11].y = l_height;	m_vertexBuffer[11].z = l_width;
+	m_vertexBuffer[11].nx = 1.0f;	m_vertexBuffer[11].ny = 0.0f;	m_vertexBuffer[11].nz = 0.0f;
+
+	//
+	m_vertexBuffer[12].x = -l_length; m_vertexBuffer[12].y = -l_height; m_vertexBuffer[12].z = -l_width;
+	m_vertexBuffer[12].nx = -1.0f;	m_vertexBuffer[12].ny = 0.0f;	m_vertexBuffer[12].nz = 0.0f;
+
+	m_vertexBuffer[13].x = -l_length; m_vertexBuffer[13].y = -l_height; m_vertexBuffer[13].z = l_width;
+	m_vertexBuffer[13].nx = -1.0f;	m_vertexBuffer[13].ny = 0.0f;	m_vertexBuffer[13].nz = 0.0f;
+
+	m_vertexBuffer[14].x = -l_length; m_vertexBuffer[14].y = l_height;	m_vertexBuffer[14].z = l_width;
+	m_vertexBuffer[14].nx = -1.0f;	m_vertexBuffer[14].ny = 0.0f;	m_vertexBuffer[14].nz = 0.0f;
+
+	m_vertexBuffer[15].x = -l_length; m_vertexBuffer[15].y = l_height;	m_vertexBuffer[15].z = -l_width;
+	m_vertexBuffer[15].nx = -1.0f;	m_vertexBuffer[15].ny = 0.0f;	m_vertexBuffer[15].nz = 0.0f;
+
+	//
+	m_vertexBuffer[16].x = -l_length; m_vertexBuffer[16].y = -l_height; m_vertexBuffer[16].z = -l_width;
+	m_vertexBuffer[16].nx = 0.0f;	m_vertexBuffer[16].ny = -1.0f;	m_vertexBuffer[16].nz = 0.0f;
+
+	m_vertexBuffer[17].x = l_length;	m_vertexBuffer[17].y = -l_height; m_vertexBuffer[17].z = -l_width;
+	m_vertexBuffer[17].nx = 0.0f;	m_vertexBuffer[17].ny = -1.0f;	m_vertexBuffer[17].nz = 0.0f;
+
+	m_vertexBuffer[18].x = l_length;	m_vertexBuffer[18].y = -l_height; m_vertexBuffer[18].z = l_width;
+	m_vertexBuffer[18].nx = 0.0f;	m_vertexBuffer[18].ny = -1.0f;	m_vertexBuffer[18].nz = 0.0f;
+
+	m_vertexBuffer[19].x = -l_length; m_vertexBuffer[19].y = -l_height; m_vertexBuffer[19].z = l_width;
+	m_vertexBuffer[19].nx = 0.0f;	m_vertexBuffer[19].ny = -1.0f;	m_vertexBuffer[19].nz = 0.0f;
+
+	//
+	m_vertexBuffer[20].x = l_length;	m_vertexBuffer[20].y = l_height;	m_vertexBuffer[20].z = -l_width;
+	m_vertexBuffer[20].nx = 0.0f;	m_vertexBuffer[20].ny = 1.0f;	m_vertexBuffer[20].nz = 0.0f;
+
+	m_vertexBuffer[21].x = -l_length; m_vertexBuffer[21].y = l_height;	m_vertexBuffer[21].z = -l_width;
+	m_vertexBuffer[21].nx = 0.0f;	m_vertexBuffer[21].ny = 1.0f;	m_vertexBuffer[21].nz = 0.0f;
+
+	m_vertexBuffer[22].x = -l_length; m_vertexBuffer[22].y = l_height;	m_vertexBuffer[22].z = l_width;
+	m_vertexBuffer[22].nx = 0.0f;	m_vertexBuffer[22].ny = 1.0f;	m_vertexBuffer[22].nz = 0.0f;
+
+	m_vertexBuffer[23].x = l_length;	m_vertexBuffer[23].y = l_height;	m_vertexBuffer[23].z = l_width;
+	m_vertexBuffer[23].nx = 0.0f;	m_vertexBuffer[23].ny = 1.0f;	m_vertexBuffer[23].nz = 0.0f;
+
+	for (int i = 0; i < 24; i++)
 	{
-		glDeleteBuffers(1, &m_positionBuffer);
+		m_vertexBuffer[i].r = 1.0f;
+		m_vertexBuffer[i].g = 1.0f;
+		m_vertexBuffer[i].b = 1.0f;
+		m_vertexBuffer[i].a = 1.0f;
 	}
-	glGenBuffers(1, &m_positionBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, m_positionBuffer);
-	int sizeOfVertices = sizeof(vertices);
-	glBufferData(GL_ARRAY_BUFFER, sizeOfVertices, vertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(in_position);
-	glVertexAttribPointer(in_position, 4, GL_FLOAT, 0, 0, 0);
-
-	if(m_normalBuffer != -1)
-	{
-		glDeleteBuffers(1, &m_normalBuffer);
-	}
-	glGenBuffers(1, &m_normalBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, m_normalBuffer);
-	int sizeOfNormals = sizeof(normals);
-	glBufferData(GL_ARRAY_BUFFER, sizeOfNormals, normals, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(in_normal);
-	glVertexAttribPointer(in_normal, 4, GL_FLOAT, 0, 0, 0);
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 // Accessors
@@ -712,6 +815,11 @@ void BlockParticleManager::SetWireFrameRender(bool wireframe)
 	m_renderWireFrame = wireframe;
 }
 
+void BlockParticleManager::SetInstancedRendering(bool instance)
+{
+	m_instanceRendering = instance;
+}
+
 // Update
 void BlockParticleManager::Update(float dt)
 {
@@ -770,6 +878,18 @@ void BlockParticleManager::Update(float dt)
 // Rendering
 void BlockParticleManager::Render()
 {
+	if (m_instanceRendering && m_instanceShader != -1)
+	{
+		RenderInstanced();
+	}
+	else
+	{
+		RenderDefault();
+	}
+}
+
+void BlockParticleManager::RenderInstanced()
+{
 	glShader* pShader = m_pRenderer->GetShader(m_instanceShader);
 
 	GLint in_position = glGetAttribLocation(pShader->GetProgramObject(), "in_position");
@@ -778,74 +898,74 @@ void BlockParticleManager::Render()
 
 	int numBlockParticles = (int)m_vpBlockParticlesList.size();
 	int numBlockParticlesRender = GetNumRenderableParticles();
-	if(numBlockParticlesRender > 0)
+	if (numBlockParticlesRender > 0)
 	{
 		float* newMatrices = new float[16 * numBlockParticlesRender];
 		float* newColors = new float[4 * numBlockParticlesRender];
 
 		int counter = 0;
-		for(int i = 0; i < numBlockParticles; i++)
+		for (int i = 0; i < numBlockParticles; i++)
 		{
-			if(m_vpBlockParticlesList[i]->m_createEmitters == true)
+			if (m_vpBlockParticlesList[i]->m_createEmitters == true)
 			{
 				continue;
 			}
 
-			if(m_vpBlockParticlesList[i]->m_erase == true)
+			if (m_vpBlockParticlesList[i]->m_erase == true)
 			{
 				continue;
 			}
 
-			newColors[counter+0] = m_vpBlockParticlesList[i]->m_currentRed;
-			newColors[counter+1] = m_vpBlockParticlesList[i]->m_currentGreen;
-			newColors[counter+2] = m_vpBlockParticlesList[i]->m_currentBlue;
-			newColors[counter+3] = m_vpBlockParticlesList[i]->m_currentAlpha;
-			counter+=4;
+			newColors[counter + 0] = m_vpBlockParticlesList[i]->m_currentRed;
+			newColors[counter + 1] = m_vpBlockParticlesList[i]->m_currentGreen;
+			newColors[counter + 2] = m_vpBlockParticlesList[i]->m_currentBlue;
+			newColors[counter + 3] = m_vpBlockParticlesList[i]->m_currentAlpha;
+			counter += 4;
 		}
 		counter = 0;
-		for(int i = 0; i < numBlockParticles; i++)
+		for (int i = 0; i < numBlockParticles; i++)
 		{
-			if(m_vpBlockParticlesList[i]->m_createEmitters == true)
+			if (m_vpBlockParticlesList[i]->m_createEmitters == true)
 			{
 				continue;
 			}
 
 			m_vpBlockParticlesList[i]->CalculateWorldTransformMatrix();
 
-			newMatrices[counter+0] = m_vpBlockParticlesList[i]->m_worldMatrix.m[0];
-			newMatrices[counter+1] = m_vpBlockParticlesList[i]->m_worldMatrix.m[1];
-			newMatrices[counter+2] = m_vpBlockParticlesList[i]->m_worldMatrix.m[2];
-			newMatrices[counter+3] = m_vpBlockParticlesList[i]->m_worldMatrix.m[3];
-			newMatrices[counter+4] = m_vpBlockParticlesList[i]->m_worldMatrix.m[4];
-			newMatrices[counter+5] = m_vpBlockParticlesList[i]->m_worldMatrix.m[5];
-			newMatrices[counter+6] = m_vpBlockParticlesList[i]->m_worldMatrix.m[6];
-			newMatrices[counter+7] = m_vpBlockParticlesList[i]->m_worldMatrix.m[7];
-			newMatrices[counter+8] = m_vpBlockParticlesList[i]->m_worldMatrix.m[8];
-			newMatrices[counter+9] = m_vpBlockParticlesList[i]->m_worldMatrix.m[9];
-			newMatrices[counter+10] = m_vpBlockParticlesList[i]->m_worldMatrix.m[10];
-			newMatrices[counter+11] = m_vpBlockParticlesList[i]->m_worldMatrix.m[11];
-			newMatrices[counter+12] = m_vpBlockParticlesList[i]->m_worldMatrix.m[12];
-			newMatrices[counter+13] = m_vpBlockParticlesList[i]->m_worldMatrix.m[13];
-			newMatrices[counter+14] = m_vpBlockParticlesList[i]->m_worldMatrix.m[14];
-			newMatrices[counter+15] = m_vpBlockParticlesList[i]->m_worldMatrix.m[15];
-			counter+=16;
+			newMatrices[counter + 0] = m_vpBlockParticlesList[i]->m_worldMatrix.m[0];
+			newMatrices[counter + 1] = m_vpBlockParticlesList[i]->m_worldMatrix.m[1];
+			newMatrices[counter + 2] = m_vpBlockParticlesList[i]->m_worldMatrix.m[2];
+			newMatrices[counter + 3] = m_vpBlockParticlesList[i]->m_worldMatrix.m[3];
+			newMatrices[counter + 4] = m_vpBlockParticlesList[i]->m_worldMatrix.m[4];
+			newMatrices[counter + 5] = m_vpBlockParticlesList[i]->m_worldMatrix.m[5];
+			newMatrices[counter + 6] = m_vpBlockParticlesList[i]->m_worldMatrix.m[6];
+			newMatrices[counter + 7] = m_vpBlockParticlesList[i]->m_worldMatrix.m[7];
+			newMatrices[counter + 8] = m_vpBlockParticlesList[i]->m_worldMatrix.m[8];
+			newMatrices[counter + 9] = m_vpBlockParticlesList[i]->m_worldMatrix.m[9];
+			newMatrices[counter + 10] = m_vpBlockParticlesList[i]->m_worldMatrix.m[10];
+			newMatrices[counter + 11] = m_vpBlockParticlesList[i]->m_worldMatrix.m[11];
+			newMatrices[counter + 12] = m_vpBlockParticlesList[i]->m_worldMatrix.m[12];
+			newMatrices[counter + 13] = m_vpBlockParticlesList[i]->m_worldMatrix.m[13];
+			newMatrices[counter + 14] = m_vpBlockParticlesList[i]->m_worldMatrix.m[14];
+			newMatrices[counter + 15] = m_vpBlockParticlesList[i]->m_worldMatrix.m[15];
+			counter += 16;
 		}
 
 		glBindVertexArray(m_vertexArray);
 
-		if(m_colourBuffer != -1)
+		if (m_colourBuffer != -1)
 		{
 			glDeleteBuffers(1, &m_colourBuffer);
 		}
 		// Bind buffer for colors and copy data into buffer
 		glGenBuffers(1, &m_colourBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, m_colourBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*4*numBlockParticlesRender, newColors, GL_STATIC_READ);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * numBlockParticlesRender, newColors, GL_STATIC_READ);
 		glEnableVertexAttribArray(in_color);
-		glVertexAttribPointer(in_color, 4, GL_FLOAT, GL_FALSE, 4*4, 0);
+		glVertexAttribPointer(in_color, 4, GL_FLOAT, GL_FALSE, 4 * 4, 0);
 		glVertexAttribDivisor(in_color, 1);
 
-		if(m_matrixBuffer != -1)
+		if (m_matrixBuffer != -1)
 		{
 			glDeleteBuffers(1, &m_matrixBuffer);
 		}
@@ -855,14 +975,14 @@ void BlockParticleManager::Render()
 		for (int i = 0; i < 4; i++)
 		{
 			glVertexAttribPointer(in_model_matrix + i,		// Location
-								  4, GL_FLOAT, GL_FALSE,	// vec4
-								  4*16,						// Stride
-								  (void *)(16 * i));		// Start offset
+				4, GL_FLOAT, GL_FALSE,	// vec4
+				4 * 16,						// Stride
+				(void *)(16 * i));		// Start offset
 
 			glEnableVertexAttribArray(in_model_matrix + i);
 			glVertexAttribDivisor(in_model_matrix + i, 1);
 		}
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*16*numBlockParticlesRender, newMatrices, GL_STATIC_READ);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16 * numBlockParticlesRender, newMatrices, GL_STATIC_READ);
 
 		delete newColors;
 		delete newMatrices;
@@ -873,14 +993,14 @@ void BlockParticleManager::Render()
 
 	GLint projMatrixLoc = glGetUniformLocation(pShader->GetProgramObject(), "projMatrix");
 	GLint viewMatrixLoc = glGetUniformLocation(pShader->GetProgramObject(), "viewMatrix");
-	
+
 	Matrix4x4 projMat;
 	Matrix4x4 viewMat;
 	m_pRenderer->GetProjectionMatrix(&projMat);
 	m_pRenderer->GetModelViewMatrix(&viewMat);
 
-	glUniformMatrix4fv(projMatrixLoc,  1, false, projMat.m);
-	glUniformMatrix4fv(viewMatrixLoc,  1, false, viewMat.m);
+	glUniformMatrix4fv(projMatrixLoc, 1, false, projMat.m);
+	glUniformMatrix4fv(viewMatrixLoc, 1, false, viewMat.m);
 
 	GLint in_light_position = glGetUniformLocation(pShader->GetProgramObject(), "in_light_position");
 	GLint in_light_const_a = glGetUniformLocation(pShader->GetProgramObject(), "in_light_const_a");
@@ -888,19 +1008,6 @@ void BlockParticleManager::Render()
 	GLint in_light_quad_a = glGetUniformLocation(pShader->GetProgramObject(), "in_light_quad_a");
 	GLint in_light_ambient = glGetUniformLocation(pShader->GetProgramObject(), "in_light_ambient");
 	GLint in_light_diffuse = glGetUniformLocation(pShader->GetProgramObject(), "in_light_diffuse");
-
-	//vec3 position = m_pRenderer->GetLightPosition(m_pGameWindow->GetMainLightId());
-	//Colour ambient = m_pRenderer->GetLightAmbient(m_pGameWindow->GetMainLightId());
-	//Colour diffuse = m_pRenderer->GetLightDiffuse(m_pGameWindow->GetMainLightId());
-	//float constantA = m_pRenderer->GetConstantAttenuation(m_pGameWindow->GetMainLightId());
-	//float linearA = m_pRenderer->GetLinearAttenuation(m_pGameWindow->GetMainLightId());
-	//float quadA = m_pRenderer->GetQuadraticAttenuation(m_pGameWindow->GetMainLightId());
-	//glUniform4f(in_light_position, position.x, position.y, position.z, 1.0f);
-	//glUniform4f(in_light_diffuse, diffuse.GetRed(), diffuse.GetGreen(), diffuse.GetBlue(), 1.0);
-	//glUniform4f(in_light_ambient, ambient.GetRed(), ambient.GetGreen(), ambient.GetBlue(), 1.0);
-	//glUniform1f(in_light_const_a, constantA*0.5f);
-	//glUniform1f(in_light_linear_a, linearA*0.5f);
-	//glUniform1f(in_light_quad_a, quadA*0.5f);
 
 	if (m_renderWireFrame)
 	{
@@ -925,6 +1032,63 @@ void BlockParticleManager::Render()
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void BlockParticleManager::RenderDefault()
+{
+	// Render all block particles
+	BlockParticlesList::iterator iterator;
+	for (iterator = m_vpBlockParticlesList.begin(); iterator != m_vpBlockParticlesList.end(); ++iterator)
+	{
+		BlockParticle* lpBlockParticle = (*iterator);
+
+		// Update the block's alpha depending on the life left
+		for (int i = 0; i < 24; i++)
+		{
+			m_vertexBuffer[i].r = lpBlockParticle->m_currentRed;
+			m_vertexBuffer[i].g = lpBlockParticle->m_currentGreen;
+			m_vertexBuffer[i].b = lpBlockParticle->m_currentBlue;
+			m_vertexBuffer[i].a = lpBlockParticle->m_currentAlpha;
+		}
+
+		if (m_renderWireFrame)
+		{
+			m_pRenderer->SetLineWidth(1.0f);
+			m_pRenderer->SetRenderMode(RM_WIREFRAME);
+			m_pRenderer->SetCullMode(CM_NOCULL);
+		}
+		else
+		{
+			m_pRenderer->SetRenderMode(RM_SOLID);
+		}
+
+		RenderBlockParticle(lpBlockParticle);
+	}
+}
+
+void BlockParticleManager::RenderBlockParticle(BlockParticle* pBlockParticle)
+{
+	pBlockParticle->CalculateWorldTransformMatrix();
+
+	m_pRenderer->PushMatrix();
+		m_pRenderer->MultiplyWorldMatrix(pBlockParticle->m_worldMatrix);
+
+		Matrix4x4 worldMatrix;
+		m_pRenderer->GetModelMatrix(&worldMatrix);
+
+		m_pRenderer->PushTextureMatrix();
+		m_pRenderer->MultiplyWorldMatrix(worldMatrix);
+
+		m_pRenderer->PushMatrix();
+			m_pRenderer->SetRenderMode(RM_SOLID);
+			m_pRenderer->SetPrimativeMode(PM_QUADS);
+			//m_pRenderer->EnableTransparency(BF_SRC_ALPHA, BF_ONE_MINUS_SRC_ALPHA);
+			m_pRenderer->RenderFromArray(VT_POSITION_NORMAL_COLOUR, m_blockMaterialID, NULL, 24, 24, 0, &m_vertexBuffer, NULL, NULL);
+			//m_pRenderer->DisableTransparency();
+		m_pRenderer->PopMatrix();
+
+		m_pRenderer->PopTextureMatrix();
+	m_pRenderer->PopMatrix();
 }
 
 void BlockParticleManager::RenderDebug()

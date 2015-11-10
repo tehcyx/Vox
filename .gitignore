@@ -18,6 +18,10 @@ Vox.ipdb
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# Code::Blocks project files
+*.depend
+*.layout
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

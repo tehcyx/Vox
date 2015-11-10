@@ -74,7 +74,7 @@ FrontendManager::FrontendManager(Renderer* pRenderer)
 		m_pButtonIconDisabled[ButtonSize(i)]->SetDepth(2.0f);
 	}
 
-	LoadCommonGraphics("default");
+	LoadCommonGraphics("Default");
 }
 
 FrontendManager::~FrontendManager()
@@ -115,39 +115,39 @@ void FrontendManager::LoadCommonGraphics(string themeName)
 	string iconName;
 
 	// Checkbox
-	iconName = "media/textures/gui/" + themeName + "/Common/checkbox/checkDefault.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/checkbox/checkDefault.tga";
 	m_pCheckboxIcon->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/checkbox/checkHover.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/checkbox/checkHover.tga";
 	m_pCheckboxIconHover->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/checkbox/checkPressed.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/checkbox/checkPressed.tga";
 	m_pCheckboxIconPressed->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/checkbox/checkDisabled.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/checkbox/checkDisabled.tga";
 	m_pCheckboxIconDisabled->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/checkbox/checkToggled.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/checkbox/checkToggled.tga";
 	m_pCheckboxIconToggled->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/checkbox/checkToggledHover.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/checkbox/checkToggledHover.tga";
 	m_pCheckboxIconToggledHover->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/checkbox/checkToggledPressed.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/checkbox/checkToggledPressed.tga";
 	m_pCheckboxIconToggledPressed->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/checkbox/checkToggledDisabled.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/checkbox/checkToggledDisabled.tga";
 	m_pCheckboxIconToggledDisabled->SetIcon(iconName);
 
 	// Optionbox
-	iconName = "media/textures/gui/" + themeName + "/Common/optionbox/optionDefault.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/optionbox/optionDefault.tga";
 	m_pOptionboxIcon->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/optionbox/optionHover.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/optionbox/optionHover.tga";
 	m_pOptionboxIconHover->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/optionbox/optionPressed.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/optionbox/optionPressed.tga";
 	m_pOptionboxIconPressed->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/optionbox/optionDisabled.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/optionbox/optionDisabled.tga";
 	m_pOptionboxIconDisabled->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/optionbox/optionToggled.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/optionbox/optionToggled.tga";
 	m_pOptionboxIconToggled->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/optionbox/optionToggledHover.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/optionbox/optionToggledHover.tga";
 	m_pOptionboxIconToggledHover->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/optionbox/optionToggledPressed.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/optionbox/optionToggledPressed.tga";
 	m_pOptionboxIconToggledPressed->SetIcon(iconName);
-	iconName = "media/textures/gui/" + themeName + "/Common/optionbox/optionToggledDisabled.tga";
+	iconName = "media/textures/gui/" + themeName + "/common/optionbox/optionToggledDisabled.tga";
 	m_pOptionboxIconToggledDisabled->SetIcon(iconName);
 
 	// Buttons
@@ -156,13 +156,13 @@ void FrontendManager::LoadCommonGraphics(string themeName)
 		string sizeFolder = "";
 		if (ButtonSize(i) == ButtonSize_85x25) { sizeFolder = "85x25";  }
 
-		iconName = "media/textures/gui/" + themeName + "/Common/buttons/" + sizeFolder + "/buttonDefault.tga";
+		iconName = "media/textures/gui/" + themeName + "/common/buttons/" + sizeFolder + "/buttonDefault.tga";
 		m_pButtonIcon[ButtonSize(i)]->SetIcon(iconName);
-		iconName = "media/textures/gui/" + themeName + "/Common/buttons/" + sizeFolder + "/buttonHover.tga";
+		iconName = "media/textures/gui/" + themeName + "/common/buttons/" + sizeFolder + "/buttonHover.tga";
 		m_pButtonIconHover[ButtonSize(i)]->SetIcon(iconName);
-		iconName = "media/textures/gui/" + themeName + "/Common/buttons/" + sizeFolder + "/buttonPressed.tga";
+		iconName = "media/textures/gui/" + themeName + "/common/buttons/" + sizeFolder + "/buttonPressed.tga";
 		m_pButtonIconPressed[ButtonSize(i)]->SetIcon(iconName);
-		iconName = "media/textures/gui/" + themeName + "/Common/buttons/" + sizeFolder + "/buttonDisabled.tga";
+		iconName = "media/textures/gui/" + themeName + "/common/buttons/" + sizeFolder + "/buttonDisabled.tga";
 		m_pButtonIconDisabled[ButtonSize(i)]->SetIcon(iconName);
 	}
 }

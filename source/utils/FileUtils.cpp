@@ -13,7 +13,15 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#endif //_WIN32
+#elif __linux__
+#include <sys/types.h>
+#include <dirent.h>
+#include <errno.h>
+#include <vector>
+#include <string>
+#include <iostream>
+#endif
+
 
 string wchar_t2string(const wchar_t *wchar)
 {
@@ -60,21 +68,19 @@ vector<string> listFilesInDirectory(string directoryName)
 
 	return listFileNames;
 #elif __linux__
-	vector<string> vStrings;
-	return vStrings;
+    directoryName = directoryName.substr(0, directoryName.length() - 3);
+	vector<string> listFileNames;
+    DIR *dp;
+    struct dirent *dirp;
+    if((dp  = opendir(directoryName.c_str())) == NULL) {
+        cout << "Error(" << errno << ") opening " << directoryName << endl;
+        return listFileNames;
+    }
+
+    while ((dirp = readdir(dp)) != NULL) {
+        listFileNames.push_back(string(dirp->d_name));
+    }
+    closedir(dp);
+	return listFileNames;
 #endif //_WIN32
-}
-
-bool dirExists(const std::string& dirName_in)
-{
-#ifdef _WIN32
-	DWORD ftyp = GetFileAttributesA(dirName_in.c_str());
-	if (ftyp == INVALID_FILE_ATTRIBUTES)
-		return false;  //something is wrong with your path!
-
-	if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
-		return true;   // this is a directory!
-#endif //_WIN32
-
-	return false;    // this is not a directory!
 }

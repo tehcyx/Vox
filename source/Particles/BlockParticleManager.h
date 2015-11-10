@@ -43,6 +43,8 @@ public:
 
 	void RemoveEmitterLinkage(BlockParticleEmitter* pEmitter);
 
+	unsigned int GetInstanceShaderIndex();
+
 	void SetupGLBuffers();
 
 	// Accessors
@@ -78,12 +80,16 @@ public:
 
 	// Rendering modes
 	void SetWireFrameRender(bool wireframe);
+	void SetInstancedRendering(bool instance);
 
 	// Update
 	void Update(float dt);
 
 	// Rendering
 	void Render();
+	void RenderInstanced();
+	void RenderDefault();
+	void RenderBlockParticle(BlockParticle* pBlockParticle);
 	void RenderDebug();
 	void RenderEmitters();
 	void RenderEffects();
@@ -109,6 +115,7 @@ private:
 
 	// Render modes
 	bool m_renderWireFrame;
+	bool m_instanceRendering;
 
 	// Array buffers
 	GLuint m_vertexArray;
@@ -119,6 +126,10 @@ private:
 
 	// Shader
 	unsigned int m_instanceShader;
+
+	// Non-instanced rendering
+	unsigned int m_blockMaterialID;
+	OGLPositionNormalColourVertex m_vertexBuffer[24];
 
 	// Block particles list
 	BlockParticlesList m_vpBlockParticlesList;

@@ -49,6 +49,7 @@
 * ~~Add different camera modes, option toggle on GUI.~~
 * ~~Add player camera controls.~~
 * ~~Enable cross platform compiling and support, linux, mac~~
+* ~~Convert all data, media, folders to lowercase to fix Linux issues.~~
 * Convert shaders over to be more unified.
 * Add VLD support to debug version, allow for memory leak detection.
 * Add audio and music playback.
@@ -62,4 +63,3 @@
 * When in auto-camera mode, slowly orient to behind the player, after a time.
 * Implement mouse rotation camera mode for when in game mode.
 * Turn cursor on/off and fix cursor in position when doing mouse rotations in game mode.
-* Convert all data, media, folders to lowercase to fix Linux issues.

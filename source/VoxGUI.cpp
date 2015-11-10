@@ -36,11 +36,14 @@ void VoxGame::CreateGUI()
 	m_pDeferredCheckBox->SetDimensions(10, 118, 14, 14);
 	m_pDeferredCheckBox->SetToggled(true);
 	m_pUpdateCheckBox = new CheckBox(m_pRenderer, m_defaultFont, "Update");
-	m_pUpdateCheckBox->SetDimensions(110, 30, 14, 14);
+	m_pUpdateCheckBox->SetDimensions(110, 28, 14, 14);
 	m_pUpdateCheckBox->SetToggled(true);
 	m_pDebugRenderCheckBox = new CheckBox(m_pRenderer, m_defaultFont, "DebugRender");
 	m_pDebugRenderCheckBox->SetDimensions(110, 10, 14, 14);
 	m_pDebugRenderCheckBox->SetToggled(false);
+	m_pInstanceRenderCheckBox = new CheckBox(m_pRenderer, m_defaultFont, "Instance Particles");
+	m_pInstanceRenderCheckBox->SetDimensions(110, 46, 14, 14);
+	m_pInstanceRenderCheckBox->SetToggled(true);
 
 	m_pFullscreenButton = new Button(m_pRenderer, m_defaultFont, "FullScreen");
 	m_pFullscreenButton->SetDimensions(230, 10, 85, 25);
@@ -107,6 +110,7 @@ void VoxGame::CreateGUI()
 	m_pMainWindow->AddComponent(m_pDeferredCheckBox);
 	m_pMainWindow->AddComponent(m_pUpdateCheckBox);
 	m_pMainWindow->AddComponent(m_pDebugRenderCheckBox);
+	m_pMainWindow->AddComponent(m_pInstanceRenderCheckBox);
 	m_pMainWindow->AddComponent(m_pFullscreenButton);
 	m_pMainWindow->AddComponent(m_pPlayAnimationButton);
 	m_pMainWindow->AddComponent(m_pAnimationsPulldown);
@@ -209,6 +213,7 @@ void VoxGame::SkinGUI()
 	m_pFrontendManager->SetCheckboxIcons(m_pWireframeCheckBox);
 	m_pFrontendManager->SetCheckboxIcons(m_pUpdateCheckBox);
 	m_pFrontendManager->SetCheckboxIcons(m_pDebugRenderCheckBox);
+	m_pFrontendManager->SetCheckboxIcons(m_pInstanceRenderCheckBox);
 
 	m_pFrontendManager->SetOptionboxIcons(m_pGameOptionBox);
 	m_pFrontendManager->SetOptionboxIcons(m_pDebugOptionBox);
@@ -234,6 +239,7 @@ void VoxGame::UnSkinGUI()
 	m_pWireframeCheckBox->SetDefaultIcons(m_pRenderer);
 	m_pUpdateCheckBox->SetDefaultIcons(m_pRenderer);
 	m_pDebugRenderCheckBox->SetDefaultIcons(m_pRenderer);
+	m_pInstanceRenderCheckBox->SetDefaultIcons(m_pRenderer);
 
 	m_pGameOptionBox->SetDefaultIcons(m_pRenderer);
 	m_pDebugOptionBox->SetDefaultIcons(m_pRenderer);
@@ -260,6 +266,7 @@ void VoxGame::DestroyGUI()
 	delete m_pDeferredCheckBox;
 	delete m_pUpdateCheckBox;
 	delete m_pDebugRenderCheckBox;
+	delete m_pInstanceRenderCheckBox;
 	delete m_pFullscreenButton;
 	delete m_pPlayAnimationButton;
 	delete m_pAnimationsPulldown;
@@ -280,16 +287,7 @@ void VoxGame::DestroyGUI()
 
 void VoxGame::UpdateGUI(float dt)
 {
-	m_shadows = m_pShadowsCheckBox->GetToggled();
-	m_ssao = m_pSSAOCheckBox->GetToggled();
-	m_blur = m_pBlurCheckBox->GetToggled();
-	m_dynamicLighting = m_pDynamicLightingCheckBox->GetToggled();
-	m_modelWireframe = m_pWireframeCheckBox->GetToggled();
-	m_multiSampling = m_pMSAACheckBox->GetToggled();
-	m_deferredRendering = m_pDeferredCheckBox->GetToggled();
-	m_animationUpdate = m_pUpdateCheckBox->GetToggled();
-	m_debugRender = m_pDebugRenderCheckBox->GetToggled();
-
+	// Depending on if deferred rendering is enabled, allow or disallow certain other graphic features
 	if (m_deferredRendering)
 	{
 		m_pSSAOCheckBox->SetDisabled(false);
@@ -301,10 +299,59 @@ void VoxGame::UpdateGUI(float dt)
 		m_pSSAOCheckBox->SetDisabled(true);
 		m_pDynamicLightingCheckBox->SetDisabled(true);
 		m_pBlurCheckBox->SetDisabled(true);
+		m_pMSAACheckBox->SetDisabled(false);
 	}
+
+	// If shaders are not loaded, then disable some graphical features
+	if (m_SSAOShader == -1)
+	{
+		m_pSSAOCheckBox->SetToggled(false);
+		m_pSSAOCheckBox->SetDisabled(true);
+		m_pDeferredCheckBox->SetToggled(false);
+		m_pDeferredCheckBox->SetDisabled(true);
+		m_pDynamicLightingCheckBox->SetToggled(false);
+		m_pDynamicLightingCheckBox->SetDisabled(true);
+	}
+	if (m_lightingShader == -1)
+	{
+		m_pDynamicLightingCheckBox->SetToggled(false);
+		m_pDynamicLightingCheckBox->SetDisabled(true);
+	}
+	if (m_shadowShader == -1)
+	{
+		m_pShadowsCheckBox->SetToggled(false);
+		m_pShadowsCheckBox->SetDisabled(true);
+	}
+	if (m_pBlockParticleManager->GetInstanceShaderIndex() == -1)
+	{
+		m_pInstanceRenderCheckBox->SetToggled(false);
+		m_pInstanceRenderCheckBox->SetDisabled(true);
+	}
+	if (m_fxaaShader == -1 && m_deferredRendering)
+	{
+		m_pMSAACheckBox->SetToggled(false);
+		m_pMSAACheckBox->SetDisabled(true);
+	}
+	if (m_blurVerticalShader == -1 || m_blurHorizontalShader == -1)
+	{
+		m_pBlurCheckBox->SetToggled(false);
+		m_pBlurCheckBox->SetDisabled(true);
+	}
+
+	m_shadows = m_pShadowsCheckBox->GetToggled();
+	m_ssao = m_pSSAOCheckBox->GetToggled();
+	m_blur = m_pBlurCheckBox->GetToggled();
+	m_dynamicLighting = m_pDynamicLightingCheckBox->GetToggled();
+	m_modelWireframe = m_pWireframeCheckBox->GetToggled();
+	m_multiSampling = m_pMSAACheckBox->GetToggled();
+	m_deferredRendering = m_pDeferredCheckBox->GetToggled();
+	m_animationUpdate = m_pUpdateCheckBox->GetToggled();
+	m_debugRender = m_pDebugRenderCheckBox->GetToggled();
+	m_instanceRender = m_pInstanceRenderCheckBox->GetToggled();
 
 	m_pPlayer->SetWireFrameRender(m_modelWireframe);
 	m_pBlockParticleManager->SetWireFrameRender(m_modelWireframe);
+	m_pBlockParticleManager->SetInstancedRendering(m_instanceRender);
 }
 
 void VoxGame::UpdateAnimationsPulldown()
